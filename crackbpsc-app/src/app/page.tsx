@@ -16,6 +16,9 @@ export default function CrackBPSC() {
   const [adActive, setAdActive] = useState(true);
   const [adHideToday, setAdHideToday] = useState(false);
   const [adDays, setAdDays] = useState("Unlimited");
+  const [notifOpen, setNotifOpen] = useState(false);
+const [notifs, setNotifs] = useState(["🎉 71st BPSC Prelims का नया फ्री मॉक टेस्ट अपलोड हो गया है!", "📢 कल रात 8 बजे बिहार स्पेशल की लाइव क्लास होगी।"]);
+const [newNotif, setNewNotif] = useState("");
 const [questions, setQuestions] = useState([
     { id: 1, type: "MCQ", text: "चंपारण सत्याग्रह (1917) में गांधीजी को बिहार किसने बुलाया था?", opts: ["राजकुमार शुक्ल", "राजेंद्र प्रसाद", "मजहरुल हक", "जयप्रकाश नारायण"], correct: 0 },
     { id: 2, type: "MATCHING", text: "सुमेलित करें: A. हड़प्पा-रावी | B. लोथल-भोगवा | C. कालीबंगा-घग्गर | D. मोहनजोदड़ो-सिंधु", opts: ["A-1, B-2, C-3, D-4", "A-2, B-1, C-3, D-4", "A-4, B-3, C-2, D-1", "A-1, B-3, C-2, D-4"], correct: 0 },
@@ -63,6 +66,15 @@ if (inExam) {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="bg-slate-900 text-white p-2.5 flex justify-between items-center text-xs">
         <span className="font-bold text-amber-400">⚡ CrackBPSC EdTech</span>
+        <button onClick={() => setNotifOpen(!notifOpen)} className="relative bg-slate-800 px-2.5 py-1 rounded-full text-sm">
+  🔔 <span className="bg-rose-600 text-white text-[10px] font-bold px-1.5 rounded-full">{notifs.length}</span>
+</button>
+        {notifOpen && (
+  <div className="fixed top-12 right-3 bg-white text-slate-900 border shadow-xl rounded-xl p-3 w-72 z-50 space-y-2 text-xs">
+    <div className="flex justify-between font-bold border-b pb-1"><span>🔔 ताज़ा सूचनाएं</span><button onClick={() => setNotifOpen(false)}>✕</button></div>
+    {notifs.map((n, i) => <div key={i} className="p-2 bg-slate-50 rounded border">{n}</div>)}
+  </div>
+)}
         <div className="flex gap-1.5">
           <button onClick={() => setRole("STUDENT")} className={"px-2.5 py-1 rounded font-bold " + (role === "STUDENT" ? "bg-blue-600" : "bg-slate-800")}>🎓 Student</button>
           <button onClick={() => setRole("WRITER")} className={"px-2.5 py-1 rounded font-bold " + (role === "WRITER" ? "bg-blue-600" : "bg-slate-800")}>✍️ Writer</button>
@@ -114,6 +126,10 @@ if (inExam) {
           </div>
           <div className="flex gap-1.5 items-center"><span className="font-bold">Negative:</span>{[0.25, 0.33, 0.5].map((n) => <button key={n} onClick={() => setNegMark(n)} className="px-2 py-1 border rounded font-bold">-{n}</button>)}</div>
           <div className="flex flex-wrap gap-1.5 items-center"><span className="font-bold">Ad Duration:</span>{["1 Day", "10 Days", "100 Days", "500 Days", "Unlimited"].map((d) => <button key={d} onClick={() => { setAdDays(d); setAdActive(true); setAdHideToday(false); }} className="px-2 py-1 border rounded font-bold">{d}</button>)}</div>
+        <div className="flex gap-2 pt-2">
+  <input value={newNotif} onChange={(e) => setNewNotif(e.target.value)} placeholder="नया नोटिफिकेशन लिखें..." className="flex-1 border rounded px-2 py-1" />
+  <button onClick={() => { if (!newNotif) return; setNotifs([newNotif, ...notifs]); setNewNotif(""); alert("🔔 नोटिफिकेशन सभी छात्रों को भेज दिया गया!"); }} className="bg-amber-500 text-black px-3 py-1 rounded font-bold">Send 🔔</button>
+</div>
         </div>
       )}
     </div>
