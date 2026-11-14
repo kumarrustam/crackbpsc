@@ -19,6 +19,12 @@ export default function CrackBPSC() {
   const [notifOpen, setNotifOpen] = useState(false);
 const [notifs, setNotifs] = useState(["🎉 71st BPSC Prelims का नया फ्री मॉक टेस्ट अपलोड हो गया है!", "📢 कल रात 8 बजे बिहार स्पेशल की लाइव क्लास होगी।"]);
 const [newNotif, setNewNotif] = useState("");
+  const [adType, setAdType] = useState("POPUP");
+  const [adTitle, setAdTitle] = useState("🔥 71st BPSC महा-ऑफर: SuperPass Pro सिर्फ ₹299 में!");
+  const [adDesc, setAdDesc] = useState("सभी 500+ मॉक टेस्ट, बिहार स्पेशल नोट्स और लाइव क्लासेस अनलॉक करें।");
+  const [popupOpen, setPopupOpen] = useState(true);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [user, setUser] = useState("");
 const [questions, setQuestions] = useState([
     { id: 1, type: "MCQ", text: "चंपारण सत्याग्रह (1917) में गांधीजी को बिहार किसने बुलाया था?", opts: ["राजकुमार शुक्ल", "राजेंद्र प्रसाद", "मजहरुल हक", "जयप्रकाश नारायण"], correct: 0 },
     { id: 2, type: "MATCHING", text: "सुमेलित करें: A. हड़प्पा-रावी | B. लोथल-भोगवा | C. कालीबंगा-घग्गर | D. मोहनजोदड़ो-सिंधु", opts: ["A-1, B-2, C-3, D-4", "A-2, B-1, C-3, D-4", "A-4, B-3, C-2, D-1", "A-1, B-3, C-2, D-4"], correct: 0 },
@@ -83,6 +89,11 @@ if (inExam) {
       </div>
 
       {role === "STUDENT" && (
+      {showLive && <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">🟢 {liveCount} लाइव</span>}
+      <button onClick={() => { setUser("Student"); setPopupOpen(true); setAdHideToday(false); }} className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg">
+              {user ? "👤 Logged In" : "Login"}
+            </button>   
+    </div>
         <div className="max-w-3xl mx-auto p-4 space-y-4">
           <div className="bg-amber-400 p-2 rounded-lg text-xs font-bold text-center">📢 71st BPSC, UPSC, SSC मॉक टेस्ट सीरीज़ लाइव है!</div>
           <div className="flex justify-between items-center">
@@ -94,6 +105,33 @@ if (inExam) {
             {showLive && <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">🟢 {liveCount} लाइव</span>}
           </div>
           {adActive && !adHideToday && (
+          {adActive && !adHideToday && adType === "POPUP" && popupOpen && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-2 border-amber-400">
+                <div className="bg-blue-800 text-white p-5 text-center space-y-2">
+                  <span className="bg-amber-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full">OFFER • {adDays}</span>
+                  <h3 className="font-black text-lg">{adTitle}</h3>
+                  <p className="text-xs text-blue-100">{adDesc}</p>
+                </div>
+                <div className="p-4 text-center space-y-2">
+                  <button onClick={() => { setPopupOpen(false); alert("🎉 ऑफर सक्रिय!"); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm">अभी अनलॉक करें →</button>
+                  <div className="flex justify-between text-[11px] text-slate-500">
+                    <button onClick={() => setPopupOpen(false)} className="underline">बंद करें (✕)</button>
+                    <button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="underline">Don&apos;t show today</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {adActive && !adHideToday && adType === "PROMO" && (
+            <div className="bg-purple-700 text-white p-4 rounded-2xl space-y-1">
+              <span className="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded">PROMO CARD • {adDays}</span>
+              <h3 className="font-bold text-base">{adTitle}</h3>
+              <p className="text-xs text-purple-100">{adDesc}</p>
+              <button onClick={() => setAdHideToday(true)} className="text-[10px] underline">आज न दिखाएं</button>
+            </div>
+          )}
             <div className="bg-blue-800 text-white p-4 rounded-xl flex justify-between items-center text-xs">
               <div><span className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">AD • {adDays}</span><div className="font-bold text-sm mt-1">CrackBPSC SuperPass Pro — ₹299/वर्ष</div></div>
               <button onClick={() => setAdHideToday(true)} className="underline">Don&apos;t show today</button>
@@ -126,7 +164,20 @@ if (inExam) {
           </div>
           <div className="flex gap-1.5 items-center"><span className="font-bold">Negative:</span>{[0.25, 0.33, 0.5].map((n) => <button key={n} onClick={() => setNegMark(n)} className="px-2 py-1 border rounded font-bold">-{n}</button>)}</div>
           <div className="flex flex-wrap gap-1.5 items-center"><span className="font-bold">Ad Duration:</span>{["1 Day", "10 Days", "100 Days", "500 Days", "Unlimited"].map((d) => <button key={d} onClick={() => { setAdDays(d); setAdActive(true); setAdHideToday(false); }} className="px-2 py-1 border rounded font-bold">{d}</button>)}</div>
-        <div className="flex gap-2 pt-2">
+        <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
+            <div className="font-bold text-indigo-800">📢 नया विज्ञापन (Ad) बनाएं:</div>
+            <div className="flex gap-1.5">
+              {["POPUP", "BANNER", "PROMO"].map((t) => (
+                <button key={t} onClick={() => { setAdType(t); setPopupOpen(true); setAdHideToday(false); setAdActive(true); }} className={"px-2.5 py-1 rounded font-bold border " + (adType === t ? "bg-indigo-600 text-white" : "bg-white")}>
+                  {t === "POPUP" ? "🪟 Popup Ad" : t === "BANNER" ? "📏 Banner" : "🎴 Promo Card"}
+                </button>
+              ))}
+            </div>
+            <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन का शीर्षक लिखें..." className="w-full border rounded p-1.5 bg-white font-bold" />
+            <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन का विवरण लिखें..." className="w-full border rounded p-1.5 bg-white" />
+            <button onClick={() => { setAdActive(true); setAdHideToday(false); setPopupOpen(true); alert("✅ नया विज्ञापन लाइव हो गया!"); }} className="w-full bg-emerald-600 text-white font-bold py-1.5 rounded">🚀 विज्ञापन लाइव करें</button>
+          </div>
+          <div className="flex gap-2 pt-2">
   <input value={newNotif} onChange={(e) => setNewNotif(e.target.value)} placeholder="नया नोटिफिकेशन लिखें..." className="flex-1 border rounded px-2 py-1" />
   <button onClick={() => { if (!newNotif) return; setNotifs([newNotif, ...notifs]); setNewNotif(""); alert("🔔 नोटिफिकेशन सभी छात्रों को भेज दिया गया!"); }} className="bg-amber-500 text-black px-3 py-1 rounded font-bold">Send 🔔</button>
 </div>
