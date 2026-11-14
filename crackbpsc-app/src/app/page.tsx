@@ -1,4 +1,4 @@
-"use client";
+use client";
 import React, { useState, useEffect } from "react";
 
 type RoleType = "STUDENT" | "HEAD_ADMIN" | "MANAGER" | "AD_MARKETING" | "CA_PUBLISHER" | "CONTENT_WRITER";
