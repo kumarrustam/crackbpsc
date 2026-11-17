@@ -57,8 +57,8 @@ export default function CrackBPSC() {
     questions.forEach((item, i) => { if (ans[i] !== undefined) { ans[i] === item.correct ? right++ : wrong++; } });
     const score = (right - wrong * negMark).toFixed(2);
     return (
-      <div className="min-h-screen bg-slate-100 p-4">
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl border p-5 space-y-4">
+      <div className="min-h-screen bg-slate-200 text-slate-950 p-4">
+  <div className="max-w-3xl mx-auto bg-white text-slate-950 rounded-2xl border-2 border-slate-300 shadow-lg p-5 space-y-4">
           <div className="flex justify-between items-center border-b pb-3">
             <h2 className="font-bold text-blue-700">{goal} Mock Test</h2>
             {!submitted ? <button onClick={() => setSubmitted(true)} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Submit</button> : <button onClick={() => { setInExam(false); setSubmitted(false); }} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Home</button>}
@@ -67,10 +67,12 @@ export default function CrackBPSC() {
             <div className="bg-amber-50 p-4 rounded-xl font-bold text-amber-800">🏆 स्कोर: {score} / {questions.length} (सही: {right}, गलत: {wrong})</div>
           ) : (
             <div className="space-y-3">
-              <p className="font-semibold">प्र.{qIdx + 1}: {q.text}</p>
-              {q.opts.map((o, idx) => (
-                <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3 border rounded-xl text-sm cursor-pointer " + (ans[qIdx] === idx ? "bg-blue-50 border-blue-600 font-bold" : "")}>{idx + 1}. {o}</div>
-              ))}
+              <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {q.text}</p>
+{q.opts.map((o, idx) => (
+  <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3.5 border-2 rounded-xl text-sm font-bold cursor-pointer transition-all " + (ans[qIdx] === idx ? "bg-blue-600 text-white border-blue-700 shadow-md" : "bg-slate-50 text-slate-950 border-slate-300 hover:border-blue-500")}>
+    ({String.fromCharCode(65 + idx)}) {o}
+  </div>
+))}
               <button onClick={() => setQIdx((qIdx + 1) % questions.length)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Next →</button>
             </div>
           )}
