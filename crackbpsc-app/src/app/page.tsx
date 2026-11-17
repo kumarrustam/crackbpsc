@@ -31,6 +31,7 @@ export default function CrackBPSC() {
   const [adSize, setAdSize] = useState("MEDIUM");
   const [adTitle, setAdTitle] = useState("🔥 71st BPSC ऑफर: SuperPass सिर्फ ₹299!");
   const [adDesc, setAdDesc] = useState("सभी 500+ मॉक टेस्ट और लाइव क्लासेस अनलॉक करें।");
+  const [adLink, setAdLink] = useState("https://");
   const [adDayCount, setAdDayCount] = useState(7);
   const [isUnlimited, setIsUnlimited] = useState(false);
   const [popupOpen, setPopupOpen] = useState(true);
@@ -127,7 +128,22 @@ export default function CrackBPSC() {
           </div>
         </div>
       )}
-      {role === "STUDENT" && !adHideToday && popupOpen && adType !== "BANNER" && (
+      {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 text-white z-50 flex flex-col justify-between p-6 text-center">
+          <div className="flex justify-between items-center">
+            <span className="bg-amber-400 text-black text-[11px] font-black px-3 py-1 rounded-full">SPONSORED • {activeDaysText}</span>
+            <button onClick={() => setPopupOpen(false)} className="w-11 h-11 bg-white/20 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl font-black border border-white/40 shadow-xl">✕</button>
+          </div>
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="text-5xl">🚀</div>
+            <h2 className="font-black text-3xl leading-tight text-amber-300">{adTitle}</h2>
+            <p className="text-sm text-blue-100 leading-relaxed">{adDesc}</p>
+            <button onClick={() => { if (adLink && adLink !== "https://") window.open(adLink, "_blank"); setPopupOpen(false); }} className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-3.5 rounded-2xl text-base shadow-lg">अभी ऑफर प्राप्त करें →</button>
+          </div>
+          <button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="text-xs text-slate-400 underline mx-auto">आज यह विज्ञापन दोबारा न दिखाएं (Don&apos;t show today)</button>
+        </div>
+      )}
+      {role === "STUDENT" && !adHideToday && popupOpen && adType !== "BANNER" && adType !== "FULL_CUT" && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-2 border-amber-400 text-center">
             <div className={"p-5 text-white space-y-2 " + (adType === "TIMER" ? "bg-rose-700" : adType === "SPIN" ? "bg-purple-800" : "bg-blue-800")}>
@@ -200,6 +216,7 @@ export default function CrackBPSC() {
               </div>
               <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 font-bold" />
               <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5" />
+            <input value={adLink} onChange={(e) => setAdLink(e.target.value)} placeholder="🔗 विज्ञापन का लिंक (URL) यहाँ डालें..." className="w-full border rounded p-1.5 bg-blue-50 text-blue-900 font-medium" />
               {canEditCoupon && <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="कूपन कोड बदलें..." className="w-full border rounded p-1.5 bg-amber-50 font-bold" />}
             <div className="flex flex-wrap items-center gap-1.5">
   <span className="font-bold">साइज़ (Size):</span>
