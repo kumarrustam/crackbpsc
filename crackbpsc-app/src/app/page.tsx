@@ -52,6 +52,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [reasonBox, setReasonBox] = useState("");
   const [newQ, setNewQ] = useState("");
   const [newOpts, setNewOpts] = useState(["", "", "", ""]);
+  const [newExp, setNewExp] = useState("");
+  const [newQEn, setNewQEn] = useState("");
+  const [newOptsEn, setNewOptsEn] = useState(["", "", "", ""]);
+  const [newExpEn, setNewExpEn] = useState("");
 
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
@@ -223,6 +227,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               <div className="p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-1">
                 <div className="text-[11px] font-extrabold text-blue-900">📌 मुख्य प्रश्न का डिब्बा:</div>
                 <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="यहाँ मुख्य प्रश्न लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
+                <input value={newQEn} onChange={(e) => setNewQEn(e.target.value)} placeholder="🇬🇧 Write question in English here..." className="w-full border rounded p-2 text-sm bg-indigo-50 font-medium mt-1.5" />
               </div>
 
               {qType === "MATCH" && (
@@ -257,18 +262,24 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   <input value={reasonBox} onChange={(e) => setReasonBox(e.target.value)} placeholder="यहाँ कारण (R) लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
                 </div>
               )}
-              <textarea
-  rows={5}
-  value={newOpts.join("\n")}
-  onChange={(e) => setNewOpts(e.target.value.split("\n"))}
-  placeholder={"हर विकल्प नई लाइन में लिखें या पेस्ट करें...\nजैसे:\nविकल्प A\nविकल्प B\nविकल्प C\nविकल्प D\nउपर्युक्त में से कोई नहीं / एक से अधिक"}
-  className="w-full border rounded-lg p-2.5 text-sm bg-slate-50 font-medium leading-relaxed"
-/>
-<div className="flex flex-wrap justify-between items-center bg-blue-50 px-3 py-1.5 rounded border border-blue-200 text-xs">
-  <span className="font-bold text-blue-900">✅ ऑटो-डिटेक्टेड विकल्प: {newOpts.filter((x) => x.trim() !== "").length} Options</span>
-  <button onClick={() => setNewOpts([...newOpts.filter((x) => x.trim() !== ""), "उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक"])} className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">+ BPSC (E) जोड़ें</button>
-</div>
-              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ) return; if (cleanOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").map((x, i) => String.fromCharCode(65 + i) + "-" + x).join(", "); const rClean = listRight.filter((x) => x.trim() !== "").map((x, i) => (i + 1) + "-" + x).join(", "); let fullText = newQ; if (qType === "MATCH") fullText = newQ + " | सूची-I: " + lClean + " : सूची-II: " + rClean; if (qType === "REASON") fullText = "अभिकथन (A): " + newQ + " | कारण (R): " + reasonBox; setQuestions([...questions, { id: Date.now(), subject: newSub, text: fullText, opts: cleanOpts, correct: 0 }]); setNewQ(""); setReasonBox(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setNewOpts(["", "", "", ""]); alert("✅ प्रश्न सभी डिब्बों के साथ सेव हो गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
+      
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <div className="text-[11px] font-bold text-slate-700">🇮🇳 हिंदी विकल्प (हर विकल्प नई लाइन में):</div>
+                  <textarea rows={4} value={newOpts.join("\n")} onChange={(e) => setNewOpts(e.target.value.split("\n"))} placeholder={"विकल्प A (हिंदी)\nविकल्प B (हिंदी)\nविकल्प C (हिंदी)\nविकल्प D (हिंदी)"} className="w-full border rounded-lg p-2 text-xs bg-slate-50 font-medium" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[11px] font-bold text-slate-700">🇬🇧 English Options (Each on new line):</div>
+                  <textarea rows={4} value={newOptsEn.join("\n")} onChange={(e) => setNewOptsEn(e.target.value.split("\n"))} placeholder={"Option A (English)\nOption B (English)\nOption C (English)\nOption D (English)"} className="w-full border rounded-lg p-2 text-xs bg-slate-50 font-medium" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <textarea rows={2} value={newExp} onChange={(e) => setNewExp(e.target.value)} placeholder="📖 हिंदी में विस्तृत व्याख्या (Explanation)..." className="w-full border rounded-lg p-2 text-xs bg-emerald-50 font-medium" />
+                <textarea rows={2} value={newExpEn} onChange={(e) => setNewExpEn(e.target.value)} placeholder="📘 Detailed Explanation in English..." className="w-full border rounded-lg p-2 text-xs bg-teal-50 font-medium" />
+              </div>
+
+              <button onClick={() => { const hiOpts = newOpts.filter((x) => x.trim() !== ""); const enOpts = newOptsEn.filter((x) => x.trim() !== ""); if (!newQ) return; if (hiOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").map((x, i) => String.fromCharCode(65 + i) + "-" + x).join(", "); const rClean = listRight.filter((x) => x.trim() !== "").map((x, i) => (i + 1) + "-" + x).join(", "); let baseQ = newQEn.trim() ? newQ + " / " + newQEn : newQ; if (qType === "MATCH") baseQ = baseQ + " | सूची-I: " + lClean + " : सूची-II: " + rClean; if (qType === "REASON") baseQ = "अभिकथन (A): " + baseQ + " | कारण (R): " + reasonBox; const combinedOpts = hiOpts.map((h, i) => enOpts[i] ? h + " / " + enOpts[i] : h); const combinedExp = newExpEn.trim() ? newExp + " | English: " + newExpEn : newExp; setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: 0, exp: combinedExp }]); setNewQ(""); setNewQEn(""); setReasonBox(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); alert("✅ हिंदी और English दोनों भाषाओं में प्रश्न सेव हो गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg">Save Bilingual Question</button>
               <div className="pt-3 border-t space-y-2">
                 <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
                 {questions.map((q, idx) => (
