@@ -173,8 +173,18 @@ export default function CrackBPSC() {
           ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <>
               <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="नया प्रश्न लिखें..." className="w-full border rounded p-2 text-sm" />
-              {newOpts.map((o, i) => <input key={i} value={o} onChange={(e) => { const c = [...newOpts]; c[i] = e.target.value; setNewOpts(c); }} placeholder={"Option " + (i + 1)} className="w-full border rounded p-2" />)}
-              <button onClick={() => { if (!newQ) return; setQuestions([...questions, { id: Date.now(), text: newQ, opts: newOpts, correct: 0 }]); setNewQ(""); alert("✅ प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
+              <textarea
+  rows={5}
+  value={newOpts.join("\n")}
+  onChange={(e) => setNewOpts(e.target.value.split("\n"))}
+  placeholder={"हर विकल्प नई लाइन में लिखें या पेस्ट करें...\nजैसे:\nविकल्प A\nविकल्प B\nविकल्प C\nविकल्प D\nउपर्युक्त में से कोई नहीं / एक से अधिक"}
+  className="w-full border rounded-lg p-2.5 text-sm bg-slate-50 font-medium leading-relaxed"
+/>
+<div className="flex flex-wrap justify-between items-center bg-blue-50 px-3 py-1.5 rounded border border-blue-200 text-xs">
+  <span className="font-bold text-blue-900">✅ ऑटो-डिटेक्टेड विकल्प: {newOpts.filter((x) => x.trim() !== "").length} Options</span>
+  <button onClick={() => setNewOpts([...newOpts.filter((x) => x.trim() !== ""), "उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक"])} className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">+ BPSC (E) जोड़ें</button>
+</div>
+              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ || cleanOpts.length < 2) return; setQuestions([...questions, { id: Date.now(), text: newQ, opts: cleanOpts, correct: 0 }]); setNewQ(""); setNewOpts(["", "", "", ""]); alert("✅ " + cleanOpts.length + " विकल्पों वाला प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
               {writerCanDelete && questions.map((q) => (
                 <div key={q.id} className="flex justify-between items-center p-2 bg-slate-50 border rounded">
                   <span>{q.text}</span>
