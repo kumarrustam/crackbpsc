@@ -144,6 +144,15 @@ export default function CrackBPSC() {
       {role === "WRITER" && (
         <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
           <h2 className="font-bold text-sm">✍️ Content Writer Panel</h2>
+          {unlockedRole !== "WRITER" ? (
+            <div className="p-3 bg-slate-100 rounded-lg space-y-2">
+              <div className="font-bold text-slate-700">🔑 Writer Panel खोलने के लिए Head Admin का PIN डालें:</div>
+              <div className="flex gap-2">
+                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="PIN डालें..." className="border rounded px-2.5 py-1 bg-white font-bold" />
+                <button onClick={() => { if (pinInput === writerPin) { setUnlockedRole("WRITER"); setPinInput(""); } else { alert("❌ गलत PIN! Head Admin से नया PIN पूछें।"); } }} className="bg-blue-600 text-white px-3 py-1 rounded font-bold">Unlock 🔓</button>
+              </div>
+            </div>
+          ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
           {!allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <>
               <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="नया प्रश्न लिखें..." className="w-full border rounded p-2 text-sm" />
