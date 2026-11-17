@@ -46,6 +46,10 @@ export default function CrackBPSC() {
 ]);
 const [newSub, setNewSub] = useState("बिहार विशेष");
   const [subjects, setSubjects] = useState(["बिहार विशेष", "इतिहास", "भूगोल", "विज्ञान", "राजव्यवस्था", "करंट अफेयर्स", "गणित", "इकोनॉमी"]);
+  const [qType, setQType] = useState("NORMAL");
+  const [listLeft, setListLeft] = useState(["", "", "", ""]);
+  const [listRight, setListRight] = useState(["", "", "", ""]);
+  const [reasonBox, setReasonBox] = useState("");
   const [newQ, setNewQ] = useState("");
   const [newOpts, setNewOpts] = useState(["", "", "", ""]);
 
