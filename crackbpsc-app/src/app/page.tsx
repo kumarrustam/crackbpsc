@@ -185,12 +185,24 @@ export default function CrackBPSC() {
   <button onClick={() => setNewOpts([...newOpts.filter((x) => x.trim() !== ""), "उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक"])} className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">+ BPSC (E) जोड़ें</button>
 </div>
               <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ || cleanOpts.length < 2) return; setQuestions([...questions, { id: Date.now(), text: newQ, opts: cleanOpts, correct: 0 }]); setNewQ(""); setNewOpts(["", "", "", ""]); alert("✅ " + cleanOpts.length + " विकल्पों वाला प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
-              {writerCanDelete && questions.map((q) => (
-                <div key={q.id} className="flex justify-between items-center p-2 bg-slate-50 border rounded">
-                  <span>{q.text}</span>
-                  <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="bg-rose-600 text-white px-2 py-0.5 rounded font-bold">Delete</button>
-                </div>
-              ))}
+              <div className="pt-3 border-t space-y-2">
+                <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
+                {questions.map((q, idx) => (
+                  <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="font-bold text-slate-900">प्र.{idx + 1}: {q.text}</span>
+                      {writerCanDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="bg-rose-600 text-white px-2 py-0.5 rounded font-bold shrink-0">Delete</button>}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {q.opts.map((opt, oIdx) => (
+                        <span key={oIdx} className={"px-2 py-0.5 rounded border text-[11px] " + (q.correct === oIdx ? "bg-emerald-100 border-emerald-600 font-bold text-emerald-900" : "bg-white text-slate-600")}>
+                          ({String.fromCharCode(65 + oIdx)}) {opt} {q.correct === oIdx && "✅"}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
         </div>
