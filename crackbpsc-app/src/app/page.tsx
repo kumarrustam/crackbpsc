@@ -105,13 +105,12 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           </div>
           ) : (
             <div className="space-y-3">
-            <div className="flex flex-wrap justify-between items-center gap-2 bg-slate-100 p-2 rounded-xl border">
-              <span className="font-extrabold text-xs text-slate-700">🌐 परीक्षा की भाषा चुनें:</span>
-              <div className="flex gap-1">
-                {[{ id: "HI", name: "🇮🇳 हिंदी" }, { id: "EN", name: "🇬🇧 English" }, { id: "BOTH", name: "🌐 दोनों" }].map((l) => (
-                  <button key={l.id} onClick={() => setExamLang(l.id)} className={"px-2.5 py-1 rounded-lg text-xs font-black " + (examLang === l.id ? "bg-blue-600 text-white shadow" : "bg-white text-slate-800 border")}>{l.name}</button>
-                ))}
-              </div>
+            <div className="flex justify-between items-center bg-slate-100 px-3 py-1.5 rounded-xl border">
+              <span className="font-extrabold text-xs text-slate-800">{goal} • {examLang === "EN" ? "Medium: English" : "माध्यम: हिंदी"}</span>
+              <button onClick={() => { const next = examLang === "HI" ? "EN" : "HI"; setExamLang(next); setLang(next); }} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
+                <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
+              </button>
+            </div>
             </div>
             <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {examLang === "HI" ? q.text.split(" / ")[0] : examLang === "EN" ? (q.text.split(" / ")[1] || q.text.split(" / ")[0]) : q.text}</p>
             {q.opts.map((o, idx) => (
@@ -176,9 +175,8 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           )}
 
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
-            <h2 className="font-extrabold text-base">{goal} All-India Live Mock Test</h2>
-            <button onClick={() => { setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm">CBT परीक्षा शुरू करें →</button>
-          </div>
+            <h2 className="font-extrabold text-base">{examLang === "EN" ? ${goal} All-India Live Mock Test : ${goal} अखिल भारतीय लाइव मॉक टेस्ट}</h2>
+            <button onClick={() => { setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm">{examLang === "EN" ? "Start CBT Exam →" : "CBT परीक्षा शुरू करें →"}</button></div>
         </div>
       )}
       {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
