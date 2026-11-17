@@ -158,6 +158,11 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               ))}
             </div>
             <div className="flex items-center gap-2">
+              <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="flex items-center gap-1 bg-white hover:bg-blue-50 border-2 border-slate-900 px-2 py-1 rounded-xl shadow-sm active:scale-95 transition-all">
+                <span className="bg-slate-900 text-white text-[11px] font-black px-1.5 py-0.5 rounded">क</span>
+                <span className="text-xs font-black text-slate-900">⇄</span>
+                <span className="bg-slate-100 text-slate-900 border border-slate-800 text-[11px] font-black px-1.5 py-0.5 rounded">A</span>
+              </button>
               {showLive && <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded-full">🟢 {liveCount}</span>}
               {user ? <button onClick={() => setUser("")} className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-lg">👤 {user}</button> : <button onClick={() => setLoginOpen(true)} className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg">Login</button>}
             </div>
