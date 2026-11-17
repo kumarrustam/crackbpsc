@@ -227,15 +227,25 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
 
               {qType === "MATCH" && (
                 <div className="p-2.5 bg-purple-50 border border-purple-300 rounded-lg space-y-2">
-                  <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान का अलग डिब्बा (सूची-I व सूची-II):</div>
+                  <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान (एक बार में लाइनें पेस्ट करें — डिब्बे अपने आप बनेंगे):</div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <div className="text-[10px] font-bold text-purple-800">सूची-I (A, B, C, D)</div>
-                      {listLeft.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...listLeft]; c[i] = e.target.value; setListLeft(c); }} placeholder={["A.", "B.", "C.", "D."][i]} className="w-full border rounded p-1.5 bg-white text-xs" />)}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] font-bold text-purple-800">सूची-I पेस्ट करें (हर मद नई लाइन में):</div>
+                      <textarea rows={4} value={listLeft.join("\n")} onChange={(e) => setListLeft(e.target.value.split("\n"))} placeholder={"यहाँ सूची-I पेस्ट करें...\nजैसे:\nचंपारण\nखेड़ा\nअहमदाबाद\nअसहयोग"} className="w-full border rounded p-1.5 bg-white text-xs font-medium" />
+                      <div className="space-y-1">
+                        {listLeft.filter((x) => x.trim() !== "").map((item, i) => (
+                          <div key={i} className="px-2 py-1 bg-purple-100 border border-purple-300 rounded text-[11px] font-bold text-purple-950">({String.fromCharCode(65 + i)}) {item}</div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-[10px] font-bold text-indigo-800">सूची-II (1, 2, 3, 4)</div>
-                      {listRight.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...listRight]; c[i] = e.target.value; setListRight(c); }} placeholder={["1.", "2.", "3.", "4."][i]} className="w-full border rounded p-1.5 bg-white text-xs" />)}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] font-bold text-indigo-800">सूची-II पेस्ट करें (हर मद नई लाइन में):</div>
+                      <textarea rows={4} value={listRight.join("\n")} onChange={(e) => setListRight(e.target.value.split("\n"))} placeholder={"यहाँ सूची-II पेस्ट करें...\nजैसे:\n1917\n1918\n1918\n1920"} className="w-full border rounded p-1.5 bg-white text-xs font-medium" />
+                      <div className="space-y-1">
+                        {listRight.filter((x) => x.trim() !== "").map((item, i) => (
+                          <div key={i} className="px-2 py-1 bg-indigo-100 border border-indigo-300 rounded text-[11px] font-bold text-indigo-950">({i + 1}) {item}</div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -258,7 +268,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
   <span className="font-bold text-blue-900">✅ ऑटो-डिटेक्टेड विकल्प: {newOpts.filter((x) => x.trim() !== "").length} Options</span>
   <button onClick={() => setNewOpts([...newOpts.filter((x) => x.trim() !== ""), "उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक"])} className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">+ BPSC (E) जोड़ें</button>
 </div>
-              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ || cleanOpts.length < 2) return; setQuestions([...questions, { id: Date.now(), subject: newSub, text: newQ, opts: cleanOpts, correct: 0 }]); setNewQ(""); setNewOpts(["", "", "", ""]); alert("✅ " + cleanOpts.length + " विकल्पों वाला प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
+              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ  cleanOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").map((x, i) => String.fromCharCode(65 + i) + "-" + x).join(", "); const rClean = listRight.filter((x) => x.trim() !== "").map((x, i) => (i + 1) + "-" + x).join(", "); let fullText = newQ; if (qType === "MATCH") fullText = newQ + " | सूची-I: " + lClean + "  सूची-II: " + rClean; if (qType === "REASON") fullText = "अभिकथन (A): " + newQ + " | कारण (R): " + reasonBox; setQuestions([...questions, { id: Date.now(), subject: newSub, text: fullText, opts: cleanOpts, correct: 0 }]); setNewQ(""); setReasonBox(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setNewOpts(["", "", "", ""]); alert("✅ प्रश्न सभी डिब्बों के साथ सेव हो गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
               <div className="pt-3 border-t space-y-2">
                 <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
                 {questions.map((q, idx) => (
