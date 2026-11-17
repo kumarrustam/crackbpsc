@@ -111,7 +111,6 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
               </button>
             </div>
-            </div>
             <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {examLang === "HI" ? q.text.split(" / ")[0] : examLang === "EN" ? (q.text.split(" / ")[1] || q.text.split(" / ")[0]) : q.text}</p>
             {q.opts.map((o, idx) => (
               <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3.5 border-2 rounded-xl text-sm font-bold cursor-pointer transition-all " + (ans[qIdx] === idx ? "bg-blue-600 text-white border-blue-700 shadow-md" : "bg-slate-50 text-slate-950 border-slate-300 hover:border-blue-500")}>
