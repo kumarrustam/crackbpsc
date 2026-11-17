@@ -28,6 +28,7 @@ export default function CrackBPSC() {
   const [canEditCoupon, setCanEditCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState("BPSC50");
   const [adType, setAdType] = useState("POPUP");
+  const [adSize, setAdSize] = useState("MEDIUM");
   const [adTitle, setAdTitle] = useState("🔥 71st BPSC ऑफर: SuperPass सिर्फ ₹299!");
   const [adDesc, setAdDesc] = useState("सभी 500+ मॉक टेस्ट और लाइव क्लासेस अनलॉक करें।");
   const [adDayCount, setAdDayCount] = useState(7);
@@ -200,6 +201,12 @@ export default function CrackBPSC() {
               <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 font-bold" />
               <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5" />
               {canEditCoupon && <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="कूपन कोड बदलें..." className="w-full border rounded p-1.5 bg-amber-50 font-bold" />}
+            <div className="flex flex-wrap items-center gap-1.5">
+  <span className="font-bold">साइज़ (Size):</span>
+  {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📰 बड़ा पोस्टर" }, { id: "FULL", name: "📱 फुल स्क्रीन" }].map((s) => (
+    <button key={s.id} onClick={() => setAdSize(s.id)} className={"px-2 py-1 rounded font-bold border " + (adSize === s.id ? "bg-amber-500 text-black" : "bg-white")}>{s.name}</button>
+  ))}
+</div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold">अवधि:</span>
                 <button onClick={() => { setIsUnlimited(false); setAdDayCount(Math.max(1, adDayCount - 1)); }} className="bg-rose-600 text-white font-black px-3 py-1 rounded">−</button>
