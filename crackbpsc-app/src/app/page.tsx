@@ -125,7 +125,7 @@ export default function CrackBPSC() {
           </div>
         </div>
       )}
-      {role === "STUDENT" && !adHideToday && popupOpen && (adType === "POPUP"  adType === "TIMER"  adType === "SPIN") && (
+      {role === "STUDENT" && !adHideToday && popupOpen && adType !== "BANNER" && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-2 border-amber-400 text-center">
             <div className={"p-5 text-white space-y-2 " + (adType === "TIMER" ? "bg-rose-700" : adType === "SPIN" ? "bg-purple-800" : "bg-blue-800")}>
