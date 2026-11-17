@@ -220,7 +220,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
   <span className="font-bold text-blue-900">✅ ऑटो-डिटेक्टेड विकल्प: {newOpts.filter((x) => x.trim() !== "").length} Options</span>
   <button onClick={() => setNewOpts([...newOpts.filter((x) => x.trim() !== ""), "उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक"])} className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">+ BPSC (E) जोड़ें</button>
 </div>
-              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ || cleanOpts.length < 2) return; setQuestions([...questions, { id: Date.now(), text: newQ, opts: cleanOpts, correct: 0 }]); setNewQ(""); setNewOpts(["", "", "", ""]); alert("✅ " + cleanOpts.length + " विकल्पों वाला प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
+              <button onClick={() => { const cleanOpts = newOpts.filter((x) => x.trim() !== ""); if (!newQ || cleanOpts.length < 2) return; setQuestions([...questions, { id: Date.now(), subject: newSub, text: newQ, opts: cleanOpts, correct: 0 }]); setNewQ(""); setNewOpts(["", "", "", ""]); alert("✅ " + cleanOpts.length + " विकल्पों वाला प्रश्न जुड़ गया!"); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save Question</button>
               <div className="pt-3 border-t space-y-2">
                 <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
                 {questions.map((q, idx) => (
