@@ -115,7 +115,7 @@ export default function CrackBPSC() {
           </div>
 
           {!adHideToday && adType === "BANNER" && (
-            <div className="bg-blue-800 text-white p-3.5 rounded-xl flex justify-between items-center text-xs">
+            <div className={"bg-blue-800 text-white rounded-xl flex justify-between items-center transition-all " + (adSize === "SMALL" ? "p-2 text-[11px]" : adSize === "LARGE" ? "p-7 text-base" : adSize === "FULL" ? "p-12 text-lg min-h-[260px]" : "p-3.5 text-xs")}>
               <div><span className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">BANNER • {activeDaysText}</span><div className="font-bold text-sm mt-1">{adTitle}</div><div>{adDesc}</div></div>
               <button onClick={() => setAdHideToday(true)} className="underline">Don&apos;t show today</button>
             </div>
@@ -267,6 +267,12 @@ export default function CrackBPSC() {
               </div>
               <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 bg-white font-bold" />
               <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5 bg-white" />
+              <div className="flex flex-wrap items-center gap-1.5">
+  <span className="font-bold">साइज़ (Size):</span>
+  {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📰 बड़ा पोस्टर" }, { id: "FULL", name: "📱 फुल स्क्रीन" }].map((s) => (
+    <button key={s.id} onClick={() => setAdSize(s.id)} className={"px-2 py-1 rounded font-bold border " + (adSize === s.id ? "bg-amber-500 text-black" : "bg-white")}>{s.name}</button>
+  ))}
+</div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold">अवधि:</span>
                 <button onClick={() => { setIsUnlimited(false); setAdDayCount(Math.max(1, adDayCount - 1)); }} className="bg-rose-600 text-white font-black px-3 py-1 rounded">−</button>
