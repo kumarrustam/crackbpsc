@@ -179,7 +179,39 @@ export default function CrackBPSC() {
           )}
         </div>
       )}
-
+{role === "ADTEAM" && (
+        <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border-2 border-amber-300 space-y-3 text-xs">
+          <h2 className="font-extrabold text-sm text-amber-900">📢 Ad Team Studio (विज्ञापन केंद्र)</h2>
+          {unlockedRole !== "ADTEAM" ? (
+            <div className="p-3 bg-slate-100 rounded-lg space-y-2">
+              <div className="font-bold text-slate-700">🔑 Ad Team खोलने के लिए Head Admin का PIN डालें:</div>
+              <div className="flex gap-2">
+                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="Ad PIN डालें..." className="border rounded px-2.5 py-1 bg-white font-bold" />
+                <button onClick={() => { if (pinInput === adPin) { setUnlockedRole("ADTEAM"); setPinInput(""); } else { alert("❌ गलत PIN!"); } }} className="bg-amber-600 text-white px-3 py-1 rounded font-bold">Unlock 🔓</button>
+              </div>
+            </div>
+          ) : !allowAd ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने Ad Team का एक्सेस बंद कर रखा है।</div> : (
+          <div className="space-y-2">
+              <div className="flex flex-wrap gap-1.5">
+                {["POPUP", "SPIN", "TIMER", "BANNER"].map((t) => (
+                  <button key={t} onClick={() => { if (t !== "BANNER" && !adCanPopup) { alert("🔒 Popup Ads बंद हैं!"); return; } setAdType(t); setPopupOpen(true); setAdHideToday(false); }} className={"px-2.5 py-1 rounded font-bold border " + (adType === t ? "bg-indigo-600 text-white" : "bg-white")}>{t}</button>
+                ))}
+              </div>
+              <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 font-bold" />
+              <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5" />
+              {canEditCoupon && <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="कूपन कोड बदलें..." className="w-full border rounded p-1.5 bg-amber-50 font-bold" />}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-bold">अवधि:</span>
+                <button onClick={() => { setIsUnlimited(false); setAdDayCount(Math.max(1, adDayCount - 1)); }} className="bg-rose-600 text-white font-black px-3 py-1 rounded">−</button>
+                <span className="bg-slate-50 border px-3 py-1 rounded font-bold">{activeDaysText}</span>
+                <button onClick={() => { setIsUnlimited(false); setAdDayCount(adDayCount + 1); }} className="bg-emerald-600 text-white font-black px-3 py-1 rounded">+</button>
+                {adCanUnlimited && <button onClick={() => setIsUnlimited(!isUnlimited)} className={"px-2 py-1 rounded border font-bold " + (isUnlimited ? "bg-indigo-600 text-white" : "bg-white")}>♾️ Unlimited</button>}
+              </div>
+              <button onClick={() => { setPopupOpen(true); setAdHideToday(false); alert("✅ नया विज्ञापन लाइव हो गया!"); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded">🚀 विज्ञापन लाइव करें</button>
+            </div>
+          )}
+        </div>
+      )}
       {role === "ADMIN" && (
         <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border-2 border-indigo-200 space-y-4 text-xs">
           <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
