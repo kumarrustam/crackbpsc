@@ -45,6 +45,7 @@ export default function CrackBPSC() {
   { id: 2, subject: "बिहार भूगोल", text: "बिहार का शोक किस नदी को कहा जाता है?", opts: ["कोसी", "गंगा", "सोन", "गंडक"], correct: 0 }
 ]);
 const [newSub, setNewSub] = useState("बिहार विशेष");
+  const [subjects, setSubjects] = useState(["बिहार विशेष", "इतिहास", "भूगोल", "विज्ञान", "राजव्यवस्था", "करंट अफेयर्स", "गणित", "इकोनॉमी"]);
   const [newQ, setNewQ] = useState("");
   const [newOpts, setNewOpts] = useState(["", "", "", ""]);
 
@@ -203,11 +204,12 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
             </div>
           ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <>
-              <div className="flex flex-wrap gap-1">
-                {["बिहार विशेष", "इतिहास", "भूगोल", "विज्ञान", "राजव्यवस्था", "करंट अफेयर्स"].map((sub) => (
-                  <button key={sub} onClick={() => setNewSub(sub)} className={"px-2 py-0.5 rounded font-bold border text-[11px] " + (newSub === sub ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-900")}>{sub}</button>
-                ))}
-              </div>
+              <div className="flex flex-wrap gap-1 items-center">
+  {subjects.map((sub) => (
+    <button key={sub} onClick={() => setNewSub(sub)} className={"px-2 py-0.5 rounded font-bold border text-[11px] " + (newSub === sub ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-900")}>{sub}</button>
+  ))}
+  <button onClick={() => { const s = prompt("नया विषय या चैप्टर का नाम लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2.5 py-0.5 rounded font-black border border-emerald-600 bg-emerald-100 text-emerald-900 text-[11px]">➕ नया विषय</button>
+</div>
               <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="नया प्रश्न लिखें..." className="w-full border rounded p-2 text-sm" />
               <textarea
   rows={5}
