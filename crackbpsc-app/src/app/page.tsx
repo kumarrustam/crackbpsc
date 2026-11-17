@@ -86,6 +86,13 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 );
               })}
             </div>
+              <div className="bg-slate-900 text-white p-3 rounded-xl space-y-1.5 text-xs">
+              <div className="font-extrabold text-amber-400">🏆 All-India टॉपर्स लीडरबोर्ड (Top 1, 2, 3 + आपकी रैंक):</div>
+              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥇 #1. अंकित राज (पटना)</span><span className="font-bold text-amber-300">{questions.length}.00 / {questions.length}</span></div>
+              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥈 #2. प्रिया कुमारी (गया)</span><span className="font-bold text-amber-300">{Math.max(0, questions.length - 0.33).toFixed(2)} / {questions.length}</span></div>
+              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥉 #3. सौरभ कुमार (नवादा)</span><span className="font-bold text-amber-300">{Math.max(0, questions.length - 0.66).toFixed(2)} / {questions.length}</span></div>
+              <div className="flex justify-between bg-emerald-600 px-2.5 py-1.5 rounded font-extrabold"><span>👤 आपकी रैंक (#{Number(score) >= questions.length ? 1 : Number(score) > 0 ? 4 : 182}) • {user || "आप"}</span><span>{score} / {questions.length}</span></div>
+            </div>
           </div>
           ) : (
             <div className="space-y-3">
@@ -196,6 +203,11 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
             </div>
           ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <>
+              <div className="flex flex-wrap gap-1">
+                {["बिहार विशेष", "इतिहास", "भूगोल", "विज्ञान", "राजव्यवस्था", "करंट अफेयर्स"].map((sub) => (
+                  <button key={sub} onClick={() => setNewSub(sub)} className={"px-2 py-0.5 rounded font-bold border text-[11px] " + (newSub === sub ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-900")}>{sub}</button>
+                ))}
+              </div>
               <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="नया प्रश्न लिखें..." className="w-full border rounded p-2 text-sm" />
               <textarea
   rows={5}
