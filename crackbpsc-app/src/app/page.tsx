@@ -214,7 +214,39 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
   ))}
   <button onClick={() => { const s = prompt("नया विषय या चैप्टर का नाम लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2.5 py-0.5 rounded font-black border border-emerald-600 bg-emerald-100 text-emerald-900 text-[11px]">➕ नया विषय</button>
 </div>
-              <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="नया प्रश्न लिखें..." className="w-full border rounded p-2 text-sm" />
+              <div className="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-lg border">
+                <button onClick={() => setQType("NORMAL")} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "NORMAL" ? "bg-blue-600 text-white" : "bg-white text-slate-800 border")}>📝 सामान्य प्रश्न</button>
+                <button onClick={() => setQType("MATCH")} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "MATCH" ? "bg-purple-600 text-white" : "bg-white text-slate-800 border")}>🔗 कूट और मिलान डिब्बा</button>
+                <button onClick={() => { setQType("REASON"); setNewOpts(["A और R दोनों सही हैं और R, A की सही व्याख्या है", "A और R दोनों सही हैं परन्तु R, A की सही व्याख्या नहीं है", "A सही है परन्तु R गलत है", "A गलत है परन्तु R सही है"]); }} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "REASON" ? "bg-amber-600 text-white" : "bg-white text-slate-800 border")}>⚖️ कथन और कारण डिब्बा</button>
+              </div>
+
+              <div className="p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-1">
+                <div className="text-[11px] font-extrabold text-blue-900">📌 मुख्य प्रश्न का डिब्बा:</div>
+                <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="यहाँ मुख्य प्रश्न लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
+              </div>
+
+              {qType === "MATCH" && (
+                <div className="p-2.5 bg-purple-50 border border-purple-300 rounded-lg space-y-2">
+                  <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान का अलग डिब्बा (सूची-I व सूची-II):</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-bold text-purple-800">सूची-I (A, B, C, D)</div>
+                      {listLeft.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...listLeft]; c[i] = e.target.value; setListLeft(c); }} placeholder={["A.", "B.", "C.", "D."][i]} className="w-full border rounded p-1.5 bg-white text-xs" />)}
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-bold text-indigo-800">सूची-II (1, 2, 3, 4)</div>
+                      {listRight.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...listRight]; c[i] = e.target.value; setListRight(c); }} placeholder={["1.", "2.", "3.", "4."][i]} className="w-full border rounded p-1.5 bg-white text-xs" />)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {qType === "REASON" && (
+                <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-lg space-y-1.5">
+                  <div className="text-[11px] font-extrabold text-amber-950">⚖️ कारण (Reason - R) का अलग डिब्बा (ऊपर मुख्य डिब्बे में अभिकथन A लिखें):</div>
+                  <input value={reasonBox} onChange={(e) => setReasonBox(e.target.value)} placeholder="यहाँ कारण (R) लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
+                </div>
+              )}
               <textarea
   rows={5}
   value={newOpts.join("\n")}
