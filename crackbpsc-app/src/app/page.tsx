@@ -107,7 +107,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
             <div className="space-y-3">
             <div className="flex justify-between items-center bg-slate-100 px-3 py-1.5 rounded-xl border">
               <span className="font-extrabold text-xs text-slate-800">{goal} • {examLang === "EN" ? "Medium: English" : "माध्यम: हिंदी"}</span>
-              <button onClick={() => { const next = examLang === "HI" ? "EN" : "HI"; setExamLang(next); setLang(next); }} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
+              <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
                 <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
               </button>
             </div>
@@ -156,10 +156,8 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="flex items-center gap-1 bg-white hover:bg-blue-50 border-2 border-slate-900 px-2 py-1 rounded-xl shadow-sm active:scale-95 transition-all">
-                <span className="bg-slate-900 text-white text-[11px] font-black px-1.5 py-0.5 rounded">क</span>
-                <span className="text-xs font-black text-slate-900">⇄</span>
-                <span className="bg-slate-100 text-slate-900 border border-slate-800 text-[11px] font-black px-1.5 py-0.5 rounded">A</span>
+              <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
+                <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
               </button>
               {showLive && <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded-full">🟢 {liveCount}</span>}
               {user ? <button onClick={() => setUser("")} className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-lg">👤 {user}</button> : <button onClick={() => setLoginOpen(true)} className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg">Login</button>}
