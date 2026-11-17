@@ -105,12 +105,20 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           </div>
           ) : (
             <div className="space-y-3">
-              <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {q.text}</p>
-{q.opts.map((o, idx) => (
-  <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3.5 border-2 rounded-xl text-sm font-bold cursor-pointer transition-all " + (ans[qIdx] === idx ? "bg-blue-600 text-white border-blue-700 shadow-md" : "bg-slate-50 text-slate-950 border-slate-300 hover:border-blue-500")}>
-    ({String.fromCharCode(65 + idx)}) {o}
-  </div>
-))}
+            <div className="flex flex-wrap justify-between items-center gap-2 bg-slate-100 p-2 rounded-xl border">
+              <span className="font-extrabold text-xs text-slate-700">🌐 परीक्षा की भाषा चुनें:</span>
+              <div className="flex gap-1">
+                {[{ id: "HI", name: "🇮🇳 हिंदी" }, { id: "EN", name: "🇬🇧 English" }, { id: "BOTH", name: "🌐 दोनों" }].map((l) => (
+                  <button key={l.id} onClick={() => setExamLang(l.id)} className={"px-2.5 py-1 rounded-lg text-xs font-black " + (examLang === l.id ? "bg-blue-600 text-white shadow" : "bg-white text-slate-800 border")}>{l.name}</button>
+                ))}
+              </div>
+            </div>
+            <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {examLang === "HI" ? q.text.split(" / ")[0] : examLang === "EN" ? (q.text.split(" / ")[1] || q.text.split(" / ")[0]) : q.text}</p>
+            {q.opts.map((o, idx) => (
+              <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3.5 border-2 rounded-xl text-sm font-bold cursor-pointer transition-all " + (ans[qIdx] === idx ? "bg-blue-600 text-white border-blue-700 shadow-md" : "bg-slate-50 text-slate-950 border-slate-300 hover:border-blue-500")}>
+                ({String.fromCharCode(65 + idx)}) {examLang === "HI" ? o.split(" / ")[0] : examLang === "EN" ? (o.split(" / ")[1] || o.split(" / ")[0]) : o}
+              </div>
+            ))}
               <button onClick={() => setQIdx((qIdx + 1) % questions.length)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Next →</button>
             </div>
           )}
