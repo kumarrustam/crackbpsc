@@ -55,8 +55,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   }, []);
   if (inExam) {
     const q = questions[qIdx];
-    let right = 0, wrong = 0;
-    questions.forEach((item, i) => { if (ans[i] !== undefined) { ans[i] === item.correct ? right++ : wrong++; } });
+    let right = 0, wrong = 0, skipped = 0;
+questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
     const score = (right - wrong * negMark).toFixed(2);
     return (
       <div className="min-h-screen bg-slate-200 text-slate-950 p-4">
@@ -66,7 +66,28 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
             {!submitted ? <button onClick={() => setSubmitted(true)} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Submit</button> : <button onClick={() => { setInExam(false); setSubmitted(false); }} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Home</button>}
           </div>
           {submitted ? (
-            <div className="bg-amber-50 p-4 rounded-xl font-bold text-amber-800">🏆 स्कोर: {score} / {questions.length} (सही: {right}, गलत: {wrong})</div>
+            <div className="space-y-3">
+            <div className="p-4 bg-amber-100 border-2 border-amber-400 rounded-xl text-slate-950 font-black">🏆 कुल स्कोर: {score} / {questions.length}</div>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs font-extrabold">
+              <div className="bg-emerald-600 text-white p-2 rounded-lg">✅ सही: {right}</div>
+              <div className="bg-rose-600 text-white p-2 rounded-lg">❌ गलत: {wrong}</div>
+              <div className="bg-slate-600 text-white p-2 rounded-lg">⏭️ स्किप्ड: {skipped}</div>
+            </div>
+            <div className="bg-white p-3 rounded-xl border-2 border-indigo-200 space-y-1.5 text-xs text-slate-950">
+              <div className="font-extrabold text-indigo-950">🧠 सब्जेक्ट-वाइज़ कमज़ोरी विश्लेषण:</div>
+              {Array.from(new Set(questions.map((q: any) => q.subject || "सामान्य ज्ञान"))).map((sub: any) => {
+                const subQs = questions.map((q, idx) => ({ ...q, idx })).filter((q: any) => (q.subject || "सामान्य ज्ञान") === sub);
+                const subRight = subQs.filter((q) => ans[q.idx] === q.correct).length;
+                const pct = Math.round((subRight / subQs.length) * 100);
+                return (
+                  <div key={sub} className="flex justify-between items-center p-2 rounded border bg-slate-50 font-bold">
+                    <span>{sub} ({subRight}/{subQs.length})</span>
+                    <span className={"px-2 py-0.5 rounded text-[11px] " + (pct < 50 ? "bg-rose-100 text-rose-800" : "bg-emerald-100 text-emerald-800")}>{pct}% {pct < 50 ? "⚠️ कमज़ोर विषय" : "💪 मज़बूत"}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
           ) : (
             <div className="space-y-3">
               <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {q.text}</p>
