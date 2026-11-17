@@ -174,7 +174,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           )}
 
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
-            <h2 className="font-extrabold text-base">{examLang === "EN" ? ${goal} All-India Live Mock Test : ${goal} अखिल भारतीय लाइव मॉक टेस्ट}</h2>
+            <h2 className="font-extrabold text-base">{goal} {examLang === "EN" ? "All-India Live Mock Test" : "अखिल भारतीय लाइव मॉक टेस्ट"}</h2>
             <button onClick={() => { setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm">{examLang === "EN" ? "Start CBT Exam →" : "CBT परीक्षा शुरू करें →"}</button></div>
         </div>
       )}
