@@ -342,15 +342,17 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 </div>
               )}
               <button onClick={() => { const hiOpts = newOpts.filter((x) => x.trim() !== ""); const enOpts = newOptsEn.filter((x) => x.trim() !== ""); if (!newQ) return; if (hiOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").join("\n"); const rClean = listRight.filter((x) => x.trim() !== "").join("\n"); let baseQ = newQEn.trim() ? newQ + " / " + newQEn : newQ; if (qType === "MATCH") baseQ = baseQ + "\n【सूची-I】\n" + lClean + "\n【सूची-II】\n" + rClean; if (qType === "REASON") baseQ = baseQ + " | कथन (A): " + assertBox + (assertBoxEn.trim() ? " / " + assertBoxEn : "") + " | कारण (R): " + reasonBox + (reasonBoxEn.trim() ? " / " + reasonBoxEn : ""); const combinedOpts = hiOpts.map((h, i) => enOpts[i] ? h + " / " + enOpts[i] : h); const combinedExp = newExpEn.trim() ? newExp + " | English: " + newExpEn : newExp; setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp }]); setNewQ(""); setNewQEn(""); setAssertBox(""); setAssertBoxEn(""); setReasonBox(""); setReasonBoxEn(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setListLeftEn(["", "", "", ""]); setListRightEn(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); setCorrectIdx(0); alert("✅ प्रश्न और सूचियां साफ-सुथरे रूप में सेव हो गईं!"); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg">Save Bilingual Question</button>
-              <div className="pt-3 border-t space-y-2"><div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
-              <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
+              <div className="pt-3 border-t space-y-2">
+                <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
+                {questions.map((q, idx) => (
+                  <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
                     <div className="flex justify-between items-start gap-2">
-                      <span className="font-bold text-slate-900">प्र.{idx + 1}: {q.text}</span>
-                      {writerCanDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="bg-rose-600 text-white px-2 py-0.5 rounded font-bold shrink-0">Delete</button>}
+                      <span className="font-bold text-slate-900 whitespace-pre-line">प्र.{idx + 1}: {q.text}</span>
+                      {writerCanDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
                     </div>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {q.opts.map((opt, oIdx) => (
-                        <span key={oIdx} className={"px-2 py-0.5 rounded border text-[11px] " + (q.correct === oIdx ? "bg-emerald-100 border-emerald-600 font-bold text-emerald-900" : "bg-white text-slate-600")}>
+                        <span key={oIdx} className={"px-2 py-0.5 rounded border text-[11px] " + (q.correct === oIdx ? "bg-emerald-600 text-white font-bold" : "bg-white text-slate-800")}>
                           ({String.fromCharCode(65 + oIdx)}) {opt} {q.correct === oIdx && "✅"}
                         </span>
                       ))}
@@ -361,7 +363,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
             </div>
           )}
         </>
-    </div>
+      )}
       {role === "MOD" && (
         <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
           <h2 className="font-bold text-sm">🛡️ Moderator Panel</h2>
