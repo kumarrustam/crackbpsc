@@ -242,7 +242,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   {Object.keys(examTree).map((cat) => (
                     <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam(examTree[cat] || ""); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
                   ))}
-                  {(role === "ADMIN" || writerCanCreateExam) && (
+                  {writerCanCreateExam && (
                     <button onClick={() => { const c = prompt("नई मुख्य Category लिखें (जैसे: State PCS, Defence, Police):"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
                   )}
                 </div>
@@ -252,7 +252,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   {(examTree[selCat] || []).map((subEx: string) => (
                     <button key={subEx} onClick={() => setSelSubExam(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-white text-slate-900")}>{subEx}</button>
                   ))}
-                  {(role === "ADMIN" || writerCanCreateExam) && (
+                  {writerCanCreateExam && (
                     <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें (जैसे: BPSC AEDO, RRB JE):"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
                   )}
                 </div>
