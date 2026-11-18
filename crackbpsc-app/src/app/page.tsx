@@ -57,6 +57,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [newOptsEn, setNewOptsEn] = useState(["", "", "", ""]);
   const [newExpEn, setNewExpEn] = useState("");
   const [examLang, setExamLang] = useState("BOTH");
+  const [correctIdx, setCorrectIdx] = useState(0);
+  const [listLeftEn, setListLeftEn] = useState(["", "", "", ""]);
+  const [listRightEn, setListRightEn] = useState(["", "", "", ""]);
+  const [reasonBoxEn, setReasonBoxEn] = useState("");
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
