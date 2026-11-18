@@ -69,7 +69,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     SSC: ["SSC CGL (Graduate)", "SSC CHSL (10+2)", "SSC MTS", "SSC GD", "SSC CPO"],
     Banking: ["SBI PO / Clerk", "IBPS PO / Clerk", "PNB / RRB Gramin Bank", "RBI Assistant"]
   });
-  const examSections = ["Full Length Test", "Mock Test", "Practice Test", "Subject-Wise Test", "PYQs", "Current Affairs"];
+  const [examSections, setExamSections] = useState(["Full Length Test", "Mock Test", "Practice Test", "Subject-Wise Test", "PYQs", "Current Affairs"]);
   const [selCat, setSelCat] = useState("BPSC");
   const [selSubExam, setSelSubExam] = useState("72वीं BPSC CCE");
   const [selSection, setSelSection] = useState("Full Length Test");
@@ -257,11 +257,14 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   )}
                 </div>
 
-                <div className="text-[11px] font-extrabold text-amber-950">📂 3. टेस्ट सेक्शन चुनें (6 Sections):</div>
-                <div className="flex flex-wrap gap-1">
+                <div className="text-[11px] font-extrabold text-amber-950">📂 3. टेस्ट सेक्शन चुनें ({examSections.length} Sections):</div>
+                <div className="flex flex-wrap gap-1 items-center">
                   {examSections.map((sec) => (
                     <button key={sec} onClick={() => setSelSection(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSection === sec ? "bg-amber-600 text-white" : "bg-white text-slate-900")}>{sec}</button>
                   ))}
+                  {writerCanCreateExam && (
+                    <button onClick={() => { const ns = prompt("नया टेस्ट सेक्शन का नाम लिखें (जैसे: Topic-Wise Test, NCERT Special):"); if (ns && ns.trim()) { setExamSections([...examSections, ns.trim()]); setSelSection(ns.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नया Section</button>
+                  )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-1 items-center">
