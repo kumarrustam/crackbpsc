@@ -238,31 +238,24 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
 
               <div className="p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-1">
                 <div className="text-[11px] font-extrabold text-blue-900">📌 मुख्य प्रश्न का डिब्बा:</div>
-                <input value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="यहाँ मुख्य प्रश्न लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
-                <input value={newQEn} onChange={(e) => setNewQEn(e.target.value)} placeholder="🇬🇧 Write question in English here..." className="w-full border rounded p-2 text-sm bg-indigo-50 font-medium mt-1.5" />
-              </div>
+                <textarea rows={2} value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="🇮🇳 यहाँ हिंदी में मुख्य प्रश्न लिखें (कोने से खींचकर बड़ा करें)..." className="w-full border rounded p-2 text-sm bg-white font-medium resize-y" />
+                <textarea rows={2} value={newQEn} onChange={(e) => setNewQEn(e.target.value)} placeholder="🇬🇧 Write question in English here (Drag corner to resize)..." className="w-full border rounded p-2 text-sm bg-indigo-50 font-medium mt-1.5 resize-y" /></div>
 
               {qType === "MATCH" && (
                 <div className="p-2.5 bg-purple-50 border border-purple-300 rounded-lg space-y-2">
-                  <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान (एक बार में लाइनें पेस्ट करें — डिब्बे अपने आप बनेंगे):</div>
+                  <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान डिब्बा (हिंदी + English • कोने से खींचकर बड़ा करें):</div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1.5">
-                      <div className="text-[10px] font-bold text-purple-800">सूची-I पेस्ट करें (हर मद नई लाइन में):</div>
-                      <textarea rows={4} value={listLeft.join("\n")} onChange={(e) => setListLeft(e.target.value.split("\n"))} placeholder={"यहाँ सूची-I पेस्ट करें...\nजैसे:\nचंपारण\nखेड़ा\nअहमदाबाद\nअसहयोग"} className="w-full border rounded p-1.5 bg-white text-xs font-medium" />
-                      <div className="space-y-1">
-                        {listLeft.filter((x) => x.trim() !== "").map((item, i) => (
-                          <div key={i} className="px-2 py-1 bg-purple-100 border border-purple-300 rounded text-[11px] font-bold text-purple-950">({String.fromCharCode(65 + i)}) {item}</div>
-                        ))}
-                      </div>
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-bold text-purple-800">🇮🇳 सूची-I (हिंदी):</div>
+                      <textarea rows={3} value={listLeft.join("\n")} onChange={(e) => setListLeft(e.target.value.split("\n"))} placeholder="सूची-I हिंदी में..." className="w-full border rounded p-1.5 bg-white text-xs resize-y" />
+                      <div className="text-[10px] font-bold text-indigo-800">🇬🇧 List-I (English):</div>
+                      <textarea rows={3} value={listLeftEn.join("\n")} onChange={(e) => setListLeftEn(e.target.value.split("\n"))} placeholder="List-I in English..." className="w-full border rounded p-1.5 bg-indigo-50 text-xs resize-y" />
                     </div>
-                    <div className="space-y-1.5">
-                      <div className="text-[10px] font-bold text-indigo-800">सूची-II पेस्ट करें (हर मद नई लाइन में):</div>
-                      <textarea rows={4} value={listRight.join("\n")} onChange={(e) => setListRight(e.target.value.split("\n"))} placeholder={"यहाँ सूची-II पेस्ट करें...\nजैसे:\n1917\n1918\n1918\n1920"} className="w-full border rounded p-1.5 bg-white text-xs font-medium" />
-                      <div className="space-y-1">
-                        {listRight.filter((x) => x.trim() !== "").map((item, i) => (
-                          <div key={i} className="px-2 py-1 bg-indigo-100 border border-indigo-300 rounded text-[11px] font-bold text-indigo-950">({i + 1}) {item}</div>
-                        ))}
-                      </div>
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-bold text-purple-800">🇮🇳 सूची-II (हिंदी):</div>
+                      <textarea rows={3} value={listRight.join("\n")} onChange={(e) => setListRight(e.target.value.split("\n"))} placeholder="सूची-II हिंदी में..." className="w-full border rounded p-1.5 bg-white text-xs resize-y" />
+                      <div className="text-[10px] font-bold text-indigo-800">🇬🇧 List-II (English):</div>
+                      <textarea rows={3} value={listRightEn.join("\n")} onChange={(e) => setListRightEn(e.target.value.split("\n"))} placeholder="List-II in English..." className="w-full border rounded p-1.5 bg-indigo-50 text-xs resize-y" />
                     </div>
                   </div>
                 </div>
@@ -270,8 +263,9 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
 
               {qType === "REASON" && (
                 <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-lg space-y-1.5">
-                  <div className="text-[11px] font-extrabold text-amber-950">⚖️ कारण (Reason - R) का अलग डिब्बा (ऊपर मुख्य डिब्बे में अभिकथन A लिखें):</div>
-                  <input value={reasonBox} onChange={(e) => setReasonBox(e.target.value)} placeholder="यहाँ कारण (R) लिखें..." className="w-full border rounded p-2 text-sm bg-white font-medium" />
+                  <div className="text-[11px] font-extrabold text-amber-950">⚖️ कारण (Reason - R) का डिब्बा (कोने से खींचकर बड़ा करें):</div>
+                  <textarea rows={2} value={reasonBox} onChange={(e) => setReasonBox(e.target.value)} placeholder="🇮🇳 यहाँ हिंदी में कारण (R) लिखें..." className="w-full border rounded p-2 text-xs bg-white font-medium resize-y" />
+                  <textarea rows={2} value={reasonBoxEn} onChange={(e) => setReasonBoxEn(e.target.value)} placeholder="🇬🇧 Write Reason (R) in English here..." className="w-full border rounded p-2 text-xs bg-indigo-50 font-medium resize-y" />
                 </div>
               )}
       
