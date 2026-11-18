@@ -357,7 +357,6 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                     </div>
                   </div>
                 ))
-                </div>
               </div>
             </div>
           )}
