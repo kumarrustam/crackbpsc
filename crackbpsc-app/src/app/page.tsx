@@ -236,6 +236,34 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
             </div>
           ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <>
+              <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
+                <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
+                <div className="flex flex-wrap gap-1 items-center">
+                  {Object.keys(examTree).map((cat) => (
+                    <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam(examTree[cat] || ""); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
+                  ))}
+                  {(role === "ADMIN" || writerCanCreateExam) && (
+                    <button onClick={() => { const c = prompt("नई मुख्य Category लिखें (जैसे: State PCS, Defence, Police):"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
+                  )}
+                </div>
+
+                <div className="text-[11px] font-extrabold text-purple-950">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
+                <div className="flex flex-wrap gap-1 items-center">
+                  {(examTree[selCat] || []).map((subEx: string) => (
+                    <button key={subEx} onClick={() => setSelSubExam(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-white text-slate-900")}>{subEx}</button>
+                  ))}
+                  {(role === "ADMIN" || writerCanCreateExam) && (
+                    <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें (जैसे: BPSC AEDO, RRB JE):"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
+                  )}
+                </div>
+
+                <div className="text-[11px] font-extrabold text-amber-950">📂 3. टेस्ट सेक्शन चुनें (6 Sections):</div>
+                <div className="flex flex-wrap gap-1">
+                  {examSections.map((sec) => (
+                    <button key={sec} onClick={() => setSelSection(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSection === sec ? "bg-amber-600 text-white" : "bg-white text-slate-900")}>{sec}</button>
+                  ))}
+                </div>
+              </div>
               <div className="flex flex-wrap gap-1 items-center">
   {subjects.map((sub) => (
     <button key={sub} onClick={() => setNewSub(sub)} className={"px-2 py-0.5 rounded font-bold border text-[11px] " + (newSub === sub ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-900")}>{sub}</button>
