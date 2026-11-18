@@ -61,6 +61,18 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [listLeftEn, setListLeftEn] = useState(["", "", "", ""]);
   const [listRightEn, setListRightEn] = useState(["", "", "", ""]);
   const [reasonBoxEn, setReasonBoxEn] = useState("");
+  const [writerCanCreateExam, setWriterCanCreateExam] = useState(true);
+  const [examTree, setExamTree] = useState<any>({
+    BPSC: ["72वीं BPSC CCE", "BPSC TRE 4.0", "BPSC Head Teacher", "BSSC Inter Level", "CDPO"],
+    UPSC: ["UPSC CSE (IAS)", "EPFO", "NDA", "CDS", "CAPF"],
+    Railway: ["RRB ALP (Driver)", "RRB Technician", "RRB NTPC", "RRB Group D", "RPF SI"],
+    SSC: ["SSC CGL (Graduate)", "SSC CHSL (10+2)", "SSC MTS", "SSC GD", "SSC CPO"],
+    Banking: ["SBI PO / Clerk", "IBPS PO / Clerk", "PNB / RRB Gramin Bank", "RBI Assistant"]
+  });
+  const examSections = ["Full Length Test", "Mock Test", "Practice Test", "Subject-Wise Test", "PYQs", "Current Affairs"];
+  const [selCat, setSelCat] = useState("BPSC");
+  const [selSubExam, setSelSubExam] = useState("72वीं BPSC CCE");
+  const [selSection, setSelSection] = useState("Full Length Test");
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
