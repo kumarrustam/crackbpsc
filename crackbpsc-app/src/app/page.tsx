@@ -61,6 +61,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [listLeftEn, setListLeftEn] = useState(["", "", "", ""]);
   const [listRightEn, setListRightEn] = useState(["", "", "", ""]);
   const [reasonBoxEn, setReasonBoxEn] = useState("");
+  const [assertBox, setAssertBox] = useState("");
+  const [assertBoxEn, setAssertBoxEn] = useState("");
   const [writerCanCreateExam, setWriterCanCreateExam] = useState(true);
   const [examTree, setExamTree] = useState<any>({
     BPSC: ["72वीं BPSC CCE", "BPSC TRE 4.0", "BPSC Head Teacher", "BSSC Inter Level", "CDPO"],
