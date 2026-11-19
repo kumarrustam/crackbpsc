@@ -87,6 +87,11 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   ]);
   const [deletedQs, setDeletedQs] = useState<any[]>([]);
   const [deletedStaff, setDeletedStaff] = useState<any[]>([]);
+  const [liveTests, setLiveTests] = useState<any[]>([
+    { id: 101, title: "72वीं BPSC All-India Live Maha-Mock #1", cat: "BPSC", subEx: "72वीं BPSC CCE", startsIn: "2 दिन बाद (रविवार, सुबह 10:00 बजे)", duration: 120, isLive: false },
+    { id: 102, title: "BPSC TRE 4.0 Live GK & GS Challenge", cat: "BPSC", subEx: "BPSC TRE 4.0", startsIn: "अभी LIVE चल रहा है", duration: 90, isLive: true }
+  ]);
+  const [regLiveIds, setRegLiveIds] = useState<number[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -98,6 +103,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       const sSub = localStorage.getItem("cb_sub"); if (sSub) setSubjects(JSON.parse(sSub));
       const sDQ = localStorage.getItem("cb_dqs"); if (sDQ) setDeletedQs(JSON.parse(sDQ));
       const sDSt = localStorage.getItem("cb_dst"); if (sDSt) setDeletedStaff(JSON.parse(sDSt));
+      const sLT = localStorage.getItem("cb_lt"); if (sLT) setLiveTests(JSON.parse(sLT));
+      const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
     } catch (e) {}
     setIsLoaded(true);
   }, []);
@@ -112,8 +119,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       localStorage.setItem("cb_sub", JSON.stringify(subjects));
       localStorage.setItem("cb_dqs", JSON.stringify(deletedQs));
       localStorage.setItem("cb_dst", JSON.stringify(deletedStaff));
+      localStorage.setItem("cb_lt", JSON.stringify(liveTests));
+    localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
