@@ -92,6 +92,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     { id: 102, title: "BPSC TRE 4.0 Live GK & GS Challenge", cat: "BPSC", subEx: "BPSC TRE 4.0", startsIn: "अभी LIVE चल रहा है", duration: 90, isLive: true }
   ]);
   const [regLiveIds, setRegLiveIds] = useState<number[]>([]);
+  const [showPass, setShowPass] = useState(true);
+  const [passBadge, setPassBadge] = useState("NEW");
+  const [passTitle, setPassTitle] = useState("Unlock Unlimited Live Tests of All Exams with Pass!");
+  const [passBtn, setPassBtn] = useState("Get Pass");
+  const [passMsg, setPassMsg] = useState("🎉 CrackBPSC Pass Activated! अब आप सभी Live Tests, Mock Tests, PYPs और Study Notes अनलिमिटेड हल कर सकते हैं।");
+  const [passFeats, setPassFeats] = useState<string[]>(["Mock Tests", "Live Tests", "Study Notes", "Doubt Support", "PYPs", "Re-Attempt Mode", "Unlimited Practice"]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -105,6 +111,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       const sDSt = localStorage.getItem("cb_dst"); if (sDSt) setDeletedStaff(JSON.parse(sDSt));
       const sLT = localStorage.getItem("cb_lt"); if (sLT) setLiveTests(JSON.parse(sLT));
       const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
+      const sPs = localStorage.getItem("cb_pass"); if (sPs) { const p = JSON.parse(sPs); setShowPass(p.showPass); setPassBadge(p.passBadge); setPassTitle(p.passTitle); setPassBtn(p.passBtn); setPassMsg(p.passMsg); setPassFeats(p.passFeats); }
     } catch (e) {}
     setIsLoaded(true);
   }, []);
@@ -121,8 +128,9 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       localStorage.setItem("cb_dst", JSON.stringify(deletedStaff));
       localStorage.setItem("cb_lt", JSON.stringify(liveTests));
     localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
+      localStorage.setItem("cb_pass", JSON.stringify({ showPass, passBadge, passTitle, passBtn, passMsg, passFeats }));
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -266,6 +274,29 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               })}
             </div>
           </div>
+          )}
+          {showPass && (
+            <div className="p-4 bg-gradient-to-r from-blue-950 via-blue-800 to-cyan-700 text-white rounded-xl shadow-md border border-cyan-400/30 space-y-3">
+              <div className="flex flex-wrap justify-between items-center gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[10px] rounded">{passBadge}</span>
+                    <span className="font-extrabold text-sm tracking-wide text-white">CrackBPSC <span className="bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded text-[11px] font-black">PASS</span></span>
+                  </div>
+                  <div className="font-extrabold text-sm sm:text-base text-white">{passTitle}</div>
+                </div>
+                <button onClick={() => alert(passMsg)} className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-lg shadow shrink-0">
+                  {passBtn}
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1.5 pt-2 border-t border-white/15 text-[11px] font-semibold text-cyan-100">
+                {passFeats.map((feat, idx) => (
+                  <span key={idx} className="flex items-center gap-1">
+                    <span className="text-emerald-400 font-black">✓</span> {feat}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
           <div className="p-4 bg-white rounded-xl border shadow-sm space-y-2.5">
             <div className="font-extrabold text-sm text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
@@ -786,6 +817,31 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className="p-3 bg-cyan-950 text-white border-2 border-cyan-400 rounded-xl space-y-2.5">
+            <div className="flex flex-wrap justify-between items-center gap-2 border-b border-white/15 pb-1.5">
+              <span className="font-extrabold text-sm text-amber-300">🎟️ CrackBPSC Pass Banner Manager (Edit & Remove)</span>
+              <div className="flex gap-1.5">
+                <button onClick={() => setShowPass(!showPass)} className={"px-2.5 py-1 rounded font-black text-xs " + (showPass ? "bg-emerald-500 text-white" : "bg-rose-600 text-white")}>
+                  {showPass ? "👁️ बैनर चालू (हटाएं)" : "🙈 बैनर हटा हुआ (वापस लगाएं)"}
+                </button>
+                <button onClick={() => {
+                  const b = prompt("1. ऊपर का छोटा बैज लिखें (जैसे: NEW या 50% OFF):", passBadge); if (b !== null && b.trim() !== "") setPassBadge(b.trim());
+                  const t = prompt("2. मुख्य शीर्षक लिखें:", passTitle); if (t !== null && t.trim() !== "") setPassTitle(t.trim());
+                  const btn = prompt("3. हरे बटन पर क्या लिखा हो? (जैसे: Get Pass या ₹199 में लें):", passBtn); if (btn !== null && btn.trim() !== "") setPassBtn(btn.trim());
+                  const msg = prompt("4. बटन दबाने पर क्या संदेश दिखे?:", passMsg); if (msg !== null && msg.trim() !== "") setPassMsg(msg.trim());
+                }} className="px-2.5 py-1 bg-amber-400 text-slate-950 font-black rounded text-xs">✏️ टेक्स्ट एडिट करें</button>
+              </div>
+            </div>
+            <div className="text-[11px] text-cyan-200 font-bold">✅ बैनर के फ़ीचर्स (दबाकर हटाएं या नया जोड़ें):</div>
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {passFeats.map((f, i) => (
+                <button key={i} onClick={() => { if (confirm(f + " को बैनर से हटाएं?")) setPassFeats(passFeats.filter((_, idx) => idx !== i)); }} className="px-2 py-0.5 bg-white/15 hover:bg-rose-600 rounded text-[11px] font-bold">
+                  ✓ {f} ✕
+                </button>
+              ))}
+              <button onClick={() => { const nf = prompt("नया फ़ीचर लिखें (जैसे: Daily Current Affairs PDF):"); if (nf && nf.trim()) setPassFeats([...passFeats, nf.trim()]); }} className="px-2.5 py-0.5 bg-emerald-500 text-white font-black rounded text-[11px]">➕ फ़ीचर जोड़ें</button>
             </div>
           </div>
             {allowAd && (
