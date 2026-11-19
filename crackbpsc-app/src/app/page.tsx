@@ -508,12 +508,15 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                       <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, verified: !x.verified } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.verified ? "bg-emerald-600 text-white" : "bg-amber-500 text-white")}>
                         {st.verified ? "✅ Verified" : "⏳ Verify करें"}
                       </button>
-                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canCreate: !x.canCreate } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.canCreate ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-700")}>
-                        {st.canCreate ? "➕ Exam: ON" : "➕ Exam: OFF"}
-                      </button>
-                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canDelete: !x.canDelete } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.canDelete ? "bg-rose-600 text-white" : "bg-slate-200 text-slate-700")}>
-                        {st.canDelete ? "🗑️ Del: ON" : "🗑️ Del: OFF"}
-                      </button>
+                      <button onClick={() => {
+                        const nm = prompt("नया नाम लिखें:", st.name); if (!nm || !nm.trim()) return;
+                        const em = prompt("नया Gmail लिखें:", st.email) || st.email;
+                        const ph = prompt("नया मोबाइल नंबर लिखें:", st.phone) || st.phone;
+                        const rl = (prompt("Role लिखें (WRITER / MOD / AD):", st.role) || st.role).toUpperCase();
+                        const pn = prompt("नया PIN लिखें:", st.pin) || st.pin;
+                        setStaffList(staffList.map((x) => x.id === st.id ? { ...x, name: nm.trim(), email: em.trim(), phone: ph.trim(), role: rl, pin: pn.trim() } : x));
+                      }} className="px-2 py-0.5 rounded font-bold text-[10px] bg-amber-500 text-white">✏️ Edit</button>
+                      <button onClick={() => { if (confirm(st.name + " को टीम से बाहर निकालें?")) setStaffList(staffList.filter((x) => x.id !== st.id)); }} className="px-2 py-0.5 rounded font-bold text-[10px] bg-rose-700 text-white">🚫 हटाएं</button>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 items-center pt-1 border-t">
