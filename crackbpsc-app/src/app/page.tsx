@@ -230,32 +230,31 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           <h2 className="font-bold text-sm">✍️ Content Writer Panel</h2>
           {unlockedRole !== "WRITER" ? (
             <div className="p-3 bg-slate-100 rounded-lg space-y-2">
-              <div className="font-bold text-slate-700">🔑 Writer Panel खोलने के लिए Head Admin का PIN डालें:</div>
+              <div className="font-bold text-slate-700">Writer पैनल खोलने के लिए PIN डालें:</div>
               <div className="flex gap-2">
-                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="PIN डालें..." className="border rounded px-2.5 py-1 bg-white font-bold" />
-                <button onClick={() => { if (pinInput === writerPin) { setUnlockedRole("WRITER"); setPinInput(""); } else { alert("❌ गलत PIN! Head Admin से नया PIN पूछें।"); } }} className="bg-blue-600 text-white px-3 py-1 rounded font-bold">Unlock 🔓</button>
+                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="Writer PIN डालें" className="border rounded px-2.5 py-1.5 bg-white flex-1" />
+                <button onClick={() => { if (pinInput === writerPin) { setUnlockedRole("WRITER"); setPinInput(""); } else alert("❌ गलत PIN!"); }} className="bg-blue-600 text-white font-bold px-4 py-1.5 rounded">Unlock</button>
               </div>
             </div>
-          ) : !allowWriter ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
-            <>
-              <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
+          ) : (
+            <div className="space-y-3">
+        <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
                 <div className="flex flex-wrap gap-1 items-center">
                   {Object.keys(examTree).map((cat) => (
-                    <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam(examTree[cat] || ""); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
+                    <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam(examTree[cat][0] || ""); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
                   ))}
                   {writerCanCreateExam && (
-                    <button onClick={() => { const c = prompt("नई मुख्य Category लिखें (जैसे: State PCS, Defence, Police):"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
+                    <button onClick={() => { const c = prompt("नई मुख्य Category लिखें:"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
                   )}
                 </div>
-
-                <div className="text-[11px] font-extrabold text-purple-950">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
+          <div className="text-[11px] font-extrabold text-purple-950">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
                 <div className="flex flex-wrap gap-1 items-center">
                   {(examTree[selCat] || []).map((subEx: string) => (
                     <button key={subEx} onClick={() => setSelSubExam(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-white text-slate-900")}>{subEx}</button>
                   ))}
                   {writerCanCreateExam && (
-                    <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें (जैसे: BPSC AEDO, RRB JE):"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
+                    <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें:"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
                   )}
                 </div>
 
@@ -265,27 +264,30 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                     <button key={sec} onClick={() => setSelSection(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSection === sec ? "bg-amber-600 text-white" : "bg-white text-slate-900")}>{sec}</button>
                   ))}
                   {writerCanCreateExam && (
-                    <button onClick={() => { const ns = prompt("नया टेस्ट सेक्शन का नाम लिखें (जैसे: Topic-Wise Test, NCERT Special):"); if (ns && ns.trim()) { setExamSections([...examSections, ns.trim()]); setSelSection(ns.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नया Section</button>
+                    <button onClick={() => { const ns = prompt("नया टेस्ट सेक्शन का नाम लिखें:"); if (ns && ns.trim()) { setExamSections([...examSections, ns.trim()]); setSelSection(ns.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नया Section</button>
                   )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-1 items-center">
-  {subjects.map((sub) => (
-    <button key={sub} onClick={() => setNewSub(sub)} className={"px-2 py-0.5 rounded font-bold border text-[11px] " + (newSub === sub ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-900")}>{sub}</button>
-  ))}
-  <button onClick={() => { const s = prompt("नया विषय या चैप्टर का नाम लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2.5 py-0.5 rounded font-black border border-emerald-600 bg-emerald-100 text-emerald-900 text-[11px]">➕ नया विषय</button>
-</div>
-              <div className="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-lg border">
-                <button onClick={() => setQType("NORMAL")} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "NORMAL" ? "bg-blue-600 text-white" : "bg-white text-slate-800 border")}>📝 सामान्य प्रश्न</button>
-                <button onClick={() => setQType("MATCH")} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "MATCH" ? "bg-purple-600 text-white" : "bg-white text-slate-800 border")}>🔗 कूट और मिलान डिब्बा</button>
-                <button onClick={() => { setQType("REASON"); setNewOpts(["A और R दोनों सही हैं और R, A की सही व्याख्या है", "A और R दोनों सही हैं परन्तु R, A की सही व्याख्या नहीं है", "A सही है परन्तु R गलत है", "A गलत है परन्तु R सही है"]); }} className={"px-2.5 py-1 rounded font-bold text-xs " + (qType === "REASON" ? "bg-amber-600 text-white" : "bg-white text-slate-800 border")}>⚖️ कथन और कारण डिब्बा</button>
+                {subjects.map((s) => (
+                  <button key={s} onClick={() => setNewSub(s)} className={"px-2 py-1 rounded font-bold border " + (newSub === s ? "bg-blue-600 text-white" : "bg-slate-50")}>{s}</button>
+                ))}
+                {writerCanAddSub && (
+                  <button onClick={() => { const s = prompt("नया विषय लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2 py-1 rounded font-black bg-emerald-600 text-white">➕ विषय</button>
+                )}
               </div>
 
-              <div className="p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-1">
+              <div className="flex flex-wrap gap-1">
+                {[{ id: "STD", name: "📝 सामान्य प्रश्न" }, { id: "MATCH", name: "🔗 कूट और मिलान डिब्बा" }, { id: "REASON", name: "⚖️ कथन और कारण डिब्बा" }].map((t) => (
+                  <button key={t.id} onClick={() => setQType(t.id)} className={"px-2.5 py-1 rounded-lg font-extrabold border " + (qType === t.id ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-800")}>{t.name}</button>
+                ))}
+              </div>
+
+              <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg space-y-1">
                 <div className="text-[11px] font-extrabold text-blue-900">📌 मुख्य प्रश्न का डिब्बा:</div>
                 <textarea rows={2} value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="🇮🇳 यहाँ हिंदी में मुख्य प्रश्न लिखें (कोने से खींचकर बड़ा करें)..." className="w-full border rounded p-2 text-sm bg-white font-medium resize-y" />
-                <textarea rows={2} value={newQEn} onChange={(e) => setNewQEn(e.target.value)} placeholder="🇬🇧 Write question in English here (Drag corner to resize)..." className="w-full border rounded p-2 text-sm bg-indigo-50 font-medium mt-1.5 resize-y" /></div>
-
+                <textarea rows={2} value={newQEn} onChange={(e) => setNewQEn(e.target.value)} placeholder="🇬🇧 Write question in English here (Drag corner to resize)..." className="w-full border rounded p-2 text-sm bg-indigo-50 font-medium mt-1.5 resize-y" />
+              </div>
               {qType === "MATCH" && (
                 <div className="p-2.5 bg-purple-50 border border-purple-300 rounded-lg space-y-2">
                   <div className="text-[11px] font-extrabold text-purple-900">🔗 कूट और मिलान डिब्बा (पूरी सूची एक ही डिब्बे में पेस्ट करें):</div>
@@ -312,21 +314,21 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   <textarea rows={2} value={reasonBoxEn} onChange={(e) => setReasonBoxEn(e.target.value)} placeholder="🇬🇧 Write Reason (R) in English here..." className="w-full border rounded p-2 text-xs bg-indigo-50 font-medium resize-y" />
                 </div>
               )}
-      
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <div className="text-[11px] font-bold text-slate-700">🇮🇳 हिंदी विकल्प (हर विकल्प नई लाइन में):</div>
-                  <textarea rows={4} value={newOpts.join("\n")} onChange={(e) => setNewOpts(e.target.value.split("\n"))} placeholder={"विकल्प A (हिंदी)\nविकल्प B (हिंदी)\nविकल्प C (हिंदी)\nविकल्प D (हिंदी)"} className="w-full border rounded-lg p-2 text-xs bg-slate-50 font-medium" />
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1">
+                  <div className="text-[11px] font-extrabold text-emerald-900">🇮🇳 हिंदी विकल्प (एक ही डिब्बा):</div>
+                  <textarea rows={4} value={newOpts.join("\n")} onChange={(e) => setNewOpts(e.target.value.split("\n"))} placeholder={"विकल्प A\nविकल्प B\nविकल्प C\nविकल्प D"} className="w-full border rounded p-2 bg-white text-xs resize-y" />
                 </div>
-                <div className="space-y-1">
-                  <div className="text-[11px] font-bold text-slate-700">🇬🇧 English Options (Each on new line):</div>
-                  <textarea rows={4} value={newOptsEn.join("\n")} onChange={(e) => setNewOptsEn(e.target.value.split("\n"))} placeholder={"Option A (English)\nOption B (English)\nOption C (English)\nOption D (English)"} className="w-full border rounded-lg p-2 text-xs bg-slate-50 font-medium" />
+                <div className="p-2.5 bg-indigo-50 border border-indigo-200 rounded-lg space-y-1">
+                  <div className="text-[11px] font-extrabold text-indigo-900">🇬🇧 English Options (Single Box):</div>
+                  <textarea rows={4} value={newOptsEn.join("\n")} onChange={(e) => setNewOptsEn(e.target.value.split("\n"))} placeholder={"Option A\nOption B\nOption C\nOption D"} className="w-full border rounded p-2 bg-white text-xs resize-y" />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <textarea rows={2} value={newExp} onChange={(e) => setNewExp(e.target.value)} placeholder="📖 हिंदी में विस्तृत व्याख्या (Explanation)..." className="w-full border rounded-lg p-2 text-xs bg-emerald-50 font-medium" />
-                <textarea rows={2} value={newExpEn} onChange={(e) => setNewExpEn(e.target.value)} placeholder="📘 Detailed Explanation in English..." className="w-full border rounded-lg p-2 text-xs bg-teal-50 font-medium" />
+              <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg space-y-1">
+                <div className="text-[11px] font-extrabold text-amber-900">📖 व्याख्या / Explanation (हिंदी + English):</div>
+                <textarea rows={2} value={newExp} onChange={(e) => setNewExp(e.target.value)} placeholder="🇮🇳 यहाँ हिंदी में व्याख्या लिखें..." className="w-full border rounded p-2 bg-white text-xs resize-y" />
+                <textarea rows={2} value={newExpEn} onChange={(e) => setNewExpEn(e.target.value)} placeholder="🇬🇧 Write explanation in English here..." className="w-full border rounded p-2 bg-indigo-50 text-xs resize-y" />
               </div>
 
               {newOpts.filter((x) => x.trim() !== "").length > 0 && (
@@ -342,6 +344,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 </div>
               )}
               <button onClick={() => { const hiOpts = newOpts.filter((x) => x.trim() !== ""); const enOpts = newOptsEn.filter((x) => x.trim() !== ""); if (!newQ) return; if (hiOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").join("\n"); const rClean = listRight.filter((x) => x.trim() !== "").join("\n"); let baseQ = newQEn.trim() ? newQ + " / " + newQEn : newQ; if (qType === "MATCH") baseQ = baseQ + "\n【सूची-I】\n" + lClean + "\n【सूची-II】\n" + rClean; if (qType === "REASON") baseQ = baseQ + " | कथन (A): " + assertBox + (assertBoxEn.trim() ? " / " + assertBoxEn : "") + " | कारण (R): " + reasonBox + (reasonBoxEn.trim() ? " / " + reasonBoxEn : ""); const combinedOpts = hiOpts.map((h, i) => enOpts[i] ? h + " / " + enOpts[i] : h); const combinedExp = newExpEn.trim() ? newExp + " | English: " + newExpEn : newExp; setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp }]); setNewQ(""); setNewQEn(""); setAssertBox(""); setAssertBoxEn(""); setReasonBox(""); setReasonBoxEn(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setListLeftEn(["", "", "", ""]); setListRightEn(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); setCorrectIdx(0); alert("✅ प्रश्न और सूचियां साफ-सुथरे रूप में सेव हो गईं!"); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg">Save Bilingual Question</button>
+
               <div className="pt-3 border-t space-y-2">
                 <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
                 {questions.map((q, idx) => (
@@ -360,7 +363,8 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   </div>
                 ))}
               </div>
-        
+            </div>
+          )}
         </div>
       )}
       {role === "MOD" && (
