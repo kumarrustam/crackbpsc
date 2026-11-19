@@ -216,11 +216,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
       {role === "STUDENT" && (
         <div className="max-w-3xl mx-auto p-4 space-y-4">
           <div className="flex justify-between items-center">
-            <div className="flex gap-1.5">
-              {["BPSC", "UPSC", "SSC"].map((g) => (
-                <button key={g} onClick={() => setGoal(g)} className={"px-3 py-1 rounded-full text-xs font-bold " + (goal === g ? "bg-blue-600 text-white" : "bg-white border")}>{g}</button>
-              ))}
-            </div>
+            
             <div className="flex items-center gap-2">
               <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
                 <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
@@ -236,6 +232,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               <button onClick={() => setAdHideToday(true)} className="underline">Don&apos;t show today</button>
             </div>
           )}
+          {showLive && (
 <div className="p-4 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 text-white rounded-xl border-2 border-rose-500 shadow space-y-2.5">
             <div className="flex flex-wrap justify-between items-center gap-2 border-b border-white/15 pb-1.5">
               <span className="font-extrabold text-sm text-amber-300">🔴 All-India Live & Upcoming Tests (Pre-Registration)</span>
@@ -269,11 +266,12 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               })}
             </div>
           </div>
+          )}
           <div className="p-4 bg-white rounded-xl border shadow-sm space-y-2.5">
             <div className="font-extrabold text-sm text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {Object.keys(examTree).map((cat) => (
-                <button key={cat} onClick={() => { setSelCat(cat); const first = (examTree[cat] || [""])[0]; setSelSubExam(first); setGoal(first); }} className={"px-3 py-1.5 rounded-lg font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white shadow" : "bg-slate-50 text-slate-900")}>{cat}</button>
+                <button key={cat} onClick={() => { setSelCat(cat); const first = (examTree[cat]  [""]); setSelSubExam(first); setGoal(first); }} className={"p-3 rounded-xl font-extrabold text-xs border text-left flex justify-between items-center " + (selCat === cat ? "bg-indigo-700 text-white border-indigo-800 shadow" : "bg-slate-50 text-slate-900 border-slate-200")}><span>🏛️ {cat}</span><span className="text-[10px] opacity-80">{(examTree[cat]  []).length} Exams ›</span></button>
               ))}
             </div>
             <div className="font-extrabold text-xs text-purple-950 pt-1">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
@@ -398,16 +396,23 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 )}
               </div>
               {(activeStaff.canLiveTest ?? false) && (
-                <div className="p-2.5 bg-rose-50 border border-rose-300 rounded-lg space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-extrabold text-rose-950">🔴 Live Test शेड्यूल करें ({selCat} › {selSubExam}):</span>
-                    <button onClick={() => {
-                      const t = prompt("Live Test का नाम लिखें (जैसे: 72वीं BPSC Maha-Mock #2):"); if (!t || !t.trim()) return;
-                      const stIn = prompt("कितने दिन/समय बाद आएगा? (जैसे: 3 दिन बाद, बुधवार शाम 7 बजे):", "3 दिन बाद") || "जल्द आ रहा है";
-                      const dur = Number(prompt("टेस्ट का समय (मिनट में):", "120")) || 120;
-                      setLiveTests([{ id: Date.now(), title: t.trim(), cat: selCat, subEx: selSubExam, startsIn: stIn, duration: dur, isLive: false }, ...liveTests]);
-                      alert("✅ Live Test शेड्यूल हो गया! अब छात्र इसके लिए Register कर सकते हैं।");
-                    }} className="px-2.5 py-1 bg-rose-600 text-white font-bold rounded text-[11px]">➕ नया Live Test जोड़ें</button>
+                <div className="p-2.5 bg-rose-50 border border-rose-300 rounded-lg space-y-2">
+                  <div className="flex flex-wrap justify-between items-center gap-1.5">
+                    <span className="text-[11px] font-extrabold text-rose-950">🔴 Live Test कंट्रोल ({selCat} › {selSubExam}):</span>
+                    <div className="flex gap-1">
+                      {(activeStaff.canToggleLive ?? false) && (
+                        <button onClick={() => setShowLive(!showLive)} className={"px-2 py-1 rounded font-bold text-[10px] " + (showLive ? "bg-emerald-600 text-white" : "bg-slate-700 text-white")}>
+                          {showLive ? "👁️ Student पर Live: ON" : "🙈 Student पर Live: OFF"}
+                        </button>
+                      )}
+                      <button onClick={() => {
+                        const t = prompt("Live Test का नाम लिखें (जैसे: 72वीं BPSC Maha-Mock #2):"); if (!t || !t.trim()) return;
+                        const stIn = prompt("कितने दिन/समय बाद आएगा? (जैसे: 3 दिन बाद, बुधवार शाम 7 बजे):", "3 दिन बाद") || "जल्द आ रहा है";
+                        const dur = Number(prompt("टेस्ट का समय (मिनट में):", "120")) || 120;
+                        setLiveTests([{ id: Date.now(), title: t.trim(), cat: selCat, subEx: selSubExam, startsIn: stIn, duration: dur, isLive: false }, ...liveTests]);
+                        alert("✅ Live Test शेड्यूल हो गया! अब नीचे से प्रश्न बनाकर इस Live Test में जोड़ें।");
+                      }} className="px-2 py-1 bg-rose-600 text-white font-bold rounded text-[10px]">➕ नया Live Test</button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -629,6 +634,9 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                       <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canLiveTest: !(x.canLiveTest ?? false) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canLiveTest ?? false) ? "bg-rose-600 text-white" : "bg-slate-200 text-slate-700")}>
                      {(st.canLiveTest ?? false) ? "🔴 LiveTest: ON" : "🔴 LiveTest: OFF"}
                    </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canToggleLive: !(x.canToggleLive ?? false) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canToggleLive ?? false) ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {(st.canToggleLive ?? false) ? "👁️ Show/Hide: ON" : "👁️ Show/Hide: OFF"}
+                      </button>
                       <button onClick={() => {
                         const nm = prompt("नया नाम लिखें:", st.name); if (!nm || !nm.trim()) return;
                         const em = prompt("नया Gmail लिखें:", st.email) || st.email;
@@ -751,6 +759,9 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           <div className="p-3 bg-rose-950 text-white border-2 border-rose-500 rounded-xl space-y-2">
             <div className="flex flex-wrap justify-between items-center gap-2 border-b border-white/15 pb-1.5">
               <span className="font-extrabold text-sm text-amber-300">🔴 Head Admin Live Test & Registration Manager</span>
+              <button onClick={() => setShowLive(!showLive)} className={"px-2.5 py-1 rounded font-black text-xs " + (showLive ? "bg-emerald-500 text-white" : "bg-slate-600 text-white")}>
+                {showLive ? "👁️ Student पर Live: ON" : "🙈 Student पर Live: OFF"}
+              </button>
               <button onClick={() => {
                 const t = prompt("1. Live Test का नाम लिखें:"); if (!t || !t.trim()) return;
                 const ct = prompt("2. Exam Category लिखें (जैसे: BPSC / UPSC / Railway):", adminBankCat) || adminBankCat;
