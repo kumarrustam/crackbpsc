@@ -85,6 +85,35 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     { id: 1, name: "अमित कुमार (BPSC Writer)", email: "amit@crackbpsc.in", phone: "9876543210", role: "WRITER", pin: "2222", verified: true, cats: ["BPSC"], subs: ["बिहार विशेष", "इतिहास"], canCreate: true, canDelete: false },
     { id: 2, name: "नेहा शर्मा (UPSC Writer)", email: "neha@crackbpsc.in", phone: "9876543211", role: "WRITER", pin: "3333", verified: true, cats: ["UPSC", "SSC"], subs: ["राजव्यवस्था", "करंट अफेयर्स"], canCreate: false, canDelete: false }
   ]);
+  const [deletedQs, setDeletedQs] = useState<any[]>([]);
+  const [deletedStaff, setDeletedStaff] = useState<any[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const sQ = localStorage.getItem("cb_qs"); if (sQ) setQuestions(JSON.parse(sQ));
+      const sSt = localStorage.getItem("cb_staff"); if (sSt) setStaffList(JSON.parse(sSt));
+      const sTr = localStorage.getItem("cb_tree"); if (sTr) setExamTree(JSON.parse(sTr));
+      const sSec = localStorage.getItem("cb_sec"); if (sSec) setExamSections(JSON.parse(sSec));
+      const sSub = localStorage.getItem("cb_sub"); if (sSub) setSubjects(JSON.parse(sSub));
+      const sDQ = localStorage.getItem("cb_dqs"); if (sDQ) setDeletedQs(JSON.parse(sDQ));
+      const sDSt = localStorage.getItem("cb_dst"); if (sDSt) setDeletedStaff(JSON.parse(sDSt));
+    } catch (e) {}
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("cb_qs", JSON.stringify(questions));
+      localStorage.setItem("cb_staff", JSON.stringify(staffList));
+      localStorage.setItem("cb_tree", JSON.stringify(examTree));
+      localStorage.setItem("cb_sec", JSON.stringify(examSections));
+      localStorage.setItem("cb_sub", JSON.stringify(subjects));
+      localStorage.setItem("cb_dqs", JSON.stringify(deletedQs));
+      localStorage.setItem("cb_dst", JSON.stringify(deletedStaff));
+    } catch (e) {}
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -379,7 +408,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-bold text-slate-900 whitespace-pre-line">प्र.{idx + 1}: {q.text}</span>
-                      {activeStaff.canDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
+                      {activeStaff.canDelete && <button onClick={() => { setDeletedQs([q, ...deletedQs]); setQuestions(questions.filter((item) => item.id !== q.id)); }} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
                     </div> 
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {q.opts.map((opt, oIdx) => (
@@ -516,7 +545,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                         const pn = prompt("नया PIN लिखें:", st.pin) || st.pin;
                         setStaffList(staffList.map((x) => x.id === st.id ? { ...x, name: nm.trim(), email: em.trim(), phone: ph.trim(), role: rl, pin: pn.trim() } : x));
                       }} className="px-2 py-0.5 rounded font-bold text-[10px] bg-amber-500 text-white">✏️ Edit</button>
-                      <button onClick={() => { if (confirm(st.name + " को टीम से बाहर निकालें?")) setStaffList(staffList.filter((x) => x.id !== st.id)); }} className="px-2 py-0.5 rounded font-bold text-[10px] bg-rose-700 text-white">🚫 हटाएं</button>
+                      <button onClick={() => { if (confirm(st.name + " को टीम से हटाकर तिजोरी में भेजें?")) { setDeletedStaff([st, ...deletedStaff]); setStaffList(staffList.filter((x) => x.id !== st.id)); } }} className="px-2 py-0.5 rounded font-bold text-[10px] bg-rose-700 text-white">🚫 हटाएं</button>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 items-center pt-1 border-t">
@@ -595,6 +624,37 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 );
               })}
             </div>
+          </div>
+          <div className="p-3 bg-rose-50 border-2 border-rose-400 rounded-xl space-y-2">
+            <div className="font-extrabold text-sm text-rose-950 border-b border-rose-200 pb-1.5">🗄️ Head Admin Safe Backup Vault (तिजोरी — डिलीट डेटा यहाँ सुरक्षित है)</div>
+            <div className="text-[11px] font-bold text-slate-800">📝 तिजोरी में सुरक्षित प्रश्न ({deletedQs.length}):</div>
+            {deletedQs.length === 0 ? <div className="text-[10px] text-slate-500">कोई डिलीट किया गया प्रश्न नहीं है।</div> : (
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {deletedQs.map((dq: any) => (
+                  <div key={dq.id} className="p-2 bg-white border rounded flex justify-between items-center gap-2">
+                    <span className="text-[11px] font-bold text-slate-800">[{dq.subject}] {dq.text}</span>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => { setQuestions([dq, ...questions]); setDeletedQs(deletedQs.filter((x) => x.id !== dq.id)); }} className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px]">♻️ वापस लाएं</button>
+                      <button onClick={() => { if (confirm("क्या इस प्रश्न को तिजोरी से भी हमेशा के लिए मिटा दें?")) setDeletedQs(deletedQs.filter((x) => x.id !== dq.id)); }} className="px-2 py-0.5 bg-rose-700 text-white rounded font-bold text-[10px]">❌ जड़ से हटाएं</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="text-[11px] font-bold text-slate-800 pt-1">👥 तिजोरी में सुरक्षित टीम सदस्य ({deletedStaff.length}):</div>
+            {deletedStaff.length === 0 ? <div className="text-[10px] text-slate-500">कोई हटाया गया सदस्य नहीं है।</div> : (
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {deletedStaff.map((ds: any) => (
+                  <div key={ds.id} className="p-2 bg-white border rounded flex justify-between items-center gap-2">
+                    <span className="text-[11px] font-bold text-slate-800">{ds.name} ({ds.phone} | {ds.role})</span>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => { setStaffList([ds, ...staffList]); setDeletedStaff(deletedStaff.filter((x) => x.id !== ds.id)); }} className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px]">♻️ वापस लाएं</button>
+                      <button onClick={() => { if (confirm("क्या इस सदस्य को तिजोरी से भी हमेशा के लिए मिटा दें?")) setDeletedStaff(deletedStaff.filter((x) => x.id !== ds.id)); }} className="px-2 py-0.5 bg-rose-700 text-white rounded font-bold text-[10px]">❌ जड़ से हटाएं</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
             {allowAd && (
             <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
