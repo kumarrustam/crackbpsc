@@ -287,7 +287,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   setActiveStaff(found);
                   setUnlockedRole("WRITER");
                   if (found.cats.length > 0) { setSelCat(found.cats[0]); setSelSubExam((examTree[found.cats[0]] || [""])[0]); }
-                  if (found.subs.length > 0) setNewSub(found.subs[0]);
+                  if (found.subs.length > 0) setNewSub(found.subs[0]); 
                   setPinInput("");
                 }} className="bg-blue-600 text-white font-bold px-4 py-1.5 rounded">Verify & Login</button>
               </div>
