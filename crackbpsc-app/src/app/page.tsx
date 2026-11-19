@@ -101,6 +101,9 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [writerPass, setWriterPass] = useState(false);
   const [modPass, setModPass] = useState(false);
   const [adPass, setAdPass] = useState(false);
+  const [targetLiveId, setTargetLiveId] = useState<number>(0);
+  const [examQs, setExamQs] = useState<any[]>([]);
+  const [editQId, setEditQId] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -141,9 +144,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     return () => clearInterval(t);
   }, []);
   if (inExam) {
-    const q = questions[qIdx];
+    const activeList = examQs.length > 0 ? examQs : questions;
+    const q = activeList[qIdx];
     let right = 0, wrong = 0, skipped = 0;
-questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
+activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
     const score = (right - wrong * negMark).toFixed(2);
     return (
       <div className="min-h-screen bg-slate-200 text-slate-950 p-4">
@@ -265,7 +269,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                     <div className="text-[11px] text-indigo-200">🏛️ {lt.cat} › {lt.subEx} | ⏱️ {lt.duration} मिनट</div>
                     <div className="text-[11px] font-bold text-amber-300">📅 {lt.startsIn}</div>
                     {lt.isLive ? (
-                      <button onClick={() => { setGoal(lt.subEx); setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded text-xs">▶️ अभी Live Test शुरू करें</button>
+                      <button onClick={() => { const ltQs = questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(lt.id) : false)); if (ltQs.length === 0) { alert("⚠️ इस Live Test में अभी प्रश्न नहीं जोड़े गए हैं!"); return; } setExamQs(ltQs); setGoal(lt.title); setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded text-xs">▶️ अभी Live Test शुरू करें ({questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(lt.id) : false)).length} Qs)</button>
                     ) : (
                       <button onClick={() => {
                         if (isReg) { setRegLiveIds(regLiveIds.filter((id) => id !== lt.id)); }
@@ -518,22 +522,65 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   </div>
                 </div>
               )}
-              <button onClick={() => { const hiOpts = newOpts.filter((x) => x.trim() !== ""); const enOpts = newOptsEn.filter((x) => x.trim() !== ""); if (!newQ) return; if (hiOpts.length < 2) return; const lClean = listLeft.filter((x) => x.trim() !== "").join("\n"); const rClean = listRight.filter((x) => x.trim() !== "").join("\n"); let baseQ = newQEn.trim() ? newQ + " / " + newQEn : newQ; if (qType === "MATCH") baseQ = baseQ + "\n【सूची-I】\n" + lClean + "\n【सूची-II】\n" + rClean; if (qType === "REASON") baseQ = baseQ + " | कथन (A): " + assertBox + (assertBoxEn.trim() ? " / " + assertBoxEn : "") + " | कारण (R): " + reasonBox + (reasonBoxEn.trim() ? " / " + reasonBoxEn : ""); const combinedOpts = hiOpts.map((h, i) => enOpts[i] ? h + " / " + enOpts[i] : h); const combinedExp = newExpEn.trim() ? newExp + " | English: " + newExpEn : newExp; setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp }]); setNewQ(""); setNewQEn(""); setAssertBox(""); setAssertBoxEn(""); setReasonBox(""); setReasonBoxEn(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setListLeftEn(["", "", "", ""]); setListRightEn(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); setCorrectIdx(0); alert("✅ प्रश्न और सूचियां साफ-सुथरे रूप में सेव हो गईं!"); }} className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg">Save Bilingual Question</button>
+              <div className="p-2.5 bg-rose-50 border-2 border-rose-300 rounded-lg flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-extrabold text-rose-950">🔴 साथ ही इस प्रश्न को Live Test में भी जोड़ें (Dual-Link):</span>
+                <select value={targetLiveId} onChange={(e) => setTargetLiveId(Number(e.target.value))} className="px-2 py-1 border rounded bg-white font-bold text-xs text-slate-900">
+                  <option value={0}>केवल सामान्य परीक्षा में रखें ({selCat} › {selSubExam})</option>
+                  {liveTests.map((lt: any) => (<option key={lt.id} value={lt.id}>✅ सामान्य परीक्षा + 🔴 Live Test: {lt.title}</option>))}
+                </select>
+              </div>
+
+              <button onClick={() => {
+                const hiOpts = newOpts.filter((x) => x.trim() !== "");
+                const enOpts = newOptsEn.filter((x) => x.trim() !== "");
+                if (!newQ) return;
+                if (hiOpts.length < 2) return;
+                const lClean = listLeft.filter((x) => x.trim() !== "").join("\n");
+                const rClean = listRight.filter((x) => x.trim() !== "").join("\n");
+                let baseQ = newQEn.trim() ? newQ + " / " + newQEn : newQ;
+                if (qType === "MATCH") baseQ = baseQ + "\n【सूची-I】\n" + lClean + "\n【सूची-II】\n" + rClean;
+                if (qType === "REASON") baseQ = baseQ + " | कथन (A): " + assertBox + (assertBoxEn.trim() ? " / " + assertBoxEn : "") + " | कारण (R): " + reasonBox + (reasonBoxEn.trim() ? " / " + reasonBoxEn : "");
+                const combinedOpts = hiOpts.map((h, i) => enOpts[i] ? h + " / " + enOpts[i] : h);
+                const combinedExp = newExpEn.trim() ? newExp + " | English: " + newExpEn : newExp;
+                const autoTag = selCat + " > " + selSubExam + " > " + selSection;
+                const lIds = targetLiveId > 0 ? [targetLiveId] : [];
+                if (editQId !== null) {
+                  setQuestions(questions.map((item) => item.id === editQId ? { ...item, subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp, liveIds: targetLiveId > 0 ? Array.from(new Set([...(item.liveIds ? item.liveIds : []), targetLiveId])) : (item.liveIds ? item.liveIds : []) } : item));
+                  setEditQId(null);
+                  alert("✅ प्रश्न सफलतापूर्वक अपडेट (Edit) हो गया!");
+                } else {
+                  setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp, tags: [autoTag], liveIds: lIds }]);
+                  alert(targetLiveId > 0 ? "✅ प्रश्न सामान्य परीक्षा और 🔴 Live Test दोनों में जुड़ गया!" : "✅ प्रश्न सामान्य परीक्षा में सेव हो गया!");
+                }
+                setNewQ(""); setNewQEn(""); setAssertBox(""); setAssertBoxEn(""); setReasonBox(""); setReasonBoxEn(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setListLeftEn(["", "", "", ""]); setListRightEn(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); setCorrectIdx(0);
+              }} className={"w-full text-white font-bold py-2.5 rounded-lg " + (editQId !== null ? "bg-amber-600" : "bg-blue-600")}>
+                {editQId !== null ? "💾 अपडेट किया हुआ प्रश्न सेव करें (Update Question)" : "Save Bilingual Question"}
+              </button>
+              {targetLiveId > 0 && (
+                <div className="p-3 bg-rose-50 border-2 border-rose-400 rounded-xl space-y-2">
+                  <div className="font-extrabold text-xs text-rose-950">🔴 चुने गए Live Test में जोड़े गए प्रश्न ({questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(targetLiveId) : false)).length}):</div>
+                  {questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(targetLiveId) : false)).map((lq: any, idx: number) => (
+                    <div key={lq.id} className="p-2 bg-white border rounded flex justify-between items-start gap-2">
+                      <span className="text-[11px] font-bold text-slate-900">Q{idx + 1}. {lq.text}</span>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => { const p = lq.text.split(" / "); setEditQId(lq.id); setNewQ(p.at(0) ? p.at(0) : ""); setNewQEn(p.at(1) ? p.at(1) : ""); const hO = (lq.opts ? lq.opts : []).map((o: string) => o.split(" / ").at(0) ? o.split(" / ").at(0) : ""); const eO = (lq.opts ? lq.opts : []).map((o: string) => o.split(" / ").at(1) ? o.split(" / ").at(1) : ""); setNewOpts([hO.at(0) ? hO.at(0) : "", hO.at(1) ? hO.at(1) : "", hO.at(2) ? hO.at(2) : "", hO.at(3) ? hO.at(3) : ""]); setNewOptsEn([eO.at(0) ? eO.at(0) : "", eO.at(1) ? eO.at(1) : "", eO.at(2) ? eO.at(2) : "", eO.at(3) ? eO.at(3) : ""]); setCorrectIdx(lq.correct); const ex = (lq.exp ? lq.exp : "").split(" | English: "); setNewExp(ex.at(0) ? ex.at(0) : ""); setNewExpEn(ex.at(1) ? ex.at(1) : ""); alert("✏️ ऊपर के बॉक्स में पूरा प्रश्न, चारों विकल्प, सही उत्तर और व्याख्या लोड हो गए हैं—सुधार करके Update दबाएं!"); }} className="px-2 py-0.5 bg-amber-500 text-white rounded font-bold text-[10px]">✏️ Edit</button>
+                        <button onClick={() => setQuestions(questions.map((x) => x.id === lq.id ? { ...x, liveIds: (x.liveIds ? x.liveIds : []).filter((id: number) => id !== targetLiveId) } : x))} className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px]">✕ हटाएं</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="pt-3 border-t space-y-2">
-                <div className="font-bold text-slate-800">📋 कुल सेव किए गए प्रश्न ({questions.length}):</div>
+                <div className="font-bold text-slate-800">📚 कुल सेव किए गए प्रश्न ({questions.length}):</div>
                 {questions.map((q, idx) => (
                   <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-bold text-slate-900 whitespace-pre-line">प्र.{idx + 1}: {q.text}</span>
-                      {activeStaff.canDelete && <button onClick={() => { setDeletedQs([q, ...deletedQs]); setQuestions(questions.filter((item) => item.id !== q.id)); }} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
-                    </div> 
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {q.opts.map((opt, oIdx) => (
-                        <span key={oIdx} className={"px-2 py-0.5 rounded border text-[11px] " + (q.correct === oIdx ? "bg-emerald-600 text-white font-bold" : "bg-white text-slate-800")}>
-                          ({String.fromCharCode(65 + oIdx)}) {opt} {q.correct === oIdx && "✅"}
-                        </span>
-                      ))}
+                      <div className="flex gap-1.5 shrink-0">
+                        <button onClick={() => { const p = q.text.split(" / "); setEditQId(q.id); setNewQ(p.at(0) ? p.at(0) : ""); setNewQEn(p.at(1) ? p.at(1) : ""); const hO = (q.opts ? q.opts : []).map((o: string) => o.split(" / ").at(0) ? o.split(" / ").at(0) : ""); const eO = (q.opts ? q.opts : []).map((o: string) => o.split(" / ").at(1) ? o.split(" / ").at(1) : ""); setNewOpts([hO.at(0) ? hO.at(0) : "", hO.at(1) ? hO.at(1) : "", hO.at(2) ? hO.at(2) : "", hO.at(3) ? hO.at(3) : ""]); setNewOptsEn([eO.at(0) ? eO.at(0) : "", eO.at(1) ? eO.at(1) : "", eO.at(2) ? eO.at(2) : "", eO.at(3) ? eO.at(3) : ""]); setCorrectIdx(q.correct); const ex = (q.exp ? q.exp : "").split(" | English: "); setNewExp(ex.at(0) ? ex.at(0) : ""); setNewExpEn(ex.at(1) ? ex.at(1) : ""); alert("✏️ ऊपर के बॉक्स में पूरा प्रश्न, चारों विकल्प, सही उत्तर और व्याख्या लोड हो गए हैं—सुधार करके Update दबाएं!"); }} className="px-2 py-0.5 bg-amber-500 text-white rounded font-bold text-[10px]">✏️ Edit</button>
+                        {activeStaff.canDelete && <button onClick={() => { setDeletedQs([q, ...deletedQs]); setQuestions(questions.filter((item) => item.id !== q.id)); }} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
+                      </div>
                     </div>
                   </div>
                 ))}
