@@ -301,7 +301,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   {Object.keys(examTree).filter((c) => activeStaff.cats.includes(c)).map((cat) => (
                     <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam((examTree[cat] || [""])); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
                   ))}
-                  {activeStaff.canCreate && (
+                  {(activeStaff.canCat ?? activeStaff.canCreate) && (
                     <button onClick={() => { const c = prompt("नई मुख्य Category लिखें:"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setStaffList(staffList.map((st) => st.id === activeStaff.id ? { ...st, cats: [...st.cats, c.trim()] } : st)); setActiveStaff({ ...activeStaff, cats: [...activeStaff.cats, c.trim()] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
                   )}
                 </div>
@@ -311,7 +311,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   {(examTree[selCat] || []).map((subEx: string) => (
                     <button key={subEx} onClick={() => setSelSubExam(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-white text-slate-900")}>{subEx}</button>
                   ))}
-                  {activeStaff.canCreate && (
+                  {(activeStaff.canSubCat ?? activeStaff.canCreate) && (
                     <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें:"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
                   )}
                 </div>
@@ -320,7 +320,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   {examSections.map((sec) => (
                     <button key={sec} onClick={() => setSelSection(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSection === sec ? "bg-amber-600 text-white" : "bg-white text-slate-900")}>{sec}</button>
                   ))}
-                  {activeStaff.canCreate && (
+                  {(activeStaff.canSec ?? activeStaff.canCreate) && (
                     <button onClick={() => { const ns = prompt("नया टेस्ट सेक्शन का नाम लिखें:"); if (ns && ns.trim()) { setExamSections([...examSections, ns.trim()]); setSelSection(ns.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नया Section</button>
                   )}
                 </div>
@@ -330,7 +330,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 {subjects.filter((s) => activeStaff.subs.includes(s)).map((s) => (
                   <button key={s} onClick={() => setNewSub(s)} className={"px-2 py-1 rounded font-bold border " + (newSub === s ? "bg-blue-600 text-white" : "bg-slate-50")}>{s}</button>
                 ))}
-                {activeStaff.canCreate && (
+                {(activeStaff.canSub ?? activeStaff.canCreate) && (
                   <button onClick={() => { const s = prompt("नया विषय लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setStaffList(staffList.map((st) => st.id === activeStaff.id ? { ...st, subs: [...st.subs, s.trim()] } : st)); setActiveStaff({ ...activeStaff, subs: [...activeStaff.subs, s.trim()] }); setNewSub(s.trim()); } }} className="px-2 py-1 rounded font-black bg-emerald-600 text-white">➕ विषय</button>
                 )}
               </div>
@@ -536,6 +536,18 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                     <div className="flex gap-1">
                       <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, verified: !x.verified } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.verified ? "bg-emerald-600 text-white" : "bg-amber-500 text-white")}>
                         {st.verified ? "✅ Verified" : "⏳ Verify करें"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canCat: !(x.canCat ?? x.canCreate) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canCat ?? st.canCreate) ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {(st.canCat ?? st.canCreate) ? "+Cat: ON" : "+Cat: OFF"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canSubCat: !(x.canSubCat ?? x.canCreate) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canSubCat ?? st.canCreate) ? "bg-purple-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {(st.canSubCat ?? st.canCreate) ? "+SubCat: ON" : "+SubCat: OFF"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canSec: !(x.canSec ?? x.canCreate) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canSec ?? st.canCreate) ? "bg-amber-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {(st.canSec ?? st.canCreate) ? "+Sec: ON" : "+Sec: OFF"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canSub: !(x.canSub ?? x.canCreate) } : x))} className={"px-1.5 py-0.5 rounded font-bold text-[10px] " + ((st.canSub ?? st.canCreate) ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {(st.canSub ?? st.canCreate) ? "+Sub: ON" : "+Sub: OFF"}
                       </button>
                       <button onClick={() => {
                         const nm = prompt("नया नाम लिखें:", st.name); if (!nm || !nm.trim()) return;
