@@ -272,7 +272,7 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                 {subjects.map((s) => (
                   <button key={s} onClick={() => setNewSub(s)} className={"px-2 py-1 rounded font-bold border " + (newSub === s ? "bg-blue-600 text-white" : "bg-slate-50")}>{s}</button>
                 ))}
-                {writerCanAddSub && (
+                {writerCanCreateExam && (
                   <button onClick={() => { const s = prompt("नया विषय लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2 py-1 rounded font-black bg-emerald-600 text-white">➕ विषय</button>
                 )}
               </div>
