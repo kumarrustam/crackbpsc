@@ -75,6 +75,16 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [selCat, setSelCat] = useState("BPSC");
   const [selSubExam, setSelSubExam] = useState("72वीं BPSC CCE");
   const [selSection, setSelSection] = useState("Full Length Test");
+  const [bankSub, setBankSub] = useState("ALL");
+  const [adminBankCat, setAdminBankCat] = useState("BPSC");
+  const [adminBankSubEx, setAdminBankSubEx] = useState("72वीं BPSC CCE");
+  const [adminBankSec, setAdminBankSec] = useState("Full Length Test");
+  const [staffLoginId, setStaffLoginId] = useState("");
+  const [activeStaff, setActiveStaff] = useState<any>(null);
+  const [staffList, setStaffList] = useState<any[]>([
+    { id: 1, name: "अमित कुमार (BPSC Writer)", email: "amit@crackbpsc.in", phone: "9876543210", role: "WRITER", pin: "2222", verified: true, cats: ["BPSC"], subs: ["बिहार विशेष", "इतिहास"], canCreate: true, canDelete: false },
+    { id: 2, name: "नेहा शर्मा (UPSC Writer)", email: "neha@crackbpsc.in", phone: "9876543211", role: "WRITER", pin: "3333", verified: true, cats: ["UPSC", "SSC"], subs: ["राजव्यवस्था", "करंट अफेयर्स"], canCreate: false, canDelete: false }
+  ]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -224,60 +234,78 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           </div>
         </div>
       )}
-
-      {role === "WRITER" && (
+     {role === "WRITER" && (
         <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
-          <h2 className="font-bold text-sm">✍️ Content Writer Panel</h2>
-          {unlockedRole !== "WRITER" ? (
-            <div className="p-3 bg-slate-100 rounded-lg space-y-2">
-              <div className="font-bold text-slate-700">Writer पैनल खोलने के लिए PIN डालें:</div>
-              <div className="flex gap-2">
-                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="Writer PIN डालें" className="border rounded px-2.5 py-1.5 bg-white flex-1" />
-                <button onClick={() => { if (pinInput === writerPin) { setUnlockedRole("WRITER"); setPinInput(""); } else alert("❌ गलत PIN!"); }} className="bg-blue-600 text-white font-bold px-4 py-1.5 rounded">Unlock</button>
+          <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
+            <h2 className="font-bold text-sm">✍️ Content Writer Studio</h2>
+            {activeStaff && activeStaff.role === "WRITER" && (
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 rounded font-bold text-[11px]">✅ {activeStaff.name} ({activeStaff.phone})</span>
+                <button onClick={() => { setActiveStaff(null); setUnlockedRole(""); }} className="px-2 py-0.5 bg-rose-100 text-rose-800 rounded font-bold text-[11px]">Logout</button>
               </div>
+            )}
+          </div>
+          {!(activeStaff && activeStaff.role === "WRITER") ? (
+            <div className="p-3 bg-slate-100 rounded-lg space-y-2">
+              <div className="font-bold text-slate-800">🔐 Verified Gmail या Mobile Number और PIN से लॉगिन करें:</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input value={staffLoginId} onChange={(e) => setStaffLoginId(e.target.value)} placeholder="Gmail या 10-अंक का मोबाइल नं." className="border rounded px-2.5 py-1.5 bg-white" />
+                <input value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder="व्यक्तिगत PIN डालें" className="border rounded px-2.5 py-1.5 bg-white" />   
+      <button onClick={() => {
+                  const found = staffList.find((st) => st.role === "WRITER" && (st.email.toLowerCase() === staffLoginId.trim().toLowerCase() || st.phone === staffLoginId.trim()) && st.pin === pinInput.trim());
+                  if (!found) { alert("❌ गलत Gmail/मोबाइल नंबर या PIN!"); return; }
+                  if (!found.verified) { alert("⏳ आपका Gmail/Mobile अभी Head Admin द्वारा वेरीफाई नहीं हुआ है!"); return; }
+                  setActiveStaff(found);
+                  setUnlockedRole("WRITER");
+                  if (found.cats.length > 0) { setSelCat(found.cats[0]); setSelSubExam((examTree[found.cats[0]] || [""])[0]); }
+                  if (found.subs.length > 0) setNewSub(found.subs[0]);
+                  setPinInput("");
+                }} className="bg-blue-600 text-white font-bold px-4 py-1.5 rounded">Verify & Login</button>
+              </div>
+              <div className="text-[10px] text-slate-500">Demo Login: amit@crackbpsc.in या 9876543210 | PIN: 2222</div>
             </div>
           ) : (
             <div className="space-y-3">
-        <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
-                <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
+              <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
+                <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
                 <div className="flex flex-wrap gap-1 items-center">
-                  {Object.keys(examTree).map((cat) => (
-                    <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam(examTree[cat][0] || ""); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
+                  {Object.keys(examTree).filter((c) => activeStaff.cats.includes(c)).map((cat) => (
+                    <button key={cat} onClick={() => { setSelCat(cat); setSelSubExam((examTree[cat] || [""])); }} className={"px-2.5 py-1 rounded font-extrabold text-xs border " + (selCat === cat ? "bg-indigo-700 text-white" : "bg-white text-slate-900")}>{cat}</button>
                   ))}
-                  {writerCanCreateExam && (
-                    <button onClick={() => { const c = prompt("नई मुख्य Category लिखें:"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
+                  {activeStaff.canCreate && (
+                    <button onClick={() => { const c = prompt("नई मुख्य Category लिखें:"); if (c && c.trim()) { setExamTree({ ...examTree, [c.trim()]: ["General Exam"] }); setStaffList(staffList.map((st) => st.id === activeStaff.id ? { ...st, cats: [...st.cats, c.trim()] } : st)); setActiveStaff({ ...activeStaff, cats: [...activeStaff.cats, c.trim()] }); setSelCat(c.trim()); setSelSubExam("General Exam"); } }} className="px-2 py-1 rounded font-black text-xs bg-emerald-600 text-white">➕ नई Category</button>
                   )}
                 </div>
-          <div className="text-[11px] font-extrabold text-purple-950">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
+
+                <div className="text-[11px] font-extrabold text-purple-950">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
                 <div className="flex flex-wrap gap-1 items-center">
                   {(examTree[selCat] || []).map((subEx: string) => (
                     <button key={subEx} onClick={() => setSelSubExam(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-white text-slate-900")}>{subEx}</button>
                   ))}
-                  {writerCanCreateExam && (
+                  {activeStaff.canCreate && (
                     <button onClick={() => { const s = prompt(selCat + " के अंदर नई Sub-Category लिखें:"); if (s && s.trim()) { setExamTree({ ...examTree, [selCat]: [...(examTree[selCat] || []), s.trim()] }); setSelSubExam(s.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नई Sub-Category</button>
                   )}
                 </div>
-
                 <div className="text-[11px] font-extrabold text-amber-950">📂 3. टेस्ट सेक्शन चुनें ({examSections.length} Sections):</div>
                 <div className="flex flex-wrap gap-1 items-center">
                   {examSections.map((sec) => (
                     <button key={sec} onClick={() => setSelSection(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (selSection === sec ? "bg-amber-600 text-white" : "bg-white text-slate-900")}>{sec}</button>
                   ))}
-                  {writerCanCreateExam && (
+                  {activeStaff.canCreate && (
                     <button onClick={() => { const ns = prompt("नया टेस्ट सेक्शन का नाम लिखें:"); if (ns && ns.trim()) { setExamSections([...examSections, ns.trim()]); setSelSection(ns.trim()); } }} className="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-600 text-white">➕ नया Section</button>
                   )}
                 </div>
               </div>
+
               <div className="flex flex-wrap gap-1 items-center">
-                {subjects.map((s) => (
+                {subjects.filter((s) => activeStaff.subs.includes(s)).map((s) => (
                   <button key={s} onClick={() => setNewSub(s)} className={"px-2 py-1 rounded font-bold border " + (newSub === s ? "bg-blue-600 text-white" : "bg-slate-50")}>{s}</button>
                 ))}
-                {writerCanCreateExam && (
-                  <button onClick={() => { const s = prompt("नया विषय लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setNewSub(s.trim()); } }} className="px-2 py-1 rounded font-black bg-emerald-600 text-white">➕ विषय</button>
+                {activeStaff.canCreate && (
+                  <button onClick={() => { const s = prompt("नया विषय लिखें:"); if (s && s.trim()) { setSubjects([...subjects, s.trim()]); setStaffList(staffList.map((st) => st.id === activeStaff.id ? { ...st, subs: [...st.subs, s.trim()] } : st)); setActiveStaff({ ...activeStaff, subs: [...activeStaff.subs, s.trim()] }); setNewSub(s.trim()); } }} className="px-2 py-1 rounded font-black bg-emerald-600 text-white">➕ विषय</button>
                 )}
               </div>
-
-              <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1">
                 {[{ id: "STD", name: "📝 सामान्य प्रश्न" }, { id: "MATCH", name: "🔗 कूट और मिलान डिब्बा" }, { id: "REASON", name: "⚖️ कथन और कारण डिब्बा" }].map((t) => (
                   <button key={t.id} onClick={() => setQType(t.id)} className={"px-2.5 py-1 rounded-lg font-extrabold border " + (qType === t.id ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-800")}>{t.name}</button>
                 ))}
@@ -351,8 +379,8 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   <div key={q.id} className="p-2.5 bg-slate-50 border rounded-lg space-y-1">
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-bold text-slate-900 whitespace-pre-line">प्र.{idx + 1}: {q.text}</span>
-                      {writerCanDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
-                    </div>
+                      {activeStaff.canDelete && <button onClick={() => setQuestions(questions.filter((item) => item.id !== q.id))} className="text-rose-600 font-bold">🗑️ डिलीट</button>}
+                    </div> 
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {q.opts.map((opt, oIdx) => (
                         <span key={oIdx} className={"px-2 py-0.5 rounded border text-[11px] " + (q.correct === oIdx ? "bg-emerald-600 text-white font-bold" : "bg-white text-slate-800")}>
@@ -456,7 +484,116 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
               <button onClick={() => setAdCanPopup(!adCanPopup)} className={"w-full py-1 rounded font-bold border " + (adCanPopup ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900")}>Popup Ads: {adCanPopup ? "ON" : "OFF"}</button>
             </div>
           </div>
-          {allowAd && (
+          <div className="p-3 bg-indigo-50 border-2 border-indigo-400 rounded-xl space-y-2.5">
+            <div className="font-extrabold text-sm text-indigo-950 border-b border-indigo-200 pb-1.5">👥 Staff Registry, Gmail/Phone Verification & Custom Access</div>
+            <button onClick={() => {
+              const nm = prompt("1. सदस्य का नाम लिखें (जैसे: राहुल वर्मा):");
+              if (!nm || !nm.trim()) return;
+              const em = prompt("2. सदस्य की Gmail ID लिखें:") || "";
+              const ph = prompt("3. 10-अंक का मोबाइल नंबर लिखें:") || "";
+              const rl = (prompt("4. Role लिखें (WRITER / MOD / AD):", "WRITER") || "WRITER").toUpperCase();
+              const pn = prompt("5. लॉगिन PIN बनाएं (जैसे: 4444):", "4444") || "4444";
+              setStaffList([...staffList, { id: Date.now(), name: nm.trim(), email: em.trim(), phone: ph.trim(), role: rl, pin: pn.trim(), verified: true, cats: ["BPSC"], subs: ["बिहार विशेष"], canCreate: false, canDelete: false }]);
+              alert("✅ नया सदस्य जोड़ा गया! अब नीचे से उसकी Exam Category और Subject चुनें।");
+            }} className="w-full py-2 bg-indigo-700 text-white font-extrabold rounded-lg text-xs">➕ नया टीम सदस्य जोड़ें (Gmail + Mobile Verification)</button>
+          <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+              {staffList.map((st) => (
+                <div key={st.id} className="p-2.5 bg-white border border-indigo-200 rounded-lg space-y-1.5">
+                  <div className="flex flex-wrap justify-between items-center gap-1">
+                    <div>
+                      <div className="font-extrabold text-slate-900 text-xs">{st.name} <span className="px-1.5 py-0.5 bg-slate-200 rounded text-[10px]">{st.role}</span></div>
+                      <div className="text-[10px] text-slate-600">📧 {st.email} | 📱 {st.phone} | 🔑 PIN: {st.pin}</div>
+                    </div>
+                    <div className="flex gap-1">
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, verified: !x.verified } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.verified ? "bg-emerald-600 text-white" : "bg-amber-500 text-white")}>
+                        {st.verified ? "✅ Verified" : "⏳ Verify करें"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canCreate: !x.canCreate } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.canCreate ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {st.canCreate ? "➕ Exam: ON" : "➕ Exam: OFF"}
+                      </button>
+                      <button onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, canDelete: !x.canDelete } : x))} className={"px-2 py-0.5 rounded font-bold text-[10px] " + (st.canDelete ? "bg-rose-600 text-white" : "bg-slate-200 text-slate-700")}>
+                        {st.canDelete ? "🗑️ Del: ON" : "🗑️ Del: OFF"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1 items-center pt-1 border-t">
+                    <span className="text-[10px] font-bold text-indigo-900">🏛️ Exams:</span>
+                    {Object.keys(examTree).map((cat) => {
+                      const ok = st.cats.includes(cat);
+                      return (
+                        <button key={cat} onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, cats: ok ? x.cats.filter((c: string) => c !== cat) : [...x.cats, cat] } : x))} className={"px-1.5 py-0.5 rounded text-[10px] font-bold border " + (ok ? "bg-indigo-600 text-white" : "bg-slate-50 text-slate-500")}>
+                          {ok ? "✓ " : ""}{cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[10px] font-bold text-blue-900">📚 Subjects:</span>
+                    {subjects.map((sub) => {
+                      const ok = st.subs.includes(sub);
+                      return (
+                        <button key={sub} onClick={() => setStaffList(staffList.map((x) => x.id === st.id ? { ...x, subs: ok ? x.subs.filter((s: string) => s !== sub) : [...x.subs, sub] } : x))} className={"px-1.5 py-0.5 rounded text-[10px] font-bold border " + (ok ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-500")}>
+                          {ok ? "✓ " : ""}{sub}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="p-3 bg-emerald-50 border-2 border-emerald-400 rounded-xl space-y-2">
+            <div className="font-extrabold text-sm text-emerald-950 border-b border-emerald-200 pb-1.5">🏦 Master Question Bank (किसी भी परीक्षा में प्रश्न भेजें)</div>
+            <div className="p-2 bg-white border border-emerald-300 rounded-lg space-y-1.5">
+              <div className="text-[11px] font-extrabold text-indigo-950">🎯 1. लक्ष्य परीक्षा चुनें जहाँ प्रश्न भेजना है:</div>
+              <div className="flex flex-wrap gap-1 items-center">
+                {Object.keys(examTree).map((cat) => (
+                  <button key={cat} onClick={() => { setAdminBankCat(cat); setAdminBankSubEx((examTree[cat] || [""])); }} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (adminBankCat === cat ? "bg-indigo-700 text-white" : "bg-slate-50")}>{cat}</button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1 items-center">
+                {(examTree[adminBankCat] || []).map((subEx: string) => (
+                  <button key={subEx} onClick={() => setAdminBankSubEx(subEx)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (adminBankSubEx === subEx ? "bg-purple-700 text-white" : "bg-slate-50")}>{subEx}</button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1 items-center">
+                {examSections.map((sec) => (
+                  <button key={sec} onClick={() => setAdminBankSec(sec)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (adminBankSec === sec ? "bg-amber-600 text-white" : "bg-slate-50")}>{sec}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              <button onClick={() => setBankSub("ALL")} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (bankSub === "ALL" ? "bg-slate-900 text-white" : "bg-white")}>सभी ({questions.length})</button>
+              {subjects.map((s) => (
+                <button key={s} onClick={() => setBankSub(s)} className={"px-2 py-0.5 rounded font-bold text-[11px] border " + (bankSub === s ? "bg-blue-700 text-white" : "bg-white")}>{s}</button>
+              ))}
+            </div>
+            <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+              {questions.filter((q) => bankSub === "ALL" || q.subject === bankSub).map((q: any, idx: number) => {
+                const targetTag = adminBankCat + " > " + adminBankSubEx + " > " + adminBankSec;
+                const qTags: string[] = q.tags || [];
+                const alreadyAdded = qTags.includes(targetTag);
+                return (
+                  <div key={q.id} className="p-2 bg-white border rounded-lg space-y-1">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="font-bold text-slate-900 text-[11px]">[{q.subject}] प्र.{idx + 1}: {q.text}</span>
+                      <button onClick={() => setQuestions(questions.map((item: any) => item.id === q.id ? { ...item, tags: alreadyAdded ? qTags.filter((t) => t !== targetTag) : [...qTags, targetTag] } : item))} className={"px-2 py-1 rounded font-black text-[10px] shrink-0 " + (alreadyAdded ? "bg-slate-700 text-white" : "bg-emerald-600 text-white")}>
+                        {alreadyAdded ? "✅ जुड़ा हुआ है" : "➕ जोड़ें"}
+                      </button>
+                    </div>
+                    {qTags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {qTags.map((tg, ti) => (
+                          <span key={ti} className="px-1.5 py-0.5 bg-indigo-100 text-indigo-900 rounded text-[10px] font-bold">📌 {tg}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+            {allowAd && (
             <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
               <div className="font-bold text-indigo-800">📢 Ad Studio (प्रकार और दिन चुनें):</div>
               <div className="flex flex-wrap gap-1.5">
@@ -484,7 +621,6 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
           )}
         </div>
       )}
-
       {loginOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
