@@ -360,9 +360,8 @@ questions.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (a
                   </div>
                 ))}
               </div>
-            </div>
           )}
-        </>
+        </div>
       )}
       {role === "MOD" && (
         <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
