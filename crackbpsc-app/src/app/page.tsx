@@ -754,20 +754,45 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   if (!aiTopic.trim()) { alert("⚠️ पहले विषय लिखें!"); return; }
                   setAiLoading(true);
                   try {
-                    const res = await fetch("https://googleapis.com" + geminiKey, {
+                    const isVertex = geminiKey.trim().startsWith("AQ.");
+                    const apiUrl = isVertex
+                      ? "https://googleapis.com" + geminiKey.trim()
+                      : "https://googleapis.com" + geminiKey.trim();
+                    const res = await fetch(apiUrl, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ contents: [{ parts: [{ text: "Generate BPSC MCQs on: " + aiTopic + ". Return ONLY valid JSON array: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Explanation\"}]" }] }] })
+                      body: JSON.stringify({
+                        contents: [{
+                          role: "user",
+                          parts: [{ text: "Generate BPSC MCQs on: " + aiTopic + " (max 25 questions per batch). Return ONLY a valid JSON array without markdown: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Detailed Explanation in Hindi & English\"}]" }]
+                        }]
+                      })
                     });
                     const data = await res.json();
+                    if (!res.ok) {
+                      alert("❌ Google AI त्रुटि: " + (data.error ? data.error.message : "Key जांचें"));
+                      setAiLoading(false);
+                      return;
+                    }
                     const raw = data.candidates.at(0).content.parts.at(0).text.replace(/`json|```/g, "").trim();
                     const arr = JSON.parse(raw);
-                    const formatted = arr.map((item: any, idx: number) => ({ id: Date.now() + idx, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: "STD", q: item.q, opts: item.opts, correct: item.correct, exp: item.exp }));
+                    const formatted = arr.map((item: any, idx: number) => ({
+                      id: Date.now() + idx,
+                      cat: selCat,
+                      subEx: selSubExam,
+                      sec: selSection,
+                      sub: "सामान्य अध्ययन",
+                      type: "STD",
+                      q: item.q,
+                      opts: item.opts,
+                      correct: item.correct,
+                      exp: item.exp
+                    }));
                     setQuestions([...formatted, ...questions]);
                     setAiTopic("");
                     alert("✅ " + formatted.length + " Bilingual प्रश्न सीधे " + selSubExam + " में जुड़ गए!");
-                  } catch (e) {
-                    alert("❌ AI त्रुटि! कृपया API Key जांचें या नीचे Bulk Paste बॉक्स का उपयोग करें।");
+                  } catch (e: any) {
+                    alert("❌ AI त्रुटि: " + (e.message ? e.message : "एक बार में 15–20 प्रश्न लिखकर पुनः प्रयास करें।"));
                   }
                   setAiLoading(false);
                 }}
