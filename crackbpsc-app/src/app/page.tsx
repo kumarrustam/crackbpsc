@@ -842,7 +842,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     const rawAns = ansL ? ansL.replace(/^(ANS|ANSWER|उत्तर)[:.)]\s*/i, "").trim().charAt(0).toUpperCase() : "A";
                     const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
                     const fullTxt = b.toLowerCase();
-                    const qType = (fullTxt.includes("कथन")  fullTxt.includes("assertion")) ? "AR" : ((fullTxt.includes("सूची")  fullTxt.includes("मिलान") || fullTxt.includes("list-i")) ? "MATCH" : "STD");
+                    const qType = fullTxt.includes("कथन") ? "AR" : fullTxt.includes("assertion") ? "AR" : fullTxt.includes("सूची") ? "MATCH" : fullTxt.includes("मिलान") ? "MATCH" : fullTxt.includes("list-i") ? "MATCH" : "STD";
                     added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: qType, q: cleanQ, opts, correct: cIdx, exp: expL ? expL.replace(/^(EXP|EXPLANATION|व्याख्या)[:.)]\s*/i, "").trim() : "" });
                   }
                 });
