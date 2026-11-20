@@ -533,8 +533,8 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               ))}
             </div>
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
-            <h2 className="font-extrabold text-base">{goal} {examLang === "EN" ? "All-India Live Mock Test" : "अखिल भारतीय लाइव मॉक टेस्ट"}</h2>
-            <button
+          <h2 className="font-extrabold text-base">{goal}</h2>
+          <button
             onClick={() => {
               const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
               if (matched.length === 0) {
@@ -556,7 +556,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             }}
             className="w-full py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg"
           >
-🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
+            🎯 CBT परीक्षा शुरू करें →
           </button>
         </div>
       </div>
