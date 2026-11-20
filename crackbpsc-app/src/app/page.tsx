@@ -473,17 +473,37 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           </div>
           {showBms && (
             <div className="space-y-2 pt-1">
-             {savedBms.map((b: any, idx: number) => (
-                <div key={idx} onClick={() => { const foundIdx = questions.findIndex((item: any) => item.q === b.q); setQIdx(foundIdx >= 0 ? foundIdx : (b.qIdx ? b.qIdx : 0)); setQSec(0); setSubmitted(false); setInExam(true); }} className="p-2.5 bg-white hover:bg-amber-100/60 cursor-pointer rounded-lg border-2 border-amber-300 space-y-1.5 transition">
-                  <div className="flex justify-between items-start gap-2 font-extrabold text-slate-900">
-                    <span>❓ {idx + 1}. {b.q ? b.q : "सहेजा गया प्रश्न"}</span>
-                    <button onClick={(e) => { e.stopPropagation(); setSavedBms(savedBms.filter((_: any, i: number) => i !== idx)); }} className="text-rose-600 font-black px-1.5">🗑️</button>
-                  </div>
-                  <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {b.ans}</div>
-                  <div className="text-[11px] text-slate-700 bg-slate-100 p-2 rounded border border-slate-200">📝 <b>Explanation:</b> {b.exp ? b.exp : "विस्तृत व्याख्या देखने के लिए इस प्रश्न पर क्लिक करें।"}</div>
-                  <div className="text-[10px] font-black text-indigo-700">👉 सीधे इस प्रश्न और विकल्पों पर जाने के लिए यहाँ क्लिक करें →</div>
+            {savedBms.map((b: any, idx: number) => (
+              <div
+                key={idx}
+                onClick={() => {
+                  const foundIdx = questions.findIndex((item: any) => item.q === b.q);
+                  setQIdx(foundIdx >= 0 ? foundIdx : (b.qIdx ? b.qIdx : 0));
+                  setQSec(0);
+                  setSubmitted(false);
+                  setInExam(true);
+                }}
+                className="p-2.5 bg-white cursor-pointer rounded-lg border-2 border-amber-300 space-y-1.5"
+              >
+                <div className="flex justify-between items-start gap-2 font-extrabold text-slate-900">
+                  <span>❓ {idx + 1}. {b.q ? b.q : "सहेजा गया प्रश्न"}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSavedBms(savedBms.filter((_: any, i: number) => i !== idx));
+                    }}
+                    className="text-rose-600 font-black px-1.5"
+                  >
+                    🗑️
+                  </button>
                 </div>
-              ))}
+                <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {b.ans}</div>
+                <div className="text-[11px] text-slate-700 bg-slate-100 p-2 rounded border border-slate-200">
+                  📝 <b>Explanation:</b> {b.exp ? b.exp : "विस्तृत व्याख्या उपलब्ध है।"}
+                </div>
+                <div className="text-[10px] font-black text-indigo-700">👉 प्रश्न खोलें →</div>
+              </div>
+            ))}
             </div>
           )}
         </div>
@@ -649,7 +669,6 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   <button onClick={() => { setNegVal(0.50); setNegLabel("1/2 (0.50)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/2 (0.50)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/2 (0.50)</button>
                   <button onClick={() => { const cv = Number(prompt("गलत उत्तर पर कटने वाले अंक लिखें (जैसे 0.20, 0.25, 0.33, 0.50, 0.66, 1):", String(negVal))); if (cv >= 0) { setNegVal(cv); setNegLabel(String(cv)); } }} className="px-2 py-1 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
                 </div>
-              </div>
               </div>
             )}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
