@@ -743,6 +743,78 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                           {showLive ? "👁️ Student पर Live: ON" : "🙈 Student पर Live: OFF"}
                         </button>
                       )}
+                      <div className="p-3 bg-emerald-950 text-white border-2 border-emerald-400 rounded-xl space-y-2 text-xs">
+            <div className="font-black text-amber-300">🤖 AI Question Generator & 📋 Gemini Bulk Importer (Bilingual + Explanation)</div>
+            <div className="flex flex-wrap gap-1.5">
+              <input value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="विषय लिखें (जैसे: बिहार का इतिहास - 10 प्रश्न)..." className="flex-1 min-w-[160px] p-1.5 rounded bg-slate-900 border border-slate-600 text-white font-bold" />
+              <button
+                disabled={aiLoading}
+                onClick={async () => {
+                  if (!geminiKey) { alert("⚠️ पहले Head Admin पैनल में अपनी Gemini API Key सेव करें, या नीचे Bulk Paste बॉक्स उपयोग करें!"); return; }
+                  if (!aiTopic.trim()) { alert("⚠️ पहले विषय लिखें!"); return; }
+                  setAiLoading(true);
+                  try {
+                    const res = await fetch("https://googleapis.com" + geminiKey, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ contents: [{ parts: [{ text: "Generate BPSC MCQs on: " + aiTopic + ". Return ONLY valid JSON array: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Explanation\"}]" }] }] })
+                    });
+                    const data = await res.json();
+                    const raw = data.candidates.at(0).content.parts.at(0).text.replace(/`json|```/g, "").trim();
+                    const arr = JSON.parse(raw);
+                    const formatted = arr.map((item: any, idx: number) => ({ id: Date.now() + idx, cat: selCat, subEx: selSubExam, sec: selSection, sub: selSub, type: "STD", q: item.q, opts: item.opts, correct: item.correct, exp: item.exp }));
+                    setQuestions([...formatted, ...questions]);
+                    setAiTopic("");
+                    alert("✅ " + formatted.length + " Bilingual प्रश्न सीधे " + selSubExam + " में जुड़ गए!");
+                  } catch (e) {
+                    alert("❌ AI त्रुटि! कृपया API Key जांचें या नीचे Bulk Paste बॉक्स का उपयोग करें।");
+                  }
+                  setAiLoading(false);
+                }}
+                className="px-3 py-1.5 bg-amber-400 text-slate-950 rounded font-black"
+              >
+                {aiLoading ? "⏳ बन रहा है..." : "✨ AI से बनाएं"}
+              </button>
+            </div>
+                        <textarea
+              rows={3}
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              placeholder={"📋 Gemini से कॉपी किए गए 150–200 प्रश्न यहाँ पेस्ट करें (हर प्रश्न इस रूप में हो):\nQ: प्रश्न हिंदी / English\nA: विकल्प 1\nB: विकल्प 2\nC: विकल्प 3\nD: विकल्प 4\nE: विकल्प 5\nANS: A\nEXP: व्याख्या यहाँ"}
+              className="w-full p-2 rounded bg-slate-900 border border-slate-600 text-white font-mono text-[11px]"
+            />
+            <button
+              onClick={() => {
+                const blocks = bulkText.split(/\n\s*\n/).filter((b) => b.trim().length > 5);
+                const added: any[] = [];
+                blocks.forEach((b, i) => {
+                  const lines = b.split("\n").map((l) => l.trim());
+                  const qLine = lines.find((l) => l.startsWith("Q:"));
+                  const oA = lines.find((l) => l.startsWith("A:"));
+                  const oB = lines.find((l) => l.startsWith("B:"));
+                  const oC = lines.find((l) => l.startsWith("C:"));
+                  const oD = lines.find((l) => l.startsWith("D:"));
+                  const oE = lines.find((l) => l.startsWith("E:"));
+                  const ansL = lines.find((l) => l.startsWith("ANS:"));
+                  const expL = lines.find((l) => l.startsWith("EXP:"));
+                  if (qLine) {
+                    const opts = [oA ? oA.slice(2).trim() : "", oB ? oB.slice(2).trim() : "", oC ? oC.slice(2).trim() : "", oD ? oD.slice(2).trim() : ""];
+                    if (oE) opts.push(oE.slice(2).trim());
+                    const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+                    const cIdx = ansL ? (mapAns[ansL.slice(4).trim().toUpperCase()] ?? 0) : 0;
+                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: selSub, type: "STD", q: qLine.slice(2).trim(), opts, correct: cIdx, exp: expL ? expL.slice(4).trim() : "" });
+                  }
+                });
+                if (added.length === 0) { alert("⚠️ फॉर्मेट जांचें! हर प्रश्न Q:, A:, B:, C:, D:, ANS:, EXP: से शुरू होना चाहिए।"); return; }
+                setQuestions([...added, ...questions]);
+                setBulkText("");
+                alert("✅ कुल " + added.length + " प्रश्न सीधे " + selSubExam + " (" + selSection + ") में जुड़ गए!");
+              }}
+              className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black"
+            >
+              ⚡ सभी प्रश्न एक साथ ऑटो-इम्पोर्ट करें
+            </button>
+          </div>
                       <button onClick={() => {
                         const t = prompt("Live Test का नाम लिखें (जैसे: 72वीं BPSC Maha-Mock #2):"); if (!t || !t.trim()) return;
                         const stIn = prompt("कितने दिन/समय बाद आएगा? (जैसे: 3 दिन बाद, बुधवार शाम 7 बजे):", "3 दिन बाद") || "जल्द आ रहा है";
@@ -1216,6 +1288,24 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className="p-3 bg-slate-900 text-white border-2 border-indigo-400 rounded-xl space-y-2 text-xs">
+            <div className="font-black text-amber-300">👑 Exam Category Order (1, 2, 3...) & Student Show/Hide Access</div>
+            <div className="space-y-1.5">
+              {(Object.keys(examTree).sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))).map((cat, idx) => (
+                <div key={cat} className="p-2 bg-slate-800 rounded-lg flex flex-wrap justify-between items-center gap-2 border border-slate-700">
+                  <span className="font-black text-cyan-300">#{idx + 1} — {cat}</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => { const pos = Number(prompt(cat + " को कितने नंबर पर रखना है? (1 से " + Object.keys(examTree).length + " लिखें):", String(idx + 1))); if (pos >= 1) { const base = Object.keys(examTree).sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b))).filter((x) => x !== cat); base.splice(Math.min(pos - 1, base.length), 0, cat); setCatOrder(base); } }} className="px-2 py-1 bg-indigo-600 text-white rounded font-black text-[11px]">🔢 क्रम सेट करें</button>
+                    <button onClick={() => setHiddenCats(hiddenCats.includes(cat) ? hiddenCats.filter((x) => x !== cat) : [...hiddenCats, cat])} className={"px-2 py-1 rounded font-black text-[11px] " + (hiddenCats.includes(cat) ? "bg-rose-600 text-white" : "bg-emerald-600 text-white")}>{hiddenCats.includes(cat) ? "🙈 छिपा है (Show करें)" : "👁️ दिखेगा (Hide करें)"}</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="pt-2 border-t border-slate-700 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold text-amber-300">🤖 Gemini AI Key:</span>
+              <input type="password" value={geminiKey} onChange={(e) => setGeminiKey(e.target.value)} placeholder="AIzaSy... अपनी Gemini API Key यहाँ पेस्ट करें" className="flex-1 min-w-[160px] p-1.5 rounded bg-slate-950 border border-slate-600 text-white font-mono text-[11px]" />
             </div>
           </div>
           <div className="p-3 bg-cyan-950 text-white border-2 border-cyan-400 rounded-xl space-y-2.5">
