@@ -317,7 +317,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     <span className="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/40">+ {activePosMark.toFixed(1)}</span>
                     <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-400 border border-rose-500/40">- {activeNegEnabled ? activeNegVal.toFixed(2) : "0.0"}</span>
                     <button onClick={() => setReportOpen(!reportOpen)} className="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black">⚠️ Report</button>
-                    <button onClick={() => { if (bookmarkedQs.includes(qIdx)) { setBookmarkedQs(bookmarkedQs.filter((x) => x !== qIdx)); setSavedBms(savedBms.filter((b: any) => b.q !== q.q)); } else { setBookmarkedQs([...bookmarkedQs, qIdx]); setSavedBms([{ q: q.q, opts: q.opts, ans: q.opts.at(q.correct) }, ...savedBms]); } }} className="px-2 py-0.5 rounded bg-slate-700/80 text-amber-300 font-black">{bookmarkedQs.includes(qIdx) ? "★ Saved" : "☆"}</button>
+                    <button onClick={() => { if (bookmarkedQs.includes(qIdx)) { setBookmarkedQs(bookmarkedQs.filter((x) => x !== qIdx)); setSavedBms(savedBms.filter((b: any) => b.q !== q.q)); } else { setBookmarkedQs([...bookmarkedQs, qIdx]); setSavedBms([{ qIdx: qIdx, q: q.q, opts: q.opts, ans: q.opts.at(q.correct), exp: q.exp ? q.exp : "इस प्रश्न की विस्तृत व्याख्या उपलब्ध है।" }, ...savedBms]); } }} className="px-2 py-0.5 rounded bg-slate-700/80 text-amber-300 font-black">{bookmarkedQs.includes(qIdx) ? "★ Saved" : "☆"}</button> 
                   </div>
                 </div>
                 {reportOpen && (
@@ -472,13 +472,15 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           </div>
           {showBms && (
             <div className="space-y-2 pt-1">
-              {savedBms.map((b: any, idx: number) => (
-                <div key={idx} className="p-2.5 bg-white rounded-lg border border-amber-300 space-y-1">
-                  <div className="flex justify-between gap-2 font-bold">
-                    <span>{idx + 1}. {b.q}</span>
-                    <button onClick={() => setSavedBms(savedBms.filter((_: any, i: number) => i !== idx))} className="text-rose-600 font-black">🗑️</button>
+             {savedBms.map((b: any, idx: number) => (
+                <div key={idx} onClick={() => { const foundIdx = questions.findIndex((item: any) => item.q === b.q); setQIdx(foundIdx >= 0 ? foundIdx : (b.qIdx ? b.qIdx : 0)); setQSec(0); setSubmitted(false); setInExam(true); }} className="p-2.5 bg-white hover:bg-amber-100/60 cursor-pointer rounded-lg border-2 border-amber-300 space-y-1.5 transition">
+                  <div className="flex justify-between items-start gap-2 font-extrabold text-slate-900">
+                    <span>❓ {idx + 1}. {b.q ? b.q : "सहेजा गया प्रश्न"}</span>
+                    <button onClick={(e) => { e.stopPropagation(); setSavedBms(savedBms.filter((_: any, i: number) => i !== idx)); }} className="text-rose-600 font-black px-1.5">🗑️</button>
                   </div>
                   <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {b.ans}</div>
+                  <div className="text-[11px] text-slate-700 bg-slate-100 p-2 rounded border border-slate-200">📝 <b>Explanation:</b> {b.exp ? b.exp : "विस्तृत व्याख्या देखने के लिए इस प्रश्न पर क्लिक करें।"}</div>
+                  <div className="text-[10px] font-black text-indigo-700">👉 सीधे इस प्रश्न और विकल्पों पर जाने के लिए यहाँ क्लिक करें →</div>
                 </div>
               ))}
             </div>
