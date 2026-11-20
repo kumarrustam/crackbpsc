@@ -178,7 +178,7 @@ useEffect(() => {
             pass: { showPass, passBadge, passTitle, passBtn, passMsg, passFeats },
             passAcc: { w: writerPass, m: modPass, a: adPass },
             layout: { m: enableMobileView, d: enableDesktopView }
-        })
+        }})
       });
     } catch (e) {}
   }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView]);
