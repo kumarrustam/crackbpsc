@@ -123,6 +123,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [savedBms, setSavedBms] = useState<any[]>([]);
   const [activeList, setActiveList] = useState<any[]>(questions);
   const [showBms, setShowBms] = useState<boolean>(false);
+  const [catOrder, setCatOrder] = useState<string[]>([]);
+  const [hiddenCats, setHiddenCats] = useState<string[]>([]);
+  const [geminiKey, setGeminiKey] = useState<string>("");
+  const [bulkText, setBulkText] = useState<string>("");
+  const [aiTopic, setAiTopic] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [totalSec, setTotalSec] = useState<number>(1200);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
   const [repWrongOpt, setRepWrongOpt] = useState<string>("Option 1");
@@ -168,6 +174,9 @@ useEffect(() => {
          if (d.marking) { setPosMark(d.marking.p); setNegEnabled(d.marking.ne); setNegVal(d.marking.nv); setNegLabel(d.marking.nl); }
          if (d.examTheme) setExamTheme(d.examTheme);
          if (d.qReports) setQReports(d.qReports);
+          if (d.catOrder) setCatOrder(d.catOrder);
+        if (d.hiddenCats) setHiddenCats(d.hiddenCats);
+        if (d.geminiKey) setGeminiKey(d.geminiKey);
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -206,11 +215,14 @@ useEffect(() => {
             layout: { m: enableMobileView, d: enableDesktopView },
             marking: { p: posMark, ne: negEnabled, nv: negVal, nl: negLabel },
           examTheme,
-          qReports
+          qReports,
+          catOrder,
+          hiddenCats,
+          geminiKey
         }})
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
