@@ -556,11 +556,11 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             }}
             className="w-full py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg"
           >
-            🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
+🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
           </button>
-            </div>
         </div>
-      )}
+      </div>
+              )}
       {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
         <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 text-white z-50 flex flex-col justify-between p-6 text-center">
           <div className="flex justify-between items-center">
