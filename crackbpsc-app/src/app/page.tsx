@@ -106,6 +106,14 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [editQId, setEditQId] = useState<number | null>(null);
   const [enableMobileView, setEnableMobileView] = useState(true);
   const [enableDesktopView, setEnableDesktopView] = useState(true);
+  const [posMark, setPosMark] = useState<number>(1);
+  const [negEnabled, setNegEnabled] = useState<boolean>(true);
+  const [negVal, setNegVal] = useState<number>(0.3333);
+  const [negLabel, setNegLabel] = useState<string>("1/3 (0.33)");
+  const [activePosMark, setActivePosMark] = useState<number>(1);
+  const [activeNegEnabled, setActiveNegEnabled] = useState<boolean>(true);
+  const [activeNegVal, setActiveNegVal] = useState<number>(0.3333);
+  const [activeNegLabel, setActiveNegLabel] = useState<string>("1/3 (0.33)");
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -142,6 +150,7 @@ useEffect(() => {
           if (d.pass) { setShowPass(d.pass.showPass); setPassBadge(d.pass.passBadge); setPassTitle(d.pass.passTitle); setPassBtn(d.pass.passBtn); setPassMsg(d.pass.passMsg); setPassFeats(d.pass.passFeats); }
           if (d.passAcc) { setWriterPass(d.passAcc.w); setModPass(d.passAcc.m); setAdPass(d.passAcc.a); }
           if (d.layout) { setEnableMobileView(d.layout.m); setEnableDesktopView(d.layout.d); }
+         if (d.marking) { setPosMark(d.marking.p); setNegEnabled(d.marking.ne); setNegVal(d.marking.nv); setNegLabel(d.marking.nl); } 
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -177,11 +186,12 @@ useEffect(() => {
             questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests,
             pass: { showPass, passBadge, passTitle, passBtn, passMsg, passFeats },
             passAcc: { w: writerPass, m: modPass, a: adPass },
-            layout: { m: enableMobileView, d: enableDesktopView }
+            layout: { m: enableMobileView, d: enableDesktopView },
+            marking: { p: posMark, ne: negEnabled, nv: negVal, nl: negLabel }
         }})
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -191,21 +201,24 @@ useEffect(() => {
     const q = activeList[qIdx];
     let right = 0, wrong = 0, skipped = 0;
 activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
-    const score = (right - wrong * negMark).toFixed(2);
+    const posTotal = right * activePosMark;
+    const negTotal = activeNegEnabled ? wrong * activeNegVal : 0;
+    const score = (posTotal - negTotal).toFixed(2);
     return (
       <div className="min-h-screen bg-slate-200 text-slate-950 p-4">
   <div className="max-w-3xl mx-auto bg-white text-slate-950 rounded-2xl border-2 border-slate-300 shadow-lg p-5 space-y-4">
           <div className="flex justify-between items-center border-b pb-3">
-            <h2 className="font-bold text-blue-700">{goal} Mock Test</h2>
+            <div className="flex flex-wrap items-center gap-1.5"><h2 className="font-bold text-blue-700">{goal}</h2><span className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-black">+{activePosMark} | {activeNegEnabled ? "-" + activeNegLabel + " Neg" : "No Negative"}</span></div>
             {!submitted ? <button onClick={() => setSubmitted(true)} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Submit</button> : <button onClick={() => { setInExam(false); setSubmitted(false); }} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Home</button>}
           </div>
           {submitted ? (
             <div className="space-y-3">
             <div className="p-4 bg-amber-100 border-2 border-amber-400 rounded-xl text-slate-950 font-black">🏆 कुल स्कोर: {score} / {questions.length}</div>
-            <div className="grid grid-cols-3 gap-2 text-center text-xs font-extrabold">
-              <div className="bg-emerald-600 text-white p-2 rounded-lg">✅ सही: {right}</div>
-              <div className="bg-rose-600 text-white p-2 rounded-lg">❌ गलत: {wrong}</div>
-              <div className="bg-slate-600 text-white p-2 rounded-lg">⏭️ स्किप्ड: {skipped}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-extrabold">
+              <div className="bg-emerald-600 text-white p-2 rounded-lg">✅ सही: {right} (+{posTotal.toFixed(2)})</div>
+              <div className="bg-rose-600 text-white p-2 rounded-lg">❌ गलत: {wrong} (-{negTotal.toFixed(2)})</div>
+              <div className="bg-slate-600 text-white p-2 rounded-lg">⏭️ छोड़े: {skipped}</div>
+              <div className="bg-indigo-700 text-white p-2 rounded-lg">🏆 कुल स्कोर: {score}</div>
             </div>
             <div className="bg-white p-3 rounded-xl border-2 border-indigo-200 space-y-1.5 text-xs text-slate-950">
               <div className="font-extrabold text-indigo-950">🧠 सब्जेक्ट-वाइज़ कमज़ोरी विश्लेषण:</div>
@@ -439,6 +452,35 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             </div>
           ) : (
             <div className="space-y-3">
+              <div className="p-3 bg-slate-900 text-white border-2 border-amber-400 rounded-xl space-y-2.5 text-xs">
+            <div className="flex flex-wrap justify-between items-center gap-2 border-b border-slate-700 pb-2">
+              <span className="font-extrabold text-amber-300">⚖️ अंक व नेगेटिव मार्किंग सेटिंग (All Exams & Custom):</span>
+              <button onClick={() => setNegEnabled(!negEnabled)} className={"px-2.5 py-1 rounded font-black text-[11px] " + (negEnabled ? "bg-rose-600 text-white" : "bg-emerald-600 text-white")}>
+                {negEnabled ? "⚖️ Negative Marking: ON (हटाएं)" : "⚖️ Negative Marking: OFF (जोड़ें)"}
+              </button>
+            </div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-cyan-300">✅ 1 सही उत्तर के अंक (वर्तमान: +{posMark}):</div>
+              <div className="flex flex-wrap gap-1.5">
+                {.map((m) => (
+                  <button key={m} onClick={() => setPosMark(m)} className={"px-2.5 py-1 rounded font-black text-xs " + (posMark === m ? "bg-emerald-500 text-white" : "bg-slate-700 text-slate-200")}>+{m}</button>
+                ))}
+                <button onClick={() => { const v = Number(prompt("1 सही उत्तर के लिए कस्टम अंक लिखें (जैसे 1, 2, 2.5, 4, 5):", String(posMark))); if (v > 0) setPosMark(v); }} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded font-black text-xs">✏️ Custom Edit</button>
+              </div>
+            </div>
+            {negEnabled && (
+              <div className="space-y-1 pt-1 border-t border-slate-700">
+                <div className="text-[11px] font-bold text-rose-300">❌ 1 गलत उत्तर पर कटौती (वर्तमान: -{negLabel}):</div>
+                <div className="flex flex-wrap gap-1.5">
+                  <button onClick={() => { setNegVal(0.20); setNegLabel("1/5 (0.20)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/5 (0.20)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/5 (0.20)</button>
+                  <button onClick={() => { setNegVal(0.25); setNegLabel("1/4 (0.25)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/4 (0.25)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/4 (0.25)</button>
+                  <button onClick={() => { setNegVal(1 / 3); setNegLabel("1/3 (0.33)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/3 (0.33)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/3 (0.33)</button>
+                  <button onClick={() => { setNegVal(0.50); setNegLabel("1/2 (0.50)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/2 (0.50)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/2 (0.50)</button>
+                  <button onClick={() => { const cv = Number(prompt("गलत उत्तर पर कटने वाले अंक लिखें (जैसे 0.20, 0.25, 0.33, 0.50, 0.66, 1):", String(negVal))); if (cv >= 0) { setNegVal(cv); setNegLabel(String(cv)); } }} className="px-2 py-1 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
+                </div>
+              </div>
+            )}
+          </div>
               <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
                 <div className="flex flex-wrap gap-1 items-center">
@@ -987,6 +1029,35 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               ))}
               <button onClick={() => { const nf = prompt("नया फ़ीचर लिखें (जैसे: Daily Current Affairs PDF):"); if (nf && nf.trim()) setPassFeats([...passFeats, nf.trim()]); }} className="px-2.5 py-0.5 bg-emerald-500 text-white font-black rounded text-[11px]">➕ फ़ीचर जोड़ें</button>
             </div>
+          </div>
+          <div className="p-3 bg-slate-900 text-white border-2 border-amber-400 rounded-xl space-y-2.5 text-xs">
+            <div className="flex flex-wrap justify-between items-center gap-2 border-b border-slate-700 pb-2">
+              <span className="font-extrabold text-amber-300">⚖️ अंक व नेगेटिव मार्किंग सेटिंग (All Exams & Custom):</span>
+              <button onClick={() => setNegEnabled(!negEnabled)} className={"px-2.5 py-1 rounded font-black text-[11px] " + (negEnabled ? "bg-rose-600 text-white" : "bg-emerald-600 text-white")}>
+                {negEnabled ? "⚖️ Negative Marking: ON (हटाएं)" : "⚖️ Negative Marking: OFF (जोड़ें)"}
+              </button>
+            </div>
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold text-cyan-300">✅ 1 सही उत्तर के अंक (वर्तमान: +{posMark}):</div>
+              <div className="flex flex-wrap gap-1.5">
+                {[1, 2, 3, 4, 5].map((m) => (
+                  <button key={m} onClick={() => setPosMark(m)} className={"px-2.5 py-1 rounded font-black text-xs " + (posMark === m ? "bg-emerald-500 text-white" : "bg-slate-700 text-slate-200")}>+{m}</button>
+                ))}
+                <button onClick={() => { const v = Number(prompt("1 सही उत्तर के लिए कस्टम अंक लिखें (जैसे 1, 2, 2.5, 4, 5):", String(posMark))); if (v > 0) setPosMark(v); }} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded font-black text-xs">✏️ Custom Edit</button>
+              </div>
+            </div>
+            {negEnabled && (
+              <div className="space-y-1 pt-1 border-t border-slate-700">
+                <div className="text-[11px] font-bold text-rose-300">❌ 1 गलत उत्तर पर कटौती (वर्तमान: -{negLabel}):</div>
+                <div className="flex flex-wrap gap-1.5">
+                  <button onClick={() => { setNegVal(0.20); setNegLabel("1/5 (0.20)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/5 (0.20)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/5 (0.20)</button>
+                  <button onClick={() => { setNegVal(0.25); setNegLabel("1/4 (0.25)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/4 (0.25)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/4 (0.25)</button>
+                  <button onClick={() => { setNegVal(1 / 3); setNegLabel("1/3 (0.33)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/3 (0.33)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/3 (0.33)</button>
+                  <button onClick={() => { setNegVal(0.50); setNegLabel("1/2 (0.50)"); }} className={"px-2 py-1 rounded font-black text-[11px] " + (negLabel === "1/2 (0.50)" ? "bg-rose-600 text-white" : "bg-slate-700 text-slate-200")}>1/2 (0.50)</button>
+                  <button onClick={() => { const cv = Number(prompt("गलत उत्तर पर कटने वाले अंक लिखें (जैसे 0.20, 0.25, 0.33, 0.50, 0.66, 1):", String(negVal))); if (cv >= 0) { setNegVal(cv); setNegLabel(String(cv)); } }} className="px-2 py-1 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
+                </div>
+              </div>
+            )}
           </div>
           <div className="p-3 bg-indigo-950 text-white border-2 border-indigo-400 rounded-xl flex flex-wrap justify-between items-center gap-2">
             <span className="font-extrabold text-xs text-amber-300">📱🖥️ Screen Layout Control (Mobile & Desktop):</span>
