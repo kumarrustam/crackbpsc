@@ -120,6 +120,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [markedQs, setMarkedQs] = useState<number[]>([]);
   const [bookmarkedQs, setBookmarkedQs] = useState<number[]>([]);
+  const [savedBms, setSavedBms] = useState<any[]>([]);
+  const [showBms, setShowBms] = useState<boolean>(false);
   const [totalSec, setTotalSec] = useState<number>(1200);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
   const [repWrongOpt, setRepWrongOpt] = useState<string>("Option 1");
@@ -249,6 +251,17 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               <div className="bg-slate-600 text-white p-2 rounded-lg">⏭️ छोड़े: {skipped}</div>
               <div className="bg-indigo-700 text-white p-2 rounded-lg">🏆 कुल स्कोर: {score}</div>
             </div>
+              {bookmarkedQs.length > 0 && (
+            <div className="bg-amber-50 p-3 rounded-xl border-2 border-amber-400 space-y-2 text-xs text-slate-950">
+              <div className="font-black text-amber-900">⭐ आपके बुकमार्क किए गए प्रश्न ({bookmarkedQs.length}):</div>
+              {bookmarkedQs.map((bi: number) => activeList.at(bi) && (
+                <div key={bi} className="p-2 bg-white rounded-lg border border-amber-300 space-y-1">
+                  <div className="font-bold">Q{bi + 1}. {activeList.at(bi).q}</div>
+                  <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {activeList.at(bi).opts.at(activeList.at(bi).correct)}</div>
+                </div>
+              ))}
+            </div>
+          )}
             <div className="bg-white p-3 rounded-xl border-2 border-indigo-200 space-y-1.5 text-xs text-slate-950">
               <div className="font-extrabold text-indigo-950">🧠 सब्जेक्ट-वाइज़ कमज़ोरी विश्लेषण:</div>
               {Array.from(new Set(questions.map((q: any) => q.subject || "सामान्य ज्ञान"))).map((sub: any) => {
@@ -304,7 +317,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     <span className="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/40">+ {activePosMark.toFixed(1)}</span>
                     <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-400 border border-rose-500/40">- {activeNegEnabled ? activeNegVal.toFixed(2) : "0.0"}</span>
                     <button onClick={() => setReportOpen(!reportOpen)} className="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black">⚠️ Report</button>
-                    <button onClick={() => setBookmarkedQs(bookmarkedQs.includes(qIdx) ? bookmarkedQs.filter((x) => x !== qIdx) : [...bookmarkedQs, qIdx])} className="px-1.5 py-0.5 rounded bg-slate-700/60 text-amber-300">{bookmarkedQs.includes(qIdx) ? "★" : "☆"}</button>
+                    <button onClick={() => { if (bookmarkedQs.includes(qIdx)) { setBookmarkedQs(bookmarkedQs.filter((x) => x !== qIdx)); setSavedBms(savedBms.filter((b: any) => b.q !== q.q)); } else { setBookmarkedQs([...bookmarkedQs, qIdx]); setSavedBms([{ q: q.q, opts: q.opts, ans: q.opts.at(q.correct) }, ...savedBms]); } }} className="px-2 py-0.5 rounded bg-slate-700/80 text-amber-300 font-black">{bookmarkedQs.includes(qIdx) ? "★ Saved" : "☆"}</button>
                   </div>
                 </div>
                 {reportOpen && (
@@ -450,6 +463,17 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               })}
             </div>
           </div>
+          )}
+            {bookmarkedQs.length > 0 && (
+            <div className="bg-amber-50 p-3 rounded-xl border-2 border-amber-400 space-y-2 text-xs text-slate-950">
+              <div className="font-black text-amber-900">⭐ आपके बुकमार्क किए गए प्रश्न ({bookmarkedQs.length}):</div>
+              {bookmarkedQs.map((bi: number) => activeList.at(bi) && (
+                <div key={bi} className="p-2 bg-white rounded-lg border border-amber-300 space-y-1">
+                  <div className="font-bold">Q{bi + 1}. {activeList.at(bi).q}</div>
+                  <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {activeList.at(bi).opts.at(activeList.at(bi).correct)}</div>
+                </div>
+              ))}
+            </div>
           )}
           {showPass && (
             <div className="p-4 bg-gradient-to-r from-blue-950 via-blue-800 to-cyan-700 text-white rounded-xl shadow-md border border-cyan-400/30 space-y-3">
