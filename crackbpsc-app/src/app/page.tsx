@@ -795,11 +795,23 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 {aiLoading ? "⏳ बन रहा है..." : "✨ AI से बनाएं"}
               </button>
             </div>
-                        <textarea
+                        <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => {
+                  const p = "Generate 15 Bilingual (Hindi & English) MCQs for " + selSubExam + " (" + selSection + ") mixing Standard MCQs, Match-the-Following, and Assertion-Reason. Use 4 options (A-D) or 5 options (A-E). Strictly use this format with a blank line between questions:\n\nQ: Question Hindi / English\nA: Opt A\nB: Opt B\nC: Opt C\nD: Opt D\nE: Opt E (optional)\nANS: A\nEXP: Explanation";
+                  navigator.clipboard.writeText(p);
+                  alert("📋 Gemini Prompt कॉपी हो गया! अब इसे Gemini में पेस्ट करें और उत्तर लाकर नीचे बॉक्स में पेस्ट कर दें।");
+                }}
+                className="px-2.5 py-1 bg-cyan-600 text-white rounded font-black text-[11px]"
+              >
+                📋 1-Click Gemini Prompt Copy करें
+              </button>
+            </div>
+            <textarea
               rows={3}
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
-              placeholder={"📋 Gemini से कॉपी किए गए 150–200 प्रश्न यहाँ पेस्ट करें (हर प्रश्न इस रूप में हो):\nQ: प्रश्न हिंदी / English\nA: विकल्प 1\nB: विकल्प 2\nC: विकल्प 3\nD: विकल्प 4\nE: विकल्प 5\nANS: A\nEXP: व्याख्या यहाँ"}
+              placeholder={"📋 Gemini से कॉपी किए गए 150–200 प्रश्न यहाँ पेस्ट करें (4 या 5 विकल्प, कूट/मिलान, कथन/कारण सभी ऑटो-पहचान होंगे):\nQ: प्रश्न हिंदी / English\nA: विकल्प 1\nB: विकल्प 2\nC: विकल्प 3\nD: विकल्प 4\nE: विकल्प 5 (वैकल्पिक)\nANS: A\nEXP: व्याख्या यहाँ"}
               className="w-full p-2 rounded bg-slate-900 border border-slate-600 text-white font-mono text-[11px]"
             />
             <button
@@ -808,26 +820,36 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 const added: any[] = [];
                 blocks.forEach((b, i) => {
                   const lines = b.split("\n").map((l) => l.trim());
-                  const qLine = lines.find((l) => l.startsWith("Q:"));
-                  const oA = lines.find((l) => l.startsWith("A:"));
-                  const oB = lines.find((l) => l.startsWith("B:"));
-                  const oC = lines.find((l) => l.startsWith("C:"));
-                  const oD = lines.find((l) => l.startsWith("D:"));
-                  const oE = lines.find((l) => l.startsWith("E:"));
-                  const ansL = lines.find((l) => l.startsWith("ANS:"));
-                  const expL = lines.find((l) => l.startsWith("EXP:"));
-                  if (qLine) {
-                    const opts = [oA ? oA.slice(2).trim() : "", oB ? oB.slice(2).trim() : "", oC ? oC.slice(2).trim() : "", oD ? oD.slice(2).trim() : ""];
-                    if (oE) opts.push(oE.slice(2).trim());
+                  const qIdxL = lines.findIndex((l) => /^(Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])/i.test(l));
+                  const qLine = qIdxL >= 0 ? lines[qIdxL] : lines.at(0);
+                  const getOpt = (ch: string) => {
+                    const re = new RegExp("^\\(?[" + ch + ch.toLowerCase() + "]\\)?[:.)]\\s*(.*)");
+                    const found = lines.find((l) => re.test(l));
+                    return found ? found.replace(re, "$1").trim() : "";
+                  };
+                  const oA = getOpt("A");
+                  const oB = getOpt("B");
+                  const oC = getOpt("C");
+                  const oD = getOpt("D");
+                  const oE = getOpt("E");
+                  const ansL = lines.find((l) => /^(ANS|ANSWER|उत्तर)[:.)]/i.test(l));
+                  const expL = lines.find((l) => /^(EXP|EXPLANATION|व्याख्या)[:.)]/i.test(l));
+                  if (qLine && oA && oB) {
+                    const cleanQ = qLine.replace(/^(Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])\s*/i, "").trim();
+                    const opts = [oA, oB, oC, oD].filter((x) => x.length > 0);
+                    if (oE) opts.push(oE);
                     const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4 };
-                    const cIdx = ansL ? (mapAns[ansL.slice(4).trim().toUpperCase()] ?? 0) : 0;
-                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: "STD", q: qLine.slice(2).trim(), opts, correct: cIdx, exp: expL ? expL.slice(4).trim() : "" }); 
+                    const rawAns = ansL ? ansL.replace(/^(ANS|ANSWER|उत्तर)[:.)]\s*/i, "").trim().charAt(0).toUpperCase() : "A";
+                    const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
+                    const fullTxt = b.toLowerCase();
+                    const qType = (fullTxt.includes("कथन")  fullTxt.includes("assertion")) ? "AR" : ((fullTxt.includes("सूची")  fullTxt.includes("मिलान") || fullTxt.includes("list-i")) ? "MATCH" : "STD");
+                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: qType, q: cleanQ, opts, correct: cIdx, exp: expL ? expL.replace(/^(EXP|EXPLANATION|व्याख्या)[:.)]\s*/i, "").trim() : "" });
                   }
                 });
-                if (added.length === 0) { alert("⚠️ फॉर्मेट जांचें! हर प्रश्न Q:, A:, B:, C:, D:, ANS:, EXP: से शुरू होना चाहिए।"); return; }
+                if (added.length === 0) { alert("⚠️ फॉर्मेट जांचें! ऊपर '📋 1-Click Gemini Prompt Copy करें' दबाकर जेमिनी से प्रश्न बनवाएं और यहाँ पेस्ट करें।"); return; }
                 setQuestions([...added, ...questions]);
                 setBulkText("");
-                alert("✅ कुल " + added.length + " प्रश्न सीधे " + selSubExam + " (" + selSection + ") में जुड़ गए!");
+                alert("✅ कुल " + added.length + " प्रश्न (4/5 विकल्प + पैटर्न ऑटो-डिटेक्ट) सीधे " + selSubExam + " में जुड़ गए!");
               }}
               className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black"
             >
