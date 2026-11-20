@@ -462,7 +462,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             <div className="space-y-1">
               <div className="text-[11px] font-bold text-cyan-300">✅ 1 सही उत्तर के अंक (वर्तमान: +{posMark}):</div>
               <div className="flex flex-wrap gap-1.5">
-                {.map((m) => (
+                {Array.of(1, 2, 3, 4, 5).map((m) => (
                   <button key={m} onClick={() => setPosMark(m)} className={"px-2.5 py-1 rounded font-black text-xs " + (posMark === m ? "bg-emerald-500 text-white" : "bg-slate-700 text-slate-200")}>+{m}</button>
                 ))}
                 <button onClick={() => { const v = Number(prompt("1 सही उत्तर के लिए कस्टम अंक लिखें (जैसे 1, 2, 2.5, 4, 5):", String(posMark))); if (v > 0) setPosMark(v); }} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded font-black text-xs">✏️ Custom Edit</button>
