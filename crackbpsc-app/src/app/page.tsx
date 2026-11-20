@@ -754,10 +754,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   if (!aiTopic.trim()) { alert("⚠️ पहले विषय लिखें!"); return; }
                   setAiLoading(true);
                   try {
-                    const isVertex = geminiKey.trim().startsWith("AQ.");
-                    const apiUrl = isVertex
-                      ? "https://googleapis.com" + geminiKey.trim()
-                      : "https://googleapis.com" + geminiKey.trim();
+                    const apiUrl = "https://googleapis.com" + geminiKey.trim();
                     const res = await fetch(apiUrl, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
