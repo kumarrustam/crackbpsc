@@ -120,6 +120,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [markedQs, setMarkedQs] = useState<number[]>([]);
   const [bookmarkedQs, setBookmarkedQs] = useState<number[]>([]);
+  const [totalSec, setTotalSec] = useState<number>(1200);
+  const [reportOpen, setReportOpen] = useState<boolean>(false);
+  const [repWrongOpt, setRepWrongOpt] = useState<string>("Option 1");
+  const [repCorrectOpt, setRepCorrectOpt] = useState<string>("Option 2");
+  const [repExp, setRepExp] = useState<string>("");
+  const [qReports, setQReports] = useState<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -158,6 +164,7 @@ useEffect(() => {
           if (d.layout) { setEnableMobileView(d.layout.m); setEnableDesktopView(d.layout.d); }
          if (d.marking) { setPosMark(d.marking.p); setNegEnabled(d.marking.ne); setNegVal(d.marking.nv); setNegLabel(d.marking.nl); }
          if (d.examTheme) setExamTheme(d.examTheme);
+         if (d.qReports) setQReports(d.qReports);
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -195,7 +202,8 @@ useEffect(() => {
             passAcc: { w: writerPass, m: modPass, a: adPass },
             layout: { m: enableMobileView, d: enableDesktopView },
             marking: { p: posMark, ne: negEnabled, nv: negVal, nl: negLabel },
-          examTheme
+          examTheme,
+          qReports
         }})
       });
     } catch (e) {}
@@ -204,6 +212,19 @@ useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
   }, []);
+  useEffect(() => {
+    if (!inExam) return;
+    if (submitted) return;
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setQSec((s) => s + 1);
+      setTotalSec((t) => {
+        if (t <= 1) { setSubmitted(true); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [inExam, submitted, isPaused]);
   if (inExam) {
     const activeList = examQs.length > 0 ? examQs : questions;
     const q = activeList[qIdx];
@@ -256,7 +277,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               <div className="flex items-center gap-2.5">
                 <button onClick={() => setIsPaused(!isPaused)} className="w-8 h-8 rounded-full bg-slate-700/80 text-white flex items-center justify-center font-black text-xs">{isPaused ? "▶️" : "⏸️"}</button>
                 <div>
-                  <div className="text-xs font-black tracking-wide text-sky-400">⏱ {String(Math.floor(qSec / 60)).padStart(2, "0")}:{String(qSec % 60).padStart(2, "0")}</div>
+                  <div className="text-xs font-black tracking-wide text-sky-400">⏱ {String(Math.floor(totalSec / 3600)).padStart(2, "0")}:{String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0")}:{String(totalSec % 60).padStart(2, "0")}</div>
                   <div className="text-[11px] font-bold opacity-80 truncate max-w-[160px] sm:max-w-xs">{goal}</div>
                 </div>
               </div>
@@ -282,11 +303,43 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   <div className="flex items-center gap-1.5 font-black text-[11px]">
                     <span className="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/40">+ {activePosMark.toFixed(1)}</span>
                     <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-400 border border-rose-500/40">- {activeNegEnabled ? activeNegVal.toFixed(2) : "0.0"}</span>
-                    <button onClick={() => alert("⚠️ प्रश्न रिपोर्ट दर्ज कर ली गई है।")} className="px-1.5 py-0.5 rounded bg-slate-700/60 text-amber-400">⚠️</button>
+                    <button onClick={() => setReportOpen(!reportOpen)} className="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black">⚠️ Report</button>
                     <button onClick={() => setBookmarkedQs(bookmarkedQs.includes(qIdx) ? bookmarkedQs.filter((x) => x !== qIdx) : [...bookmarkedQs, qIdx])} className="px-1.5 py-0.5 rounded bg-slate-700/60 text-amber-300">{bookmarkedQs.includes(qIdx) ? "★" : "☆"}</button>
                   </div>
                 </div>
-
+                {reportOpen && (
+                  <div className="p-3 rounded-xl bg-amber-950/90 border-2 border-amber-400 text-white space-y-2 text-xs">
+                    <div className="flex justify-between items-center font-black text-amber-300">
+                      <span>⚠️ इस प्रश्न की गलती रिपोर्ट करें (सीधे Admin को जाएगा):</span>
+                      <button onClick={() => setReportOpen(false)} className="px-2 py-0.5 bg-slate-700 rounded">✖️</button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] font-bold text-rose-300 block mb-0.5">❌ कौन-सा ऑप्शन / हिस्सा गलत है?</label>
+                        <select value={repWrongOpt} onChange={(e) => setRepWrongOpt(e.target.value)} className="w-full p-1.5 rounded bg-slate-900 border border-slate-600 text-white font-bold">
+                          <option value="Option 1">Option 1 गलत है</option>
+                          <option value="Option 2">Option 2 गलत है</option>
+                          <option value="Option 3">Option 3 गलत है</option>
+                          <option value="Option 4">Option 4 गलत है</option>
+                          <option value="Option 5">Option 5 गलत है</option>
+                          <option value="पूरा प्रश्न ही गलत है">पूरा प्रश्न ही गलत है</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-emerald-300 block mb-0.5">✅ सही ऑप्शन क्या होना चाहिए?</label>
+                        <select value={repCorrectOpt} onChange={(e) => setRepCorrectOpt(e.target.value)} className="w-full p-1.5 rounded bg-slate-900 border border-slate-600 text-white font-bold">
+                          <option value="Option 1">Option 1 सही है</option>
+                          <option value="Option 2">Option 2 सही है</option>
+                          <option value="Option 3">Option 3 सही है</option>
+                          <option value="Option 4">Option 4 सही है</option>
+                          <option value="Option 5">Option 5 सही है</option>
+                        </select>
+                      </div>
+                    </div>
+                    <textarea rows={2} value={repExp} onChange={(e) => setRepExp(e.target.value)} placeholder="अपना Explanation / प्रमाण यहाँ लिखें..." className="w-full p-2 rounded bg-slate-900 border border-slate-600 text-white font-semibold" />
+                    <button onClick={() => { setQReports([{ id: Date.now(), qText: q.q, opts: q.opts, wrongOpt: repWrongOpt, correctOpt: repCorrectOpt, exp: repExp, time: new Date().toLocaleTimeString() }, ...qReports]); setRepExp(""); setReportOpen(false); alert("✅ आपकी रिपोर्ट पूरे प्रश्न, सही ऑप्शन व Explanation के साथ Admin को भेज दी गई है!"); }} className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black">📤 रिपोर्ट सबमिट करें</button>
+                  </div>
+                )}
                 {showPalette && (
                   <div className="p-3 rounded-xl bg-slate-800/90 border border-slate-600 space-y-2.5 text-xs">
                     <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
@@ -1140,6 +1193,25 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               </button>
             </div>
           </div>
+          {qReports.length > 0 && (
+            <div className="p-3 bg-rose-950 text-white border-2 border-rose-400 rounded-xl space-y-2 text-xs">
+              <div className="flex justify-between items-center font-black text-amber-300">
+                <span>⚠️ छात्रों की प्रश्न रिपोर्ट्स ({qReports.length}):</span>
+                <button onClick={() => setQReports([])} className="px-2 py-0.5 bg-rose-700 rounded text-[10px]">सभी साफ़ करें</button>
+              </div>
+              {qReports.map((r: any) => (
+                <div key={r.id} className="p-2.5 bg-slate-900 rounded-lg border border-rose-500/40 space-y-1">
+                  <div className="font-extrabold text-amber-200">❓ प्रश्न: {r.qText}</div>
+                  <div className="text-[11px] text-slate-300">विकल्प: {Array.isArray(r.opts) ? r.opts.join(" | ") : ""}</div>
+                  <div className="flex flex-wrap gap-2 text-[11px] font-black">
+                    <span className="text-rose-400">❌ गलत बताया: {r.wrongOpt}</span>
+                    <span className="text-emerald-400">✅ सही सुझाव: {r.correctOpt}</span>
+                  </div>
+                  {r.exp && <div className="text-[11px] text-cyan-200 bg-slate-800 p-1.5 rounded">📝 Explanation: {r.exp}</div>}
+                </div>
+              ))}
+            </div>
+          )}
             {allowAd && (
             <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
               <div className="font-bold text-indigo-800">📢 Ad Studio (प्रकार और दिन चुनें):</div>
