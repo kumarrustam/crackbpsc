@@ -956,6 +956,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     <button onClick={() => setLiveTests(liveTests.map((x) => x.id === lt.id ? { ...x, isLive: !x.isLive, startsIn: !x.isLive ? "अभी LIVE चल रहा है" : "जल्द शुरू होगा" } : x))} className={"px-2 py-0.5 rounded font-black text-[10px] " + (lt.isLive ? "bg-emerald-500 text-white" : "bg-amber-400 text-slate-950")}>
                       {lt.isLive ? "🟢 LIVE चालू (बंद करें)" : "▶️ अभी LIVE करें"}
                     </button>
+                    <button onClick={() => { const t = prompt("1. Live Test का नाम:", lt.title); const ct = prompt("2. Exam Category:", lt.cat); const sb = prompt("3. Sub-Category:", lt.subEx); const stIn = prompt("4. समय/तारीख:", lt.startsIn); const dur = Number(prompt("5. अवधि (मिनट में):", String(lt.duration))); setLiveTests(liveTests.map((x) => x.id === lt.id ? { ...x, title: t ? t : lt.title, cat: ct ? ct : lt.cat, subEx: sb ? sb : lt.subEx, startsIn: stIn ? stIn : lt.startsIn, duration: dur ? dur : lt.duration } : x)); }} className="px-2 py-1 bg-sky-500 text-white rounded font-black text-[10px]">✏️ Edit</button>
                     <button onClick={() => setLiveTests(liveTests.filter((x) => x.id !== lt.id))} className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px]">🗑️</button>
                   </div>
                 </div>
