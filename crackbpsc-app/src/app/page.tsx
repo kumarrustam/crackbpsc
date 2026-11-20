@@ -558,6 +558,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           >
             🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
           </button>
+            </div>
         </div>
       )}
       {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
