@@ -105,38 +105,78 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [examQs, setExamQs] = useState<any[]>([]);
   const [editQId, setEditQId] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+useEffect(() => {
+    const loadAll = async () => {
+      try {
+        const sQ = localStorage.getItem("cb_q"); if (sQ) setQuestions(JSON.parse(sQ));
+        const sS = localStorage.getItem("cb_s"); if (sS) setStaffList(JSON.parse(sS));
+        const sE = localStorage.getItem("cb_e"); if (sE) setExamTree(JSON.parse(sE));
+        const sSc = localStorage.getItem("cb_sc"); if (sSc) setExamSections(JSON.parse(sSc));
+        const sSb = localStorage.getItem("cb_sb"); if (sSb) setSubjects(JSON.parse(sSb));
+        const sDQ = localStorage.getItem("cb_dq"); if (sDQ) setDeletedQs(JSON.parse(sDQ));
+        const sDS = localStorage.getItem("cb_ds"); if (sDS) setDeletedStaff(JSON.parse(sDS));
+        const sLT = localStorage.getItem("cb_lt"); if (sLT) setLiveTests(JSON.parse(sLT));
+        const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
+        const sPs = localStorage.getItem("cb_pass"); if (sPs) { const p = JSON.parse(sPs); setShowPass(p.showPass); setPassBadge(p.passBadge); setPassTitle(p.passTitle); setPassBtn(p.passBtn); setPassMsg(p.passMsg); setPassFeats(p.passFeats); }
+        const sPA = localStorage.getItem("cb_pass_acc"); if (sPA) { const a = JSON.parse(sPA); setWriterPass(a.w); setModPass(a.m); setAdPass(a.a); }
 
-  useEffect(() => {
-    try {
-      const sQ = localStorage.getItem("cb_qs"); if (sQ) setQuestions(JSON.parse(sQ));
-      const sSt = localStorage.getItem("cb_staff"); if (sSt) setStaffList(JSON.parse(sSt));
-      const sTr = localStorage.getItem("cb_tree"); if (sTr) setExamTree(JSON.parse(sTr));
-      const sSec = localStorage.getItem("cb_sec"); if (sSec) setExamSections(JSON.parse(sSec));
-      const sSub = localStorage.getItem("cb_sub"); if (sSub) setSubjects(JSON.parse(sSub));
-      const sDQ = localStorage.getItem("cb_dqs"); if (sDQ) setDeletedQs(JSON.parse(sDQ));
-      const sDSt = localStorage.getItem("cb_dst"); if (sDSt) setDeletedStaff(JSON.parse(sDSt));
-      const sLT = localStorage.getItem("cb_lt"); if (sLT) setLiveTests(JSON.parse(sLT));
-      const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
-      const sPs = localStorage.getItem("cb_pass"); if (sPs) { const p = JSON.parse(sPs); setShowPass(p.showPass); setPassBadge(p.passBadge); setPassTitle(p.passTitle); setPassBtn(p.passBtn); setPassMsg(p.passMsg); setPassFeats(p.passFeats); }
-      const sPA = localStorage.getItem("cb_pass_acc"); if (sPA) { const a = JSON.parse(sPA); setWriterPass(a.w); setModPass(a.m); setAdPass(a.a); }
-    } catch (e) {}
-    setIsLoaded(true);
-  }, []);
-
+        const res = await fetch("https://supabase.co", {
+          headers: {
+            apikey: "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go",
+            Authorization: "Bearer sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"
+          }
+        });
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0 && rows.at(0).data) {
+          const d = rows.at(0).data;
+          if (d.questions) setQuestions(d.questions);
+          if (d.staffList) setStaffList(d.staffList);
+          if (d.examTree) setExamTree(d.examTree);
+          if (d.examSections) setExamSections(d.examSections);
+          if (d.subjects) setSubjects(d.subjects);
+          if (d.deletedQs) setDeletedQs(d.deletedQs);
+          if (d.deletedStaff) setDeletedStaff(d.deletedStaff);
+          if (d.liveTests) setLiveTests(d.liveTests);
+          if (d.pass) { setShowPass(d.pass.showPass); setPassBadge(d.pass.passBadge); setPassTitle(d.pass.passTitle); setPassBtn(d.pass.passBtn); setPassMsg(d.pass.passMsg); setPassFeats(d.pass.passFeats); }
+          if (d.passAcc) { setWriterPass(d.passAcc.w); setModPass(d.passAcc.m); setAdPass(d.passAcc.a); }
+        }
+      } catch (e) {}
+      setIsLoaded(true);
+    };
+    loadAll();
+  }, []); 
   useEffect(() => {
     if (!isLoaded) return;
     try {
-      localStorage.setItem("cb_qs", JSON.stringify(questions));
-      localStorage.setItem("cb_staff", JSON.stringify(staffList));
-      localStorage.setItem("cb_tree", JSON.stringify(examTree));
-      localStorage.setItem("cb_sec", JSON.stringify(examSections));
-      localStorage.setItem("cb_sub", JSON.stringify(subjects));
-      localStorage.setItem("cb_dqs", JSON.stringify(deletedQs));
-      localStorage.setItem("cb_dst", JSON.stringify(deletedStaff));
+      localStorage.setItem("cb_q", JSON.stringify(questions));
+      localStorage.setItem("cb_s", JSON.stringify(staffList));
+      localStorage.setItem("cb_e", JSON.stringify(examTree));
+      localStorage.setItem("cb_sc", JSON.stringify(examSections));
+      localStorage.setItem("cb_sb", JSON.stringify(subjects));
+      localStorage.setItem("cb_dq", JSON.stringify(deletedQs));
+      localStorage.setItem("cb_ds", JSON.stringify(deletedStaff));
       localStorage.setItem("cb_lt", JSON.stringify(liveTests));
-    localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
+      localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
       localStorage.setItem("cb_pass", JSON.stringify({ showPass, passBadge, passTitle, passBtn, passMsg, passFeats }));
       localStorage.setItem("cb_pass_acc", JSON.stringify({ w: writerPass, m: modPass, a: adPass }));
+
+      fetch("https://supabase.co", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "resolution=merge-duplicates",
+          apikey: "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go",
+          Authorization: "Bearer sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"
+        },
+        body: JSON.stringify({
+          id: "main",
+          data: {
+            questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests,
+            pass: { showPass, passBadge, passTitle, passBtn, passMsg, passFeats },
+            passAcc: { w: writerPass, m: modPass, a: adPass }
+          }
+        })
+      });
     } catch (e) {}
   }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass]);
   useEffect(() => {
