@@ -754,15 +754,12 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   if (!aiTopic.trim()) { alert("⚠️ पहले विषय लिखें!"); return; }
                   setAiLoading(true);
                   try {
-                    const apiUrl = "https://googleapis.com" + geminiKey.trim();
-                    const res = await fetch(apiUrl, {
+                    const res = await fetch("/api/gemini", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        contents: [{
-                          role: "user",
-                          parts: [{ text: "Generate BPSC MCQs on: " + aiTopic + " (max 25 questions per batch). Return ONLY a valid JSON array without markdown: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Detailed Explanation in Hindi & English\"}]" }]
-                        }]
+                        apiKey: geminiKey,
+                        prompt: "Generate BPSC MCQs on: " + aiTopic + " (max 25 questions per batch). Return ONLY a valid JSON array without markdown: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Detailed Explanation in Hindi & English\"}]"
                       })
                     });
                     const data = await res.json();
