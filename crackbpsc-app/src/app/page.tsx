@@ -464,17 +464,27 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             </div>
           </div>
           )}
-            {bookmarkedQs.length > 0 && (
-            <div className="bg-amber-50 p-3 rounded-xl border-2 border-amber-400 space-y-2 text-xs text-slate-950">
-              <div className="font-black text-amber-900">⭐ आपके बुकमार्क किए गए प्रश्न ({bookmarkedQs.length}):</div>
-              {bookmarkedQs.map((bi: number) => activeList.at(bi) && (
-                <div key={bi} className="p-2 bg-white rounded-lg border border-amber-300 space-y-1">
-                  <div className="font-bold">Q{bi + 1}. {activeList.at(bi).q}</div>
-                  <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {activeList.at(bi).opts.at(activeList.at(bi).correct)}</div>
+            {savedBms.length > 0 && (
+        <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-3 space-y-2 text-xs text-slate-950">
+          <div className="flex justify-between items-center">
+            <span className="font-black text-amber-900">⭐ मेरे Saved Bookmarks ({savedBms.length} प्रश्न)</span>
+            <button onClick={() => setShowBms(!showBms)} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded font-black text-[11px]">{showBms ? "छिपाएं ▲" : "रिवीजन करें ▼"}</button>
+          </div>
+          {showBms && (
+            <div className="space-y-2 pt-1">
+              {savedBms.map((b: any, idx: number) => (
+                <div key={idx} className="p-2.5 bg-white rounded-lg border border-amber-300 space-y-1">
+                  <div className="flex justify-between gap-2 font-bold">
+                    <span>{idx + 1}. {b.q}</span>
+                    <button onClick={() => setSavedBms(savedBms.filter((_: any, i: number) => i !== idx))} className="text-rose-600 font-black">🗑️</button>
+                  </div>
+                  <div className="text-[11px] font-black text-emerald-700">✅ सही उत्तर: {b.ans}</div>
                 </div>
               ))}
             </div>
           )}
+        </div>
+      )}
           {showPass && (
             <div className="p-4 bg-gradient-to-r from-blue-950 via-blue-800 to-cyan-700 text-white rounded-xl shadow-md border border-cyan-400/30 space-y-3">
               <div className="flex flex-wrap justify-between items-center gap-3">
