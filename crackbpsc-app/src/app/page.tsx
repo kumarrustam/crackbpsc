@@ -650,6 +650,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   <button onClick={() => { const cv = Number(prompt("गलत उत्तर पर कटने वाले अंक लिखें (जैसे 0.20, 0.25, 0.33, 0.50, 0.66, 1):", String(negVal))); if (cv >= 0) { setNegVal(cv); setNegLabel(String(cv)); } }} className="px-2 py-1 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
                 </div>
               </div>
+              </div>
             )}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
               <span className="text-[11px] font-bold text-amber-300">🌓 Test Screen Theme:</span>
