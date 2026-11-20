@@ -532,7 +532,6 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 </button>
               ))}
             </div>
-          </div>
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
             <h2 className="font-extrabold text-base">{goal} {examLang === "EN" ? "All-India Live Mock Test" : "अखिल भारतीय लाइव मॉक टेस्ट"}</h2>
             <button
