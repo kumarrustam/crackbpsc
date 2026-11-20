@@ -117,7 +117,6 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [examTheme, setExamTheme] = useState<"AUTO" | "LIGHT" | "DARK">("AUTO");
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [qSec, setQSec] = useState<number>(0);
-  const [examLang, setExamLang] = useState<"BI" | "HI" | "EN">("BI");
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [markedQs, setMarkedQs] = useState<number[]>([]);
   const [bookmarkedQs, setBookmarkedQs] = useState<number[]>([]);
