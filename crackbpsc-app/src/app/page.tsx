@@ -535,9 +535,30 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           </div>
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
             <h2 className="font-extrabold text-base">{goal} {examLang === "EN" ? "All-India Live Mock Test" : "अखिल भारतीय लाइव मॉक टेस्ट"}</h2>
-            <button onClick={() => { const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection); if (matched.length === 0) { alert("⚠️ इस परीक्षा व सेक्शन में अभी कोई प्रश्न नहीं जोड़ा गया है!"); return; } setActiveList(matched); setQIdx(0); setQSec(0); setTotalSec(matched.length * 60); setAns({}); setMarkedQs([]); setSubmitted(false); setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true); }} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-sm shadow-lg">
-        🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
-      </button>
+            <button
+            onClick={() => {
+              const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
+              if (matched.length === 0) {
+                alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है!");
+                return;
+              }
+              setActiveList(matched);
+              setQIdx(0);
+              setQSec(0);
+              setTotalSec(matched.length * 60);
+              setAns({});
+              setMarkedQs([]);
+              setSubmitted(false);
+              setActivePosMark(posMark);
+              setActiveNegEnabled(negEnabled);
+              setActiveNegVal(negVal);
+              setActiveNegLabel(negLabel);
+              setInExam(true);
+            }}
+            className="w-full py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg"
+          >
+            🎯 CBT परीक्षा शुरू करें ({questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection).length} प्रश्न) →
+          </button>
         </div>
       )}
       {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
