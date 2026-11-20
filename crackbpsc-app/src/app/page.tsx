@@ -546,7 +546,10 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           <div className="p-4 bg-white rounded-xl border shadow-sm space-y-2.5">
             <div className="font-extrabold text-sm text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {Object.keys(examTree).map((cat) => (
+              {Object.keys(examTree)
+        .filter((c) => !hiddenCats.includes(c))
+        .sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))
+        .map((cat) => (
                 <button key={cat} onClick={() => { setSelCat(cat); const first = examTree[cat] ? examTree[cat].at(0) : ""; setSelSubExam(first); setGoal(first); }} className={"p-3 rounded-xl font-extrabold text-xs border text-left flex justify-between items-center " + (selCat === cat ? "bg-indigo-700 text-white border-indigo-800 shadow" : "bg-slate-50 text-slate-900 border-slate-200")}><span>🏛️ {cat}</span><span className="text-[10px] opacity-80">{examTree[cat] ? examTree[cat].length : 0} Exams ›</span></button>
               ))}
             </div>
