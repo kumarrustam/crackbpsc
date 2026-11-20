@@ -104,6 +104,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [targetLiveId, setTargetLiveId] = useState<number>(0);
   const [examQs, setExamQs] = useState<any[]>([]);
   const [editQId, setEditQId] = useState<number | null>(null);
+  const [enableMobileView, setEnableMobileView] = useState(true);
+  const [enableDesktopView, setEnableDesktopView] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -139,6 +141,7 @@ useEffect(() => {
           if (d.liveTests) setLiveTests(d.liveTests);
           if (d.pass) { setShowPass(d.pass.showPass); setPassBadge(d.pass.passBadge); setPassTitle(d.pass.passTitle); setPassBtn(d.pass.passBtn); setPassMsg(d.pass.passMsg); setPassFeats(d.pass.passFeats); }
           if (d.passAcc) { setWriterPass(d.passAcc.w); setModPass(d.passAcc.m); setAdPass(d.passAcc.a); }
+          if (d.layout) { setEnableMobileView(d.layout.m); setEnableDesktopView(d.layout.d); }
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -173,12 +176,12 @@ useEffect(() => {
           data: {
             questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests,
             pass: { showPass, passBadge, passTitle, passBtn, passMsg, passFeats },
-            passAcc: { w: writerPass, m: modPass, a: adPass }
-          }
+            passAcc: { w: writerPass, m: modPass, a: adPass },
+            layout: { m: enableMobileView, d: enableDesktopView }
         })
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -271,7 +274,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
       )}
 
       {role === "STUDENT" && (
-        <div className="max-w-3xl mx-auto p-4 space-y-4">
+          <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>
           <div className="flex justify-between items-center">
             
             <div className="flex items-center gap-2">
@@ -405,7 +408,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
         </div>
       )}
      {role === "WRITER" && (
-        <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
+        <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border space-y-3 text-xs"}>
           <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
             <h2 className="font-bold text-sm">✍️ Content Writer Studio</h2>
             {activeStaff && activeStaff.role === "WRITER" && (
@@ -982,6 +985,17 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 </button>
               ))}
               <button onClick={() => { const nf = prompt("नया फ़ीचर लिखें (जैसे: Daily Current Affairs PDF):"); if (nf && nf.trim()) setPassFeats([...passFeats, nf.trim()]); }} className="px-2.5 py-0.5 bg-emerald-500 text-white font-black rounded text-[11px]">➕ फ़ीचर जोड़ें</button>
+            </div>
+          </div>
+          <div className="p-3 bg-indigo-950 text-white border-2 border-indigo-400 rounded-xl flex flex-wrap justify-between items-center gap-2">
+            <span className="font-extrabold text-xs text-amber-300">📱🖥️ Screen Layout Control (Mobile & Desktop):</span>
+            <div className="flex flex-wrap gap-1.5">
+              <button onClick={() => setEnableMobileView(!enableMobileView)} className={"px-2.5 py-1 rounded font-black text-xs " + (enableMobileView ? "bg-emerald-500 text-white" : "bg-slate-600 text-white")}>
+                {enableMobileView ? "📱 Mobile App View: ON" : "📱 Mobile App View: OFF"}
+              </button>
+              <button onClick={() => setEnableDesktopView(!enableDesktopView)} className={"px-2.5 py-1 rounded font-black text-xs " + (enableDesktopView ? "bg-sky-500 text-white" : "bg-slate-600 text-white")}>
+                {enableDesktopView ? "🖥️ Desktop / Tablet View: ON" : "🖥️ Desktop / Tablet View: OFF"}
+              </button>
             </div>
           </div>
             {allowAd && (
