@@ -762,7 +762,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     const data = await res.json();
                     const raw = data.candidates.at(0).content.parts.at(0).text.replace(/`json|```/g, "").trim();
                     const arr = JSON.parse(raw);
-                    const formatted = arr.map((item: any, idx: number) => ({ id: Date.now() + idx, cat: selCat, subEx: selSubExam, sec: selSection, sub: selSub, type: "STD", q: item.q, opts: item.opts, correct: item.correct, exp: item.exp }));
+                    const formatted = arr.map((item: any, idx: number) => ({ id: Date.now() + idx, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: "STD", q: item.q, opts: item.opts, correct: item.correct, exp: item.exp }));
                     setQuestions([...formatted, ...questions]);
                     setAiTopic("");
                     alert("✅ " + formatted.length + " Bilingual प्रश्न सीधे " + selSubExam + " में जुड़ गए!");
@@ -802,7 +802,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     if (oE) opts.push(oE.slice(2).trim());
                     const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4 };
                     const cIdx = ansL ? (mapAns[ansL.slice(4).trim().toUpperCase()] ?? 0) : 0;
-                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: selSub, type: "STD", q: qLine.slice(2).trim(), opts, correct: cIdx, exp: expL ? expL.slice(4).trim() : "" });
+                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: "STD", q: qLine.slice(2).trim(), opts, correct: cIdx, exp: expL ? expL.slice(4).trim() : "" }); 
                   }
                 });
                 if (added.length === 0) { alert("⚠️ फॉर्मेट जांचें! हर प्रश्न Q:, A:, B:, C:, D:, ANS:, EXP: से शुरू होना चाहिए।"); return; }
