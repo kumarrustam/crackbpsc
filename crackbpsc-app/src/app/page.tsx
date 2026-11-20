@@ -648,7 +648,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
         </div>
       )}
       {role === "MOD" && (
-        <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border space-y-3 text-xs">
+        <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border space-y-3 text-xs"}>
           <h2 className="font-bold text-sm">🛡️ Moderator Panel</h2>
           {!allowMod ? <div className="p-3 bg-rose-100 text-rose-800 font-bold rounded">🔒 Head Admin ने आपका एक्सेस बंद कर रखा है।</div> : (
             <div className="flex gap-2">
@@ -674,7 +674,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
         </div>
       )}
 {role === "ADTEAM" && (
-        <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border-2 border-amber-300 space-y-3 text-xs">
+        <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border-2 border-amber-300 space-y-3 text-xs"}>
           <h2 className="font-extrabold text-sm text-amber-900">📢 Ad Team Studio (विज्ञापन केंद्र)</h2>
           {unlockedRole !== "ADTEAM" ? (
             <div className="p-3 bg-slate-100 rounded-lg space-y-2">
@@ -729,7 +729,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
         </div>
       )}
       {role === "ADMIN" && (
-        <div className="max-w-3xl mx-auto p-4 bg-white mt-4 rounded-xl border-2 border-indigo-200 space-y-4 text-xs">
+        <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border-2 border-indigo-200 space-y-3 text-xs"}>
           <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
             <span className="font-extrabold text-sm text-indigo-950">👑 Head Admin Command Center</span>
             <div className="flex gap-1.5">
