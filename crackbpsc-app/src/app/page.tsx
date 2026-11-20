@@ -114,6 +114,13 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [activeNegEnabled, setActiveNegEnabled] = useState<boolean>(true);
   const [activeNegVal, setActiveNegVal] = useState<number>(0.3333);
   const [activeNegLabel, setActiveNegLabel] = useState<string>("1/3 (0.33)");
+  const [examTheme, setExamTheme] = useState<"AUTO" | "LIGHT" | "DARK">("AUTO");
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [qSec, setQSec] = useState<number>(0);
+  const [examLang, setExamLang] = useState<"BI" | "HI" | "EN">("BI");
+  const [showPalette, setShowPalette] = useState<boolean>(false);
+  const [markedQs, setMarkedQs] = useState<number[]>([]);
+  const [bookmarkedQs, setBookmarkedQs] = useState<number[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -150,7 +157,8 @@ useEffect(() => {
           if (d.pass) { setShowPass(d.pass.showPass); setPassBadge(d.pass.passBadge); setPassTitle(d.pass.passTitle); setPassBtn(d.pass.passBtn); setPassMsg(d.pass.passMsg); setPassFeats(d.pass.passFeats); }
           if (d.passAcc) { setWriterPass(d.passAcc.w); setModPass(d.passAcc.m); setAdPass(d.passAcc.a); }
           if (d.layout) { setEnableMobileView(d.layout.m); setEnableDesktopView(d.layout.d); }
-         if (d.marking) { setPosMark(d.marking.p); setNegEnabled(d.marking.ne); setNegVal(d.marking.nv); setNegLabel(d.marking.nl); } 
+         if (d.marking) { setPosMark(d.marking.p); setNegEnabled(d.marking.ne); setNegVal(d.marking.nv); setNegLabel(d.marking.nl); }
+         if (d.examTheme) setExamTheme(d.examTheme);
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -187,7 +195,8 @@ useEffect(() => {
             pass: { showPass, passBadge, passTitle, passBtn, passMsg, passFeats },
             passAcc: { w: writerPass, m: modPass, a: adPass },
             layout: { m: enableMobileView, d: enableDesktopView },
-            marking: { p: posMark, ne: negEnabled, nv: negVal, nl: negLabel }
+            marking: { p: posMark, ne: negEnabled, nv: negVal, nl: negLabel },
+          examTheme
         }})
       });
     } catch (e) {}
@@ -243,21 +252,71 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             </div>
           </div>
           ) : (
-            <div className="space-y-3">
-            <div className="flex justify-between items-center bg-slate-100 px-3 py-1.5 rounded-xl border">
-              <span className="font-extrabold text-xs text-slate-800">{goal} • {examLang === "EN" ? "Medium: English" : "माध्यम: हिंदी"}</span>
-              <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
-                <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
-              </button>
-            </div>
-            <p className="font-extrabold text-base text-black leading-relaxed">प्र.{qIdx + 1}: {examLang === "HI" ? q.text.split(" / ")[0] : examLang === "EN" ? (q.text.split(" / ")[1] || q.text.split(" / ")[0]) : q.text}</p>
-            {q.opts.map((o: any, idx: number) => (
-              <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3.5 border-2 rounded-xl text-sm font-bold cursor-pointer transition-all " + (ans[qIdx] === idx ? "bg-blue-600 text-white border-blue-700 shadow-md" : "bg-slate-50 text-slate-950 border-slate-300 hover:border-blue-500")}>
-                ({String.fromCharCode(65 + idx)}) {examLang === "HI" ? o.split(" / ")[0] : examLang === "EN" ? (o.split(" / ")[1] || o.split(" / ")[0]) : o}
+            <div className={((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "bg-[#181A1F] text-slate-100 border-slate-700" : "bg-white text-slate-900 border-slate-300") + " rounded-2xl border-2 overflow-hidden shadow-xl"}>
+            <div className={((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "bg-[#111317] border-slate-800" : "bg-slate-100 border-slate-300") + " px-3 py-2.5 border-b flex justify-between items-center gap-2"}>
+              <div className="flex items-center gap-2.5">
+                <button onClick={() => setIsPaused(!isPaused)} className="w-8 h-8 rounded-full bg-slate-700/80 text-white flex items-center justify-center font-black text-xs">{isPaused ? "▶️" : "⏸️"}</button>
+                <div>
+                  <div className="text-xs font-black tracking-wide text-sky-400">⏱ {String(Math.floor(qSec / 60)).padStart(2, "0")}:{String(qSec % 60).padStart(2, "0")}</div>
+                  <div className="text-[11px] font-bold opacity-80 truncate max-w-[160px] sm:max-w-xs">{goal}</div>
+                </div>
               </div>
-            ))}
-              <button onClick={() => setQIdx((qIdx + 1) % questions.length)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Next →</button>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setExamTheme(examTheme === "AUTO" ? "DARK" : examTheme === "DARK" ? "LIGHT" : "AUTO")} className="px-2 py-1 rounded bg-slate-700 text-amber-300 font-black text-[10px]">{examTheme === "AUTO" ? "⏰ Auto" : examTheme === "DARK" ? "🌙 Dark" : "☀️ Light"}</button>
+                <button onClick={() => setExamLang(examLang === "BI" ? "HI" : examLang === "HI" ? "EN" : "BI")} className="px-2 py-1 rounded bg-slate-700 text-white font-black text-[11px]">अ/A ({examLang})</button>
+                <button onClick={() => setShowPalette(!showPalette)} className="px-2.5 py-1 rounded bg-indigo-600 text-white font-black text-xs">☰</button>
+              </div>
             </div>
+              {isPaused ? (
+              <div className="p-10 text-center space-y-4">
+                <div className="text-3xl">⏸️</div>
+                <div className="text-base font-black text-amber-400">परीक्षा अस्थायी रूप से रोकी गई है (Test Paused)</div>
+                <button onClick={() => setIsPaused(false)} className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-black text-xs">▶️ परीक्षा फिर से शुरू करें (Resume)</button>
+              </div>
+            ) : (
+              <div className="p-3 sm:p-4 space-y-3">
+                <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-700/50 text-xs">
+                  <div className="flex items-center gap-2 font-black">
+                    <span className="px-2 py-0.5 rounded bg-slate-700 text-white">{qIdx + 1} / {activeList.length}</span>
+                    <span className="text-slate-400 font-bold">⏱ {String(Math.floor(qSec / 60)).padStart(2, "0")}:{String(qSec % 60).padStart(2, "0")}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-black text-[11px]">
+                    <span className="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/40">+ {activePosMark.toFixed(1)}</span>
+                    <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-400 border border-rose-500/40">- {activeNegEnabled ? activeNegVal.toFixed(2) : "0.0"}</span>
+                    <button onClick={() => alert("⚠️ प्रश्न रिपोर्ट दर्ज कर ली गई है।")} className="px-1.5 py-0.5 rounded bg-slate-700/60 text-amber-400">⚠️</button>
+                    <button onClick={() => setBookmarkedQs(bookmarkedQs.includes(qIdx) ? bookmarkedQs.filter((x) => x !== qIdx) : [...bookmarkedQs, qIdx])} className="px-1.5 py-0.5 rounded bg-slate-700/60 text-amber-300">{bookmarkedQs.includes(qIdx) ? "★" : "☆"}</button>
+                  </div>
+                </div>
+
+                {showPalette && (
+                  <div className="p-3 rounded-xl bg-slate-800/90 border border-slate-600 space-y-2.5 text-xs">
+                    <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
+                      {activeList.map((_: any, i: number) => (
+                        <button key={i} onClick={() => { setQIdx(i); setQSec(0); setShowPalette(false); }} className={"py-1.5 rounded font-black text-xs " + (ans[i] !== undefined ? "bg-emerald-600 text-white" : markedQs.includes(i) ? "bg-purple-600 text-white" : i === qIdx ? "bg-sky-500 text-white" : "bg-slate-700 text-slate-300")}>{i + 1}</button>
+                      ))}
+                    </div>
+                    <button onClick={() => { setShowPalette(false); setSubmitted(true); }} className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black text-xs">✅ Submit Test (अंतिम सबमिट करें)</button>
+                  </div>
+                )}
+                <p className="font-extrabold text-sm sm:text-base leading-relaxed">{examLang === "HI" ? q.q.split(" / ").at(0) : examLang === "EN" ? (q.q.split(" / ").at(1) ? q.q.split(" / ").at(1) : q.q) : q.q}</p>
+
+                <div className="space-y-2">
+                  {q.opts.map((o: any, idx: number) => (
+                    <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3 rounded-xl border-2 cursor-pointer flex items-center gap-3 text-xs sm:text-sm font-bold transition " + (ans[qIdx] === idx ? "border-sky-500 bg-sky-500/20" : ((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "border-slate-700 bg-[#22252C]" : "border-slate-200 bg-slate-50"))}>
+                      <span className={"w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 " + (ans[qIdx] === idx ? "bg-sky-500 text-white" : "bg-slate-600 text-white")}>{idx + 1}</span>
+                      <span>{examLang === "HI" ? o.split(" / ").at(0) : examLang === "EN" ? (o.split(" / ").at(1) ? o.split(" / ").at(1) : o) : o}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-3 border-t border-slate-700/50 grid grid-cols-3 gap-2 text-xs font-black">
+                  <button onClick={() => { if (!markedQs.includes(qIdx)) setMarkedQs([...markedQs, qIdx]); setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2.5 rounded-xl bg-slate-700 text-white">Mark & Next</button>
+                  <button onClick={() => { const na = { ...ans }; delete na[qIdx]; setAns(na); }} className="py-2.5 rounded-xl bg-slate-600 text-white">Clear</button>
+                  <button onClick={() => { setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2.5 rounded-xl bg-sky-500 text-white">Save & Next</button>
+                </div>
+              </div>
+            )}
+          </div>
           )}
         </div>
       </div>
@@ -480,6 +539,12 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 </div>
               </div>
             )}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="text-[11px] font-bold text-amber-300">🌓 Test Screen Theme:</span>
+              <button onClick={() => setExamTheme("AUTO")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "AUTO" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300")}>⏰ Auto IST (6AM–6PM)</button>
+              <button onClick={() => setExamTheme("LIGHT")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "LIGHT" ? "bg-amber-400 text-slate-950" : "bg-slate-700 text-slate-300")}>☀️ White Mode</button>
+              <button onClick={() => setExamTheme("DARK")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "DARK" ? "bg-sky-600 text-white" : "bg-slate-700 text-slate-300")}>🌙 Dark Mode</button>
+            </div>
           </div>
               <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
@@ -1058,6 +1123,12 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 </div>
               </div>
             )}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="text-[11px] font-bold text-amber-300">🌓 Test Screen Theme:</span>
+              <button onClick={() => setExamTheme("AUTO")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "AUTO" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300")}>⏰ Auto IST (6AM–6PM)</button>
+              <button onClick={() => setExamTheme("LIGHT")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "LIGHT" ? "bg-amber-400 text-slate-950" : "bg-slate-700 text-slate-300")}>☀️ White Mode</button>
+              <button onClick={() => setExamTheme("DARK")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "DARK" ? "bg-sky-600 text-white" : "bg-slate-700 text-slate-300")}>🌙 Dark Mode</button>
+            </div>
           </div>
           <div className="p-3 bg-indigo-950 text-white border-2 border-indigo-400 rounded-xl flex flex-wrap justify-between items-center gap-2">
             <span className="font-extrabold text-xs text-amber-300">📱🖥️ Screen Layout Control (Mobile & Desktop):</span>
