@@ -1559,6 +1559,5 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           </div>
         )}
       </div>
-  </>
   );
       }
