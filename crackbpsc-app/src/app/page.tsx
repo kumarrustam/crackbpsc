@@ -627,32 +627,55 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
       </div>
        </div>     
               )}
-      {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 text-white z-50 flex flex-col justify-between p-6 text-center">
-          <div className="flex justify-between items-center">
-            <span className="bg-amber-400 text-black text-[11px] font-black px-3 py-1 rounded-full">SPONSORED • {activeDaysText}</span>
-            <button onClick={() => setPopupOpen(false)} className="w-11 h-11 bg-white/20 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl font-black border border-white/40 shadow-xl">✕</button>
-          </div>
-          <div className="max-w-md mx-auto space-y-4">
-            <div className="text-5xl">🚀</div>
-            <h2 className="font-black text-3xl leading-tight text-amber-300">{adTitle}</h2>
-            <p className="text-sm text-blue-100 leading-relaxed">{adDesc}</p>
-            <button onClick={() => { if (adLink && adLink !== "https://") window.open(adLink, "_blank"); setPopupOpen(false); }} className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-3.5 rounded-2xl text-base shadow-lg">अभी ऑफर प्राप्त करें →</button>
-          </div>
-          <button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="text-xs text-slate-400 underline mx-auto">आज यह विज्ञापन दोबारा न दिखाएं (Don&apos;t show today)</button>
-        </div>
-      )}
-      {role === "STUDENT" && !adHideToday && popupOpen && adType !== "BANNER" && adType !== "FULL_CUT" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-2 border-amber-400 text-center">
-            <div className={"p-5 text-white space-y-2 " + (adType === "TIMER" ? "bg-rose-700" : adType === "SPIN" ? "bg-purple-800" : "bg-blue-800")}>
-              <span className="bg-amber-400 text-black text-[10px] font-black px-2.5 py-0.5 rounded-full">{adType === "TIMER" ? "⏳ समाप्त: 14:59" : adType === "SPIN" ? "🎡 SPIN & WIN" : "OFFER • " + activeDaysText}</span>
-              <h3 className="font-black text-lg">{adTitle}</h3>
-              <p className="text-xs opacity-90">{adDesc}</p>
+  {role === "STUDENT" && !adHideToday && popupOpen && (() => {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (adStartDate && todayStr < adStartDate) return false;
+        if (adEndDate && todayStr > adEndDate) return false;
+        const hr = new Date().getHours();
+        if (adTimeSlot === "8AM" && hr !== 8) return false;
+        if (adTimeSlot === "10AM" && hr !== 10) return false;
+        if (adTimeSlot === "EVENING" && (hr < 17 || hr > 21)) return false;
+        if (adTimeSlot.includes("-")) {
+          const parts = adTimeSlot.split("-");
+          if (hr < Number(parts.at(0)) || hr > Number(parts.at(1))) return false;
+        }
+        const seenKey = "cb_ad_seen_" + todayStr + "_v" + adVer;
+        const rawCnt = typeof window !== "undefined" ? localStorage.getItem(seenKey) : "0";
+        return Number(rawCnt ? rawCnt : "0") < adMaxDaily;
+      })() && (
+        <div className={adSize === "FULL"  adType === "FULL_CUT" ? "fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white z-50 flex flex-col justify-between p-5" : adType === "BANNER"  adSize === "SMALL" ? "fixed bottom-3 left-3 right-3 z-50 flex justify-center" : "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"}>
+          <div style={{ width: adCustomW ? adCustomW : undefined, height: adCustomH ? adCustomH : undefined }} className={adSize === "FULL" || adType === "FULL_CUT" ? "w-full h-full flex flex-col justify-between max-w-2xl mx-auto" : adSize === "SMALL" ? "w-full max-w-3xl rounded-2xl shadow-2xl border-2 border-amber-400 bg-slate-900 text-white p-3 flex flex-wrap items-center justify-between gap-2" : adSize === "LARGE" ? "w-full max-w-md min-h-[460px] flex flex-col justify-between rounded-3xl shadow-2xl border-2 border-amber-400 bg-white overflow-hidden" : "w-full max-w-sm rounded-3xl shadow-2xl border-2 border-amber-400 bg-white overflow-hidden"}>
+            <div className={adSize === "SMALL" ? "flex items-center gap-2" : "p-4 bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white space-y-1.5"}>
+              <div className="flex justify-between items-center gap-2">
+                <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">{adType === "SPIN" ? "🎡 LUCKY SPIN" : adType === "TIMER" ? "⏳ FLASH TIMER" : adType === "BANNER" ? "🪧 SPECIAL BANNER" : "🔥 OFFER"}</span>
+                {adSize !== "SMALL" && <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="w-7 h-7 rounded-full bg-white/20 text-white font-black text-xs">✕</button>}
+              </div>
+              <h3 className={adSize === "SMALL" ? "font-black text-xs text-amber-300" : "font-black text-lg leading-snug text-amber-300"}>{adTitle}</h3>
+              {adSize !== "SMALL" && <p className="text-xs text-slate-200">{adDesc}</p>}
             </div>
-            <div className="p-4 space-y-2">
-              <button onClick={() => { alert(adType === "SPIN" ? "🎉 कूपन BPSC50 मिला!" : "✅ ऑफर सक्रिय!"); setPopupOpen(false); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm">{adType === "SPIN" ? "🎡 पहिया घुमाएं" : "अभी अनलॉक करें →"}</button>
-              <div className="flex justify-between text-[11px] text-slate-500"><button onClick={() => setPopupOpen(false)} className="underline">बंद करें (✕)</button><button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="underline">Don&apos;t show today</button></div>
+            {adType === "SPIN" && adSize !== "SMALL" && (
+              <div className="p-4 flex flex-col items-center gap-2 bg-amber-50">
+                <div style={{ transform: "rotate(" + spinDeg + "deg)", transition: "transform 2.5s cubic-bezier(0.17, 0.67, 0.12, 0.99)" }} className="w-36 h-36 rounded-full border-4 border-indigo-700 bg-gradient-to-tr from-amber-400 via-rose-500 to-indigo-600 flex items-center justify-center shadow-xl text-white font-black text-center text-xs p-2">🎡 50% OFF • FREE PASS • ₹199 • BONUS</div>
+                {spinWon ? <div className="font-black text-emerald-700 text-xs bg-emerald-100 px-3 py-1 rounded-full">🎉 बधाई हो! मिला: {spinWon}</div> : <button onClick={() => { const prizes = ["50% OFF SuperPass", "FREE 7-Day Pass", "₹199 Special Offer", "100 Bonus Test Coins"]; setSpinDeg(spinDeg + 1440 + Math.floor(Math.random() * 360)); setTimeout(() => setSpinWon(prizes.at(Math.floor(Math.random() * prizes.length)) as string), 2500); }} className="px-4 py-1.5 bg-indigo-700 text-white rounded-full font-black text-xs shadow">🎯 चक्का घुमाएं (SPIN NOW)</button>}
+              </div>
+            )}
+            {adType === "TIMER" && adSize !== "SMALL" && (
+              <div className="p-3 bg-rose-950 text-white flex justify-center gap-2 font-mono font-black text-base">
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(Math.floor(totalSec / 3600)).padStart(2, "0")}h</span>
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0")}m</span>
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(totalSec % 60).padStart(2, "0")}s</span>
+              </div>
+            )}
+            <div className={adSize === "SMALL" ? "flex items-center gap-1.5" : "p-3 bg-slate-50 space-y-2"}>
+              <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); if (adTargetMode === "LINK" && adLink && adLink !== "https://") { window.open(adLink, "_blank"); } else { alert("🎯 सीधे " + selCat + " ➔ " + selSubExam + " (" + selSection + ") पर ले जाया गया!"); } }} className={adSize === "SMALL" ? "px-3 py-1 bg-amber-400 text-slate-950 rounded-lg font-black text-xs" : "w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-xl font-black text-xs shadow"}>{adTargetMode === "LINK" ? "🔗 ऑफर / लिंक खोलें →" : "🎯 सीधे " + selSubExam + " टेस्ट पर जाएं →"}</button>
+              {adSize === "SMALL" ? (
+                <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="px-2 py-1 bg-slate-700 text-white rounded text-xs font-bold">✕</button>
+              ) : (
+                <div className="flex justify-between text-[11px] text-slate-500">
+                  <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; localStorage.setItem(k, String(adMaxDaily)); setPopupOpen(false); }}>आज दोबारा न दिखाएं</button>
+                  <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="font-bold text-slate-700">बंद करें ✕</button>
+                </div>
+              )}
             </div>
           </div>
         </div>
