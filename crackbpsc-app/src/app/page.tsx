@@ -1057,6 +1057,11 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             navigator.clipboard.writeText(p);
             alert("🌟 ऑल-इन-वन मिक्स (Bilingual) Prompt कॉपी हो गया!");
           }} className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-black text-[11px]">🌟 All-in-One Combo</button>
+           <button onClick={() => {
+            const p = "Generate 50 High-Level Bilingual (Hindi + English) MCQs for " + selSubExam + " covering ALL subjects: History (इतिहास), Geography (भूगोल), Polity (राजव्यवस्था), Economics (इकोनॉमी), General Science (सामान्य विज्ञान), Environment (पर्यावरण), Bihar & State GK/Current Affairs (बिहार विशेष व करंट अफेयर्स), Maths (गणित), Reasoning (रीज़निंग), Pedagogy (शिक्षण शास्त्र), Hindi (हिंदी), English, Sanskrit (संस्कृत), Maithili (मैथिली), Urdu (उर्दू). Include Normal, Assertion-Reason (कथन-कारण), and Parallel Table Match (सूची-I A,B,C,D,E | सूची-II 1,2,3,4,5) with 4 or 5 options, Ans: and Exp: in Hindi & English.";
+            navigator.clipboard.writeText(p);
+            alert("📚 All-Subjects Master Bilingual Prompt (16+ विषय) कॉपी हो गया! अब Gemini में पेस्ट करें।");
+          }} className="px-2.5 py-1 bg-emerald-500 text-slate-950 rounded-lg font-black text-[11px]">📚 All-Subjects Master Prompt</button>    
         </div>
         <textarea
           rows={4}
@@ -1070,6 +1075,27 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             const cleanRaw = bulkText.replace(/\r/g, "").trim();
             if (!cleanRaw) { alert("⚠️ पहले बॉक्स में प्रश्न पेस्ट करें!"); return; }
             const blocks = cleanRaw.split(/\n(?=(?:Q|Que|Question|प्रश्न|प्र\.|प्र)\s*\d*[\.\:\)\-]|\d+[\.\)]\s+)/i);
+            const getAutoSub = (txt: string) => {
+              const s = txt.toLowerCase();
+              if (/बिहार|bihar|पटना|मगध|मिथिला|चंपारण|नालंदा|वैशाली/.test(s)) return "बिहार विशेष";
+              if (/उत्तर प्रदेश|uttar pradesh|झारखंड|jharkhand|मध्य प्रदेश|राजस्थान|महाराष्ट्र|बंगाल/.test(s)) return "राज्य GK / CA";
+              if (/करंट अफेयर्स|current affairs|2025|2026|सूचकांक|पुरस्कार|नियुक्ति|सम्मेलन/.test(s)) return "करंट अफेयर्स";
+              if (/पियाजे|वाइगोत्स्की|कोहलबर्ग|pedagogy|शिक्षण|बाल विकास|nep 2020|ncf|समावेशी/.test(s)) return "शिक्षण शास्त्र (Pedagogy)";
+              if (/संविधान|अनुच्छेद|संसद|राष्ट्रपति|polity|constitution|पंचायती|मौलिक अधिकार/.test(s)) return "राजव्यवस्था";
+              if (/इतिहास|history|मुगल|मौर्य|गांधी|1857|हड़प्पा|गुप्त|अशोक/.test(s)) return "इतिहास";
+              if (/भूगोल|geography|नदी|पर्वत|जलवायु|मिट्टी|अक्षांश|देशांतर|खनिज/.test(s)) return "भूगोल";
+              if (/अर्थव्यवस्था|economy|बजट|gdp|rbi|मुद्रास्फीति|नीति आयोग|बैंकिंग/.test(s)) return "इकोनॉमी";
+              if (/पर्यावरण|environment|पारिस्थितिकी|ओज़ोन|प्रदूषण|उद्यान|जैव विविधता/.test(s)) return "पर्यावरण";
+              if (/भौतिकी|रसायन|जीवविज्ञान|विटामिन|कोशिका|physics|biology|chemistry/.test(s)) return "विज्ञान";
+              if (/प्रतिशत|औसत|अनुपात|त्रिकोणमिति|गणित|profit|ratio|क्षेत्रमिति/.test(s)) return "गणित";
+              if (/कोडिंग|रक्त संबंध|श्रृंखला|reasoning|syllogism|दिशा/.test(s)) return "रीज़निंग";
+              if (/संधि|समास|अलंकार|पर्यायवाची|विलोम|मुहावरा|तत्सम/.test(s)) return "हिंदी";
+              if (/synonym|antonym|preposition|idiom|tense|narration|voice/.test(s)) return "English";
+              if (/लकार|प्रत्याहार|संस्कृत|विसर्ग|धातु रूप|माहेश्वर/.test(s)) return "संस्कृत";
+              if (/विद्यापति|मैथिली|तिरहुत|मिथिलाक्षर/.test(s)) return "मैथिली";
+              if (/उर्दू|ग़ज़ल|नज़्म|क़सीदा/.test(s) || /[\u0600-\u06FF]/.test(txt)) return "उर्दू";
+              return newSub;
+            };
             const added: any[] = [];
             blocks.forEach((b, i) => {
               const lines = b.split("\n").map((l) => l.trim()).filter((x) => x.length > 0);
@@ -1111,7 +1137,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                   cat: selCat,
                   subEx: selSubExam,
                   sec: selSection,
-                  sub: newSub,
+                  sub: getAutoSub(fullQ),
                   type: qType,
                   q: fullQ,
                   opts: opts,
