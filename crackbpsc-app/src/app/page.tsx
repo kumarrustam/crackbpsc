@@ -159,6 +159,68 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (u) setUser(u);
   }, []);
   useEffect(() => {
+    const raw = localStorage.getItem("cb_master_cfg_v1");
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.staffList) setStaffList(d.staffList);
+    if (d.deletedStaff) setDeletedStaff(d.deletedStaff);
+    if (d.catOrder) setCatOrder(d.catOrder);
+    if (d.hiddenCats) setHiddenCats(d.hiddenCats);
+    if (typeof d.showPass === "boolean") setShowPass(d.showPass);
+    if (d.passBadge) setPassBadge(d.passBadge);
+    if (d.passTitle) setPassTitle(d.passTitle);
+    if (d.passBtn) setPassBtn(d.passBtn);
+    if (d.passMsg) setPassMsg(d.passMsg);
+    if (d.passFeats) setPassFeats(d.passFeats);
+    if (typeof d.writerPass === "boolean") setWriterPass(d.writerPass);
+    if (typeof d.modPass === "boolean") setModPass(d.modPass);
+    if (typeof d.adPass === "boolean") setAdPass(d.adPass);
+    if (typeof d.enableMobileView === "boolean") setEnableMobileView(d.enableMobileView);
+    if (typeof d.enableDesktopView === "boolean") setEnableDesktopView(d.enableDesktopView);
+    if (typeof d.posMark === "number") setPosMark(d.posMark);
+    if (typeof d.negEnabled === "boolean") setNegEnabled(d.negEnabled);
+    if (typeof d.negVal === "number") setNegVal(d.negVal);
+    if (d.negLabel) setNegLabel(d.negLabel);
+    if (d.examTimers) setExamTimers(d.examTimers);
+    if (typeof d.testMins === "number") setTestMins(d.testMins);
+    if (d.liveTests) setLiveTests(d.liveTests);
+    if (d.regLiveIds) setRegLiveIds(d.regLiveIds);
+    if (d.adType) setAdType(d.adType);
+    if (d.adTitle) setAdTitle(d.adTitle);
+    if (d.adDesc) setAdDesc(d.adDesc);
+    if (d.adSize) setAdSize(d.adSize);
+    if (d.adCustomW) setAdCustomW(d.adCustomW);
+    if (d.adCustomH) setAdCustomH(d.adCustomH);
+    if (typeof d.adMaxDaily === "number") setAdMaxDaily(d.adMaxDaily);
+    if (d.adTimeSlot) setAdTimeSlot(d.adTimeSlot);
+    if (d.adStartDate) setAdStartDate(d.adStartDate);
+    if (d.adEndDate) setAdEndDate(d.adEndDate);
+    if (d.adTargetMode) setAdTargetMode(d.adTargetMode);
+    if (d.adTargetCat) setAdTargetCat(d.adTargetCat);
+    if (d.adTargetSub) setAdTargetSub(d.adTargetSub);
+    if (d.adTargetSec) setAdTargetSec(d.adTargetSec);
+    if (d.adLink) setAdLink(d.adLink);
+    if (typeof d.adVer === "number") setAdVer(d.adVer);
+    if (d.qText) setQText(d.qText);
+    if (d.bulkText) setBulkText(d.bulkText);
+  }, []);
+  useEffect(() => {
+    const payload = {
+      staffList, deletedStaff, catOrder, hiddenCats, showPass, passBadge, passTitle, passBtn, passMsg, passFeats,
+      writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
+      examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
+      adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
+      adLink, adVer, qText, bulkText
+    };
+    localStorage.setItem("cb_master_cfg_v1", JSON.stringify(payload));
+  }, [
+    staffList, deletedStaff, catOrder, hiddenCats, showPass, passBadge, passTitle, passBtn, passMsg, passFeats,
+    writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
+    examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
+    adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
+    adLink, adVer, qText, bulkText
+  ]);
+  useEffect(() => {
     const sl = localStorage.getItem("cb_staff_list");
     if (sl) setStaffList(JSON.parse(sl));
   }, []);
