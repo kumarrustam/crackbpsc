@@ -144,6 +144,9 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [adCustomW, setAdCustomW] = useState<string>("");
   const [adCustomH, setAdCustomH] = useState<string>("");
   const [adTargetMode, setAdTargetMode] = useState<string>("EXAM");
+  const [adTargetCat, setAdTargetCat] = useState<string>("BPSC");
+  const [adTargetSub, setAdTargetSub] = useState<string>("72वीं BPSC CCE");
+  const [adTargetSec, setAdTargetSec] = useState<string>("Full Length Test");
   const [adVer, setAdVer] = useState<number>(1);
   const [spinDeg, setSpinDeg] = useState<number>(0);
   const [spinWon, setSpinWon] = useState<string>("");
@@ -669,7 +672,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               </div>
             )}
             <div className={adSize === "SMALL" ? "flex items-center gap-1.5" : "p-3 bg-slate-50 space-y-2"}>
-              <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); if (adTargetMode === "LINK" && adLink && adLink !== "https://") { window.open(adLink, "_blank"); } else { alert("🎯 सीधे " + selCat + " ➔ " + selSubExam + " (" + selSection + ") पर ले जाया गया!"); } }} className={adSize === "SMALL" ? "px-3 py-1 bg-amber-400 text-slate-950 rounded-lg font-black text-xs" : "w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-xl font-black text-xs shadow"}>{adTargetMode === "LINK" ? "🔗 ऑफर / लिंक खोलें →" : "🎯 सीधे " + selSubExam + " टेस्ट पर जाएं →"}</button>
+              <button onClick={() => { const d = new window.Date(); const k = "cb_ad_seen_" + d.toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); if (adTargetMode === "LINK" && adLink && adLink !== "https://") { window.open(adLink, "_blank"); } else { setSelCat(adTargetCat); setSelSubExam(adTargetSub); setSelSection(adTargetSec); setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); } }} className={adSize === "SMALL" ? "px-3 py-1 bg-amber-400 text-slate-950 rounded-lg font-black text-xs" : "w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-xl font-black text-xs shadow"}>{adTargetMode === "LINK" ? "🔗 ऑफर / लिंक खोलें →" : "🎯 सीधे " + adTargetSub + " (" + adTargetSec + ") दें →"}</button>
               {adSize === "SMALL" ? (
                 <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="px-2 py-1 bg-slate-700 text-white rounded text-xs font-bold">✕</button>
               ) : (
@@ -1571,11 +1574,33 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               <span className="font-bold text-rose-300 text-[11px]">तक:</span>
               <input type="date" value={adEndDate} onChange={(e) => setAdEndDate(e.target.value)} className="p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
             </div>
-            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
-              <span className="font-bold text-cyan-300 text-[11px]">🎯 क्लिक करने पर कहाँ जाए:</span>
-              <button onClick={() => setAdTargetMode("EXAM")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "EXAM" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>📚 चुनी हुई परीक्षा ({selSubExam})</button>
-              <button onClick={() => setAdTargetMode("LINK")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "LINK" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>🔗 कस्टम लिंक (URL)</button>
-              {adTargetMode === "LINK" && <input value={adLink} onChange={(e) => setAdLink(e.target.value)} placeholder="https://..." className="flex-1 min-w-[160px] p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />}
+            <div className="space-y-2 pt-1 border-t border-slate-700">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-cyan-300 text-[11px]">🎯 क्लिक करने पर कहाँ जाए:</span>
+                <button onClick={() => setAdTargetMode("EXAM")} className={"px-2.5 py-1 rounded-lg font-black text-[11px] " + (adTargetMode === "EXAM" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>📚 परीक्षा चुनें (Category / Sub)</button>
+                <button onClick={() => setAdTargetMode("LINK")} className={"px-2.5 py-1 rounded-lg font-black text-[11px] " + (adTargetMode === "LINK" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>🔗 कस्टम लिंक (URL)</button>
+              </div>
+              {adTargetMode === "EXAM" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 p-2 bg-slate-950/90 border border-cyan-500/50 rounded-xl">
+                  <select value={adTargetCat} onChange={(e) => { const c = e.target.value; setAdTargetCat(c); const subs = examTree[c] ? examTree[c] : []; if (subs.length > 0) setAdTargetSub(subs.at(0)); }} className="p-1.5 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold">
+                    {Object.keys(examTree).map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                  <select value={adTargetSub} onChange={(e) => setAdTargetSub(e.target.value)} className="p-1.5 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold">
+                    {(examTree[adTargetCat] ? examTree[adTargetCat] : []).map((sub: string) => (
+                      <option key={sub} value={sub}>{sub}</option>
+                    ))}
+                  </select>
+                  <select value={adTargetSec} onChange={(e) => setAdTargetSec(e.target.value)} className="p-1.5 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold">
+                    {examSections.map((sec: string) => (
+                      <option key={sec} value={sec}>{sec}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <input value={adLink} onChange={(e) => setAdLink(e.target.value)} placeholder="https://..." className="w-full p-2 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold" />
+              )}
             </div>
             <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
           </div> 
