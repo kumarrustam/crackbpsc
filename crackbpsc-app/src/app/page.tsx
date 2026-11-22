@@ -137,6 +137,31 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [repCorrectOpt, setRepCorrectOpt] = useState<string>("Option 2");
   const [repExp, setRepExp] = useState<string>("");
   const [qReports, setQReports] = useState<any[]>([]);
+  const [adMaxDaily, setAdMaxDaily] = useState<number>(1);
+  const [adTimeSlot, setAdTimeSlot] = useState<string>("ALL");
+  const [adStartDate, setAdStartDate] = useState<string>("");
+  const [adEndDate, setAdEndDate] = useState<string>("");
+  const [adCustomW, setAdCustomW] = useState<string>("");
+  const [adCustomH, setAdCustomH] = useState<string>("");
+  const [adTargetMode, setAdTargetMode] = useState<string>("EXAM");
+  const [adVer, setAdVer] = useState<number>(1);
+  const [spinDeg, setSpinDeg] = useState<number>(0);
+  const [spinWon, setSpinWon] = useState<string>("");
+  useEffect(() => {
+    const r = localStorage.getItem("cb_role");
+    if (r) setRole(r as any);
+    const st = localStorage.getItem("cb_staff");
+    if (st) setActiveStaff(JSON.parse(st));
+    const u = localStorage.getItem("cb_user");
+    if (u) setUser(u);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("cb_role", role);
+  }, [role]);
+  useEffect(() => {
+    if (activeStaff) localStorage.setItem("cb_staff", JSON.stringify(activeStaff));
+    else localStorage.removeItem("cb_staff");
+  }, [activeStaff]);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
