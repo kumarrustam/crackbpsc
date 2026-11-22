@@ -588,15 +588,47 @@ useEffect(() => {
                   </div>
                 )}
                 {showPalette && (
-                  <div className="p-3 rounded-xl bg-slate-800/90 border border-slate-600 space-y-2.5 text-xs">
-                    <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
-                      {activeList.map((_: any, i: number) => (
-                        <button key={i} onClick={() => { setQIdx(i); setQSec(0); setShowPalette(false); }} className={"py-1.5 rounded font-black text-xs " + (ans[i] !== undefined ? "bg-emerald-600 text-white" : markedQs.includes(i) ? "bg-purple-600 text-white" : i === qIdx ? "bg-sky-500 text-white" : "bg-slate-700 text-slate-300")}>{i + 1}</button>
-                      ))}
-                    </div>
-                    <button onClick={() => { setShowPalette(false); setSubmitted(true); }} className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black text-xs">✅ Submit Test (अंतिम सबमिट करें)</button>
+            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex justify-end">
+              <div className="w-80 sm:w-96 h-full bg-slate-900 border-l-2 border-indigo-500 text-white p-3.5 flex flex-col justify-between shadow-2xl">
+                <div className="space-y-2.5 overflow-hidden flex flex-col flex-1">
+                  <div className="flex items-center justify-between border-b border-slate-700 pb-2">
+                    <span className="font-black text-sm text-cyan-300">📊 Question Palette डैशबोर्ड</span>
+                    <button onClick={() => setShowPalette(false)} className="px-2.5 py-1 bg-rose-600 rounded-lg font-black text-xs">✕ बंद करें</button>
                   </div>
-                )}
+                  <div className="grid grid-cols-3 gap-1.5 text-center text-[10px] font-black">
+                    <div className="p-1.5 bg-emerald-900/70 border border-emerald-500/40 rounded-lg text-emerald-300">🟢 हल: {Object.keys(ans).length}</div>
+                    <div className="p-1.5 bg-purple-900/70 border border-purple-500/40 rounded-lg text-purple-300">🟣 Review: {reviewQs.length}</div>
+                    <div className="p-1.5 bg-slate-800 border border-slate-600 rounded-lg text-slate-300">⚪ बाकी: {Math.max(0, activeList.length - Object.keys(ans).length)}</div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto pr-1 pt-1">
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {activeList.map((_: any, i: number) => {
+                        const isAns = ans[i] !== undefined;
+                        const isRev = reviewQs.includes(i);
+                        const isCur = qIdx === i;
+                        const cls = isCur ? "bg-amber-400 text-slate-950 ring-2 ring-white" : isRev ? "bg-purple-600 text-white" : isAns ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300 border border-slate-700";
+                        return (
+                          <button key={i} onClick={() => { setQIdx(i); setQSec(0); setShowPalette(false); }} className={"py-2 rounded-lg font-black text-xs transition " + cls}>
+                            {i + 1}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-2.5 border-t border-slate-700 space-y-2">
+                  <div className="grid grid-cols-3 gap-1.5 text-[11px] font-black">
+                    <button onClick={() => { if (qIdx > 0) { setQIdx(qIdx - 1); setQSec(0); setShowPalette(false); } }} className="py-2 bg-slate-800 border border-slate-600 rounded-lg">⬅ पिछला</button>
+                    <button onClick={() => { setReviewQs(reviewQs.includes(qIdx) ? reviewQs.filter((x) => x !== qIdx) : [...reviewQs, qIdx]); }} className="py-2 bg-purple-700 text-white rounded-lg">🟣 Review</button>
+                    <button onClick={() => { if (qIdx + 1 < activeList.length) { setQIdx(qIdx + 1); setQSec(0); setShowPalette(false); } }} className="py-2 bg-indigo-600 text-white rounded-lg">अगला ➔</button>
+                  </div>
+                  <button onClick={() => { setShowPalette(false); setSubmitted(true); }} className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-slate-950 rounded-xl font-black text-xs shadow-lg">
+                    ✅ Submit Test (अंतिम सबमिट करें)
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
                 {(() => {
                 const trLine = (txt: string) => {
                   const parts = txt.split(" / ");
