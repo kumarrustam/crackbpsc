@@ -628,10 +628,12 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
        </div>     
               )}
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
-        const todayStr = new Date().toISOString().slice(0, 10);
+        if (typeof window === "undefined") return false;
+        const d = new window.Date();
+        const todayStr = d.toISOString().slice(0, 10);
         if (adStartDate && todayStr < adStartDate) return false;
         if (adEndDate && todayStr > adEndDate) return false;
-        const hr = new Date().getHours();
+        const hr = d.getHours();
         if (adTimeSlot === "8AM" && hr !== 8) return false;
         if (adTimeSlot === "10AM" && hr !== 10) return false;
         if (adTimeSlot === "EVENING" && (hr < 17 || hr > 21)) return false;
@@ -640,7 +642,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           if (hr < Number(parts.at(0)) || hr > Number(parts.at(1))) return false;
         }
         const seenKey = "cb_ad_seen_" + todayStr + "_v" + adVer;
-        const rawCnt = typeof window !== "undefined" ? localStorage.getItem(seenKey) : "0";
+        const rawCnt = localStorage.getItem(seenKey);
         return Number(rawCnt ? rawCnt : "0") < adMaxDaily;
       })() && (
         <div className={adSize === "FULL" ? "fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white z-50 flex flex-col justify-between p-5" : adType === "FULL_CUT" ? "fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white z-50 flex flex-col justify-between p-5" : adType === "BANNER" ? "fixed bottom-3 left-3 right-3 z-50 flex justify-center" : adSize === "SMALL" ? "fixed bottom-3 left-3 right-3 z-50 flex justify-center" : "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"}>
