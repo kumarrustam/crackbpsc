@@ -598,7 +598,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                       <div className="rounded-xl overflow-hidden border-2 border-indigo-400/60 bg-slate-900/90 text-white text-xs sm:text-sm">
                         {tableRows.map((row: string, rIdx: number) => {
                           const cols = row.split("|");
-                          const leftCol = trLine((cols.at(0) ? cols.at(0) : "").trim());
+                          const leftCol = trLine(String(cols.at(0) ? cols.at(0) : "").trim());
                           const rightCol = trLine((cols.slice(1).join("|")).trim());
                           return (
                             <div key={rIdx} className={"grid grid-cols-2 divide-x divide-indigo-400/50 border-b border-indigo-400/30 last:border-b-0 " + (rIdx === 0 ? "bg-indigo-700 font-black text-amber-200" : "font-bold")}>
