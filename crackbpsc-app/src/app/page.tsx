@@ -1532,14 +1532,33 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
           </div>
         )}
       {loginOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
-            <div className="flex justify-between font-bold"><span>CrackBPSC Login</span><button onClick={() => setLoginOpen(false)}>✕</button></div>
-            <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="नाम या मोबाइल नंबर..." className="w-full border rounded-lg px-3 py-2 text-sm" />
-            <button onClick={() => { if (!contact) return; setUser(contact); setLoginOpen(false); setPopupOpen(true); setAdHideToday(false); }} className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg text-sm">Login करें →</button>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
+              <div className="flex justify-between font-bold">
+                <span>CrackBPSC Login</span>
+                <button onClick={() => setLoginOpen(false)}>✕</button>
+              </div>
+              <input
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                placeholder="नाम या मोबाइल..."
+                className="w-full p-2.5 border rounded-xl text-sm"
+              />
+              <button
+                onClick={() => {
+                  if (!contact) return;
+                  setUser(contact);
+                  localStorage.setItem("cb_user", contact);
+                  setLoginOpen(false);
+                }}
+                className="w-full py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm"
+              >
+                लॉगिन करें
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-       </div>
+        )}
+      </div>
+    </div>
   );
-}
+      }
