@@ -576,8 +576,42 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                     <button onClick={() => { setShowPalette(false); setSubmitted(true); }} className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black text-xs">✅ Submit Test (अंतिम सबमिट करें)</button>
                   </div>
                 )}
-                <p className="font-extrabold text-sm sm:text-base leading-relaxed">{examLang === "HI" ? q.q.split(" / ").at(0) : examLang === "EN" ? (q.q.split(" / ").at(1) ? q.q.split(" / ").at(1) : q.q) : q.q}</p>
-
+                {(() => {
+                const trLine = (txt: string) => {
+                  const parts = txt.split(" / ");
+                  if (parts.length < 2) return txt;
+                  if (examLang === "HI") return parts.at(0);
+                  if (examLang === "EN") return parts.slice(1).join(" / ");
+                  return txt;
+                };
+                const rawLines = q.q.split("\n").map((l: string) => l.trim()).filter((x: string) => x.length > 0);
+                const tableRows = rawLines.filter((l: string) => l.includes("|"));
+                const normalLines = rawLines.filter((l: string) => !l.includes("|"));
+                return (
+                  <div className="space-y-2.5">
+                    <div className="font-extrabold text-sm sm:text-base leading-relaxed space-y-1">
+                      {normalLines.map((ln: string, i: number) => (
+                        <div key={i}>{trLine(ln)}</div>
+                      ))}
+                    </div>
+                    {tableRows.length > 0 && (
+                      <div className="rounded-xl overflow-hidden border-2 border-indigo-400/60 bg-slate-900/90 text-white text-xs sm:text-sm">
+                        {tableRows.map((row: string, rIdx: number) => {
+                          const cols = row.split("|");
+                          const leftCol = trLine((cols.at(0) ? cols.at(0) : "").trim());
+                          const rightCol = trLine((cols.slice(1).join("|")).trim());
+                          return (
+                            <div key={rIdx} className={"grid grid-cols-2 divide-x divide-indigo-400/50 border-b border-indigo-400/30 last:border-b-0 " + (rIdx === 0 ? "bg-indigo-700 font-black text-amber-200" : "font-bold")}>
+                              <div className="p-2 sm:p-2.5">{leftCol}</div>
+                              <div className="p-2 sm:p-2.5">{rightCol}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
                 <div className="space-y-2">
                   {q.opts.map((o: any, idx: number) => (
                     <div key={idx} onClick={() => setAns({ ...ans, [qIdx]: idx })} className={"p-3 rounded-xl border-2 cursor-pointer flex items-center gap-3 text-xs sm:text-sm font-bold transition " + (ans[qIdx] === idx ? "border-sky-500 bg-sky-500/20" : ((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "border-slate-700 bg-[#22252C]" : "border-slate-200 bg-slate-50"))}>
