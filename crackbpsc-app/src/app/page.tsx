@@ -325,7 +325,7 @@ useEffect(() => {
           catOrder,
           hiddenCats,
           geminiKey,
-          examTimers
+          examTimers,
             examQLimits,
           optERules
         }})
