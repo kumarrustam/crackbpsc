@@ -359,7 +359,7 @@ useEffect(() => {
     activeList.forEach((item, i) => {
       const hasOptE = Array.isArray(item.opts) && item.opts.length >= 5;
       const chosenTxt = ans[i] !== undefined && item.opts ? String(item.opts[ans[i]]).toLowerCase() : "";
-      const isUnattemptedE = useOptERule && hasOptE && ans[i] === 4 && (chosenTxt.includes("अनुत्तरित")  chosenTxt.includes("not attempted")  chosenTxt.includes("unattempted"));
+     const isUnattemptedE = useOptERule && hasOptE && ans[i] === 4 && /अनुत्तरित|not attempted|unattempted/.test(chosenTxt);
       if (isUnattemptedE) {
         skipped++;
       } else if (ans[i] === undefined) {
