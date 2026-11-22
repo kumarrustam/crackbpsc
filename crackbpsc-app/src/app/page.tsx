@@ -151,6 +151,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [adTargetSec, setAdTargetSec] = useState<string>("Full Length Test");
   const [qTimes, setQTimes] = useState<Record<number, number>>({});
   const [examQLimits, setExamQLimits] = useState<Record<string, number>>({});
+  const [optERules, setOptERules] = useState<Record<string, boolean>>({});
   const [adVer, setAdVer] = useState<number>(1);
   const [spinDeg, setSpinDeg] = useState<number>(0);
   const [spinWon, setSpinWon] = useState<string>("");
@@ -207,6 +208,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (typeof d.adVer === "number") setAdVer(d.adVer);
     if (d.bulkText) setBulkText(d.bulkText);
     if (d.examQLimits) setExamQLimits(d.examQLimits);
+    if (d.optERules) setOptERules(d.optERules);
   }, []);
   useEffect(() => {
     const payload = {
@@ -214,7 +216,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
       examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
       adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-      adLink, adVer, bulkText, examQLimits
+      adLink, adVer, bulkText, examQLimits, optERules
     };
     localStorage.setItem("cb_master_cfg_v1", JSON.stringify(payload));
   }, [
@@ -222,7 +224,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
     examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
     adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-    adLink, adVer, bulkText, examQLimits
+    adLink, adVer, bulkText, examQLimits, optERules
   ]);
   useEffect(() => {
     const sl = localStorage.getItem("cb_staff_list");
@@ -253,7 +255,6 @@ useEffect(() => {
         const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
         const sPs = localStorage.getItem("cb_pass"); if (sPs) { const p = JSON.parse(sPs); setShowPass(p.showPass); setPassBadge(p.passBadge); setPassTitle(p.passTitle); setPassBtn(p.passBtn); setPassMsg(p.passMsg); setPassFeats(p.passFeats); }
         const sPA = localStorage.getItem("cb_pass_acc"); if (sPA) { const a = JSON.parse(sPA); setWriterPass(a.w); setModPass(a.m); setAdPass(a.a); }
-
         const res = await fetch("https://supabase.co", {
           headers: {
             apikey: "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go",
@@ -280,7 +281,9 @@ useEffect(() => {
           if (d.catOrder) setCatOrder(d.catOrder);
         if (d.hiddenCats) setHiddenCats(d.hiddenCats);
         if (d.geminiKey) setGeminiKey(d.geminiKey);
-        if (d.examTimers) setExamTimers(d.examTimers);  
+        if (d.examTimers) setExamTimers(d.examTimers);
+         if (d.examQLimits) setExamQLimits(d.examQLimits);
+          if (d.optERules) setOptERules(d.optERules); 
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -301,7 +304,6 @@ useEffect(() => {
       localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
       localStorage.setItem("cb_pass", JSON.stringify({ showPass, passBadge, passTitle, passBtn, passMsg, passFeats }));
       localStorage.setItem("cb_pass_acc", JSON.stringify({ w: writerPass, m: modPass, a: adPass }));
-
       fetch("https://supabase.co", {
         method: "POST",
         headers: {
@@ -324,6 +326,8 @@ useEffect(() => {
           hiddenCats,
           geminiKey,
           examTimers
+            examQLimits,
+          optERules
         }})
       });
     } catch (e) {}
@@ -350,10 +354,25 @@ useEffect(() => {
     const qLim = examQLimits[selSubExam + "_" + selSection];
     const activeList = qLim ? rawList.slice(0, qLim) : rawList;
     const q = activeList[qIdx];
-    let right = 0, wrong = 0, skipped = 0;
-activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
+    const useOptERule = Boolean(optERules[selSubExam]);
+    let right = 0, wrong = 0, skipped = 0, blankPen = 0;
+    activeList.forEach((item, i) => {
+      const hasOptE = Array.isArray(item.opts) && item.opts.length >= 5;
+      const chosenTxt = ans[i] !== undefined && item.opts ? String(item.opts[ans[i]]).toLowerCase() : "";
+      const isUnattemptedE = useOptERule && hasOptE && ans[i] === 4 && (chosenTxt.includes("अनुत्तरित")  chosenTxt.includes("not attempted")  chosenTxt.includes("unattempted"));
+      if (isUnattemptedE) {
+        skipped++;
+      } else if (ans[i] === undefined) {
+        skipped++;
+        if (useOptERule && hasOptE) blankPen++;
+      } else if (ans[i] === item.correct) {
+        right++;
+      } else {
+        wrong++;
+      }
+    });
     const posTotal = right * activePosMark;
-    const negTotal = activeNegEnabled ? wrong * activeNegVal : 0;
+    const negTotal = activeNegEnabled ? (wrong + blankPen) * activeNegVal : 0;
     const score = (posTotal - negTotal).toFixed(2);
     return (
       <div className="min-h-screen bg-slate-200 text-slate-950 p-4">
@@ -951,6 +970,15 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 </div>
               </div>
             )}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-slate-700">
+            <span className="text-[11px] font-bold text-amber-300">🛡️ विशेष 5-Option नियम ({selSubExam}): Option (E) अनुत्तरित = 0 कटौती, खाली छोड़ने पर नेगेटिव</span>
+            <button
+              onClick={() => setOptERules({ ...optERules, [selSubExam]: !optERules[selSubExam] })}
+              className={"px-2.5 py-1 rounded-lg font-black text-[11px] " + (optERules[selSubExam] ? "bg-emerald-500 text-slate-950" : "bg-slate-700 text-slate-200")}
+            >
+              {optERules[selSubExam] ? "✅ लागू है (ON — केवल " + selSubExam + ")" : "⚪ बंद है (OFF — क्लिक कर चालू करें)"}
+            </button>
+          </div>
                 <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
               <span className="text-[11px] font-bold text-amber-300">🌓 Test Screen Theme:</span>
               <button onClick={() => setExamTheme("AUTO")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "AUTO" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300")}>⏰ Auto IST (6AM–6PM)</button>
