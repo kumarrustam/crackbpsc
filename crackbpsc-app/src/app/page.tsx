@@ -137,6 +137,23 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [repCorrectOpt, setRepCorrectOpt] = useState<string>("Option 2");
   const [repExp, setRepExp] = useState<string>("");
   const [qReports, setQReports] = useState<any[]>([]);
+  const [adMaxDaily, setAdMaxDaily] = useState<number>(1);
+  const [adTimeSlot, setAdTimeSlot] = useState<string>("ALL");
+  const [adStartDate, setAdStartDate] = useState<string>("");
+  const [adEndDate, setAdEndDate] = useState<string>("");
+  const [adCustomW, setAdCustomW] = useState<string>("");
+  const [adCustomH, setAdCustomH] = useState<string>("");
+  const [adTargetMode, setAdTargetMode] = useState<string>("EXAM");
+  const [adVer, setAdVer] = useState<number>(1);
+  const [spinDeg, setSpinDeg] = useState<number>(0);
+  const [spinWon, setSpinWon] = useState<string>("");
+  useEffect(() => {
+    const r = localStorage.getItem("cb_role"); if (r) setRole(r as any);
+    const st = localStorage.getItem("cb_staff"); if (st) setActiveStaff(JSON.parse(st));
+    const u = localStorage.getItem("cb_user"); if (u) setUser(u);
+  }, []);
+  useEffect(() => { localStorage.setItem("cb_role", role); }, [role]);
+  useEffect(() => { if (activeStaff) localStorage.setItem("cb_staff", JSON.stringify(activeStaff)); else localStorage.removeItem("cb_staff"); }, [activeStaff]);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -602,32 +619,46 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
       </div>
        </div>     
               )}
-      {role === "STUDENT" && !adHideToday && popupOpen && adType === "FULL_CUT" && (
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 text-white z-50 flex flex-col justify-between p-6 text-center">
-          <div className="flex justify-between items-center">
-            <span className="bg-amber-400 text-black text-[11px] font-black px-3 py-1 rounded-full">SPONSORED • {activeDaysText}</span>
-            <button onClick={() => setPopupOpen(false)} className="w-11 h-11 bg-white/20 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl font-black border border-white/40 shadow-xl">✕</button>
-          </div>
-          <div className="max-w-md mx-auto space-y-4">
-            <div className="text-5xl">🚀</div>
-            <h2 className="font-black text-3xl leading-tight text-amber-300">{adTitle}</h2>
-            <p className="text-sm text-blue-100 leading-relaxed">{adDesc}</p>
-            <button onClick={() => { if (adLink && adLink !== "https://") window.open(adLink, "_blank"); setPopupOpen(false); }} className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-3.5 rounded-2xl text-base shadow-lg">अभी ऑफर प्राप्त करें →</button>
-          </div>
-          <button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="text-xs text-slate-400 underline mx-auto">आज यह विज्ञापन दोबारा न दिखाएं (Don&apos;t show today)</button>
-        </div>
-      )}
-      {role === "STUDENT" && !adHideToday && popupOpen && adType !== "BANNER" && adType !== "FULL_CUT" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-2 border-amber-400 text-center">
-            <div className={"p-5 text-white space-y-2 " + (adType === "TIMER" ? "bg-rose-700" : adType === "SPIN" ? "bg-purple-800" : "bg-blue-800")}>
-              <span className="bg-amber-400 text-black text-[10px] font-black px-2.5 py-0.5 rounded-full">{adType === "TIMER" ? "⏳ समाप्त: 14:59" : adType === "SPIN" ? "🎡 SPIN & WIN" : "OFFER • " + activeDaysText}</span>
-              <h3 className="font-black text-lg">{adTitle}</h3>
-              <p className="text-xs opacity-90">{adDesc}</p>
+      {role === "STUDENT" && !adHideToday && popupOpen && (() => {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (adStartDate && todayStr < adStartDate) return false;
+        if (adEndDate && todayStr > adEndDate) return false;
+        const hr = new Date().getHours();
+        if (adTimeSlot === "8AM" && hr !== 8) return false;
+        if (adTimeSlot === "10AM" && hr !== 10) return false;
+        if (adTimeSlot === "EVENING" && (hr < 17 || hr > 21)) return false;
+        if (adTimeSlot.includes("-")) { const parts = adTimeSlot.split("-"); if (hr < Number(parts.at(0)) || hr > Number(parts.at(1))) return false; }
+        const seenKey = "cb_ad_seen_" + todayStr + "_v" + adVer;
+        const rawCnt = typeof window !== "undefined" ? localStorage.getItem(seenKey) : "0";
+        const seenCnt = Number(rawCnt ? rawCnt : "0");
+        return seenCnt < adMaxDaily;
+      })() && (
+        <div className={adSize === "FULL" ? "fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white z-50 flex flex-col justify-between p-5" : adType === "FULL_CUT" ? "fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white z-50 flex flex-col justify-between p-5" : adType === "BANNER" ? "fixed bottom-3 left-3 right-3 z-50 flex justify-center" : adSize === "SMALL" ? "fixed bottom-3 left-3 right-3 z-50 flex justify-center" : "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"}>
+          <div style={{ width: adCustomW ? adCustomW : undefined, height: adCustomH ? adCustomH : undefined }} className={(adSize === "FULL" ? "w-full h-full flex flex-col justify-between max-w-2xl mx-auto" : adType === "FULL_CUT" ? "w-full h-full flex flex-col justify-between max-w-2xl mx-auto" : adSize === "SMALL" ? "w-full max-w-3xl rounded-2xl shadow-2xl border-2 border-amber-400 bg-slate-900 text-white p-3 flex flex-wrap items-center justify-between gap-2" : adSize === "LARGE" ? "w-full max-w-md min-h-[460px] flex flex-col justify-between rounded-3xl shadow-2xl border-2 border-amber-400 bg-white overflow-hidden" : "w-full max-w-sm rounded-3xl shadow-2xl border-2 border-amber-400 bg-white overflow-hidden")}>
+            <div className={adSize === "SMALL" ? "flex items-center gap-2" : "p-4 bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white space-y-1.5"}>
+              <div className="flex justify-between items-center gap-2">
+                <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">{adType === "SPIN" ? "🎡 LUCKY SPIN" : adType === "TIMER" ? "⏳ FLASH TIMER" : adType === "BANNER" ? "🪧 SPECIAL BANNER" : "🔥 OFFER"}</span>
+                {adSize !== "SMALL" && <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="w-7 h-7 rounded-full bg-white/20 text-white font-black text-xs">✕</button>}
+              </div>
+              <h3 className={adSize === "SMALL" ? "font-black text-xs text-amber-300" : "font-black text-lg leading-snug text-amber-300"}>{adTitle}</h3>
+              {adSize !== "SMALL" && <p className="text-xs text-slate-200">{adDesc}</p>}
             </div>
-            <div className="p-4 space-y-2">
-              <button onClick={() => { alert(adType === "SPIN" ? "🎉 कूपन BPSC50 मिला!" : "✅ ऑफर सक्रिय!"); setPopupOpen(false); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm">{adType === "SPIN" ? "🎡 पहिया घुमाएं" : "अभी अनलॉक करें →"}</button>
-              <div className="flex justify-between text-[11px] text-slate-500"><button onClick={() => setPopupOpen(false)} className="underline">बंद करें (✕)</button><button onClick={() => { setAdHideToday(true); setPopupOpen(false); }} className="underline">Don&apos;t show today</button></div>
+            {adType === "SPIN" && adSize !== "SMALL" && (
+              <div className="p-4 flex flex-col items-center gap-2 bg-amber-50">
+                <div style={{ transform: "rotate(" + spinDeg + "deg)", transition: "transform 2.5s cubic-bezier(0.17, 0.67, 0.12, 0.99)" }} className="w-36 h-36 rounded-full border-4 border-indigo-700 bg-gradient-to-tr from-amber-400 via-rose-500 to-indigo-600 flex items-center justify-center shadow-xl text-white font-black text-center text-xs p-2">🎡 50% OFF • FREE PASS • ₹199 • BONUS</div>
+                {spinWon ? <div className="font-black text-emerald-700 text-xs bg-emerald-100 px-3 py-1 rounded-full">🎉 बधाई हो! मिला: {spinWon}</div> : <button onClick={() => { const prizes = ["50% OFF SuperPass", "FREE 7-Day Pass", "₹199 Special Offer", "100 Bonus Test Coins"]; setSpinDeg(spinDeg + 1440 + Math.floor(Math.random() * 360)); setTimeout(() => setSpinWon(prizes.at(Math.floor(Math.random() * prizes.length)) as string), 2500); }} className="px-4 py-1.5 bg-indigo-700 text-white rounded-full font-black text-xs shadow">🎯 चक्का घुमाएं (SPIN NOW)</button>}
+              </div>
+            )}
+            {adType === "TIMER" && adSize !== "SMALL" && (
+              <div className="p-3 bg-rose-950 text-white flex justify-center gap-2 font-mono font-black text-base">
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(Math.floor(totalSec / 3600)).padStart(2, "0")}h</span>:
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0")}m</span>:
+                <span className="px-2.5 py-1 bg-rose-600 rounded">{String(totalSec % 60).padStart(2, "0")}s</span>
+              </div>
+            )}
+            <div className={adSize === "SMALL" ? "flex items-center gap-1.5" : "p-3 bg-slate-50 space-y-2"}>
+              <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); if (adTargetMode === "LINK" && adLink && adLink !== "https://") { window.open(adLink, "_blank"); } else { alert("🎯 सीधे " + selCat + " ➔ " + selSubExam + " (" + selSection + ") पर ले जाया गया!"); } }} className={adSize === "SMALL" ? "px-3 py-1 bg-amber-400 text-slate-950 rounded-lg font-black text-xs" : "w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-xl font-black text-xs shadow"}>{adTargetMode === "LINK" ? "🔗 ऑफर / लिंक खोलें →" : "🎯 सीधे " + selSubExam + " टेस्ट पर जाएं →"}</button>
+              {adSize === "SMALL" ? <button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="px-2 py-1 bg-slate-700 text-white rounded text-xs font-bold">✕</button> : <div className="flex justify-between text-[11px] text-slate-500"><button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; localStorage.setItem(k, String(adMaxDaily)); setPopupOpen(false); }}>आज दोबारा न दिखाएं</button><button onClick={() => { const k = "cb_ad_seen_" + new Date().toISOString().slice(0, 10) + "_v" + adVer; const prev = localStorage.getItem(k); localStorage.setItem(k, String(Number(prev ? prev : "0") + 1)); setPopupOpen(false); }} className="font-bold text-slate-700">बंद करें ✕</button></div>}
             </div>
           </div>
         </div>
@@ -1451,34 +1482,55 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               ))}
             </div>
           )}
-            {allowAd && (
-            <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
-              <div className="font-bold text-indigo-800">📢 Ad Studio (प्रकार और दिन चुनें):</div>
-              <div className="flex flex-wrap gap-1.5">
-                {["POPUP", "SPIN", "TIMER", "BANNER"].map((t) => (
-                  <button key={t} onClick={() => { if (t !== "BANNER" && !adCanPopup) { alert("🔒 Popup Ads बंद हैं!"); return; } setAdType(t); setPopupOpen(true); setAdHideToday(false); }} className={"px-2.5 py-1 rounded font-bold border " + (adType === t ? "bg-indigo-600 text-white" : "bg-white")}>{t}</button>
-                ))}
-              </div>
-              <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 bg-white font-bold" />
-              <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5 bg-white" />
-              <div className="flex flex-wrap items-center gap-1.5">
-  <span className="font-bold">साइज़ (Size):</span>
-  {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📰 बड़ा पोस्टर" }, { id: "FULL", name: "📱 फुल स्क्रीन" }].map((s) => (
-    <button key={s.id} onClick={() => setAdSize(s.id)} className={"px-2 py-1 rounded font-bold border " + (adSize === s.id ? "bg-amber-500 text-black" : "bg-white")}>{s.name}</button>
-  ))}
-</div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-bold">अवधि:</span>
-                <button onClick={() => { setIsUnlimited(false); setAdDayCount(Math.max(1, adDayCount - 1)); }} className="bg-rose-600 text-white font-black px-3 py-1 rounded">−</button>
-                <span className="bg-white border px-3 py-1 rounded font-bold">{activeDaysText}</span>
-                <button onClick={() => { setIsUnlimited(false); setAdDayCount(adDayCount + 1); }} className="bg-emerald-600 text-white font-black px-3 py-1 rounded">+</button>
-                <button onClick={() => setIsUnlimited(!isUnlimited)} className={"px-2 py-1 rounded border font-bold " + (isUnlimited ? "bg-indigo-600 text-white" : "bg-white")}>♾️ Unlimited</button>
-              </div>
-              <button onClick={() => { setPopupOpen(true); setAdHideToday(false); alert("✅ विज्ञापन लाइव हो गया!"); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded">🚀 विज्ञापन लाइव करें</button>
+      {allowAd && (
+          <div className="p-3 bg-slate-900 text-white border-2 border-amber-400 rounded-xl space-y-2.5 text-xs">
+            <div className="font-black text-amber-300">📢 Pro Ad Campaign & Smart Scheduler</div>
+            <div className="flex flex-wrap gap-1.5">
+              {["POPUP", "SPIN", "TIMER", "BANNER"].map((t) => (
+                <button key={t} onClick={() => setAdType(t)} className={"px-2.5 py-1 rounded font-black text-[11px] " + (adType === t ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-white")}>{t === "SPIN" ? "🎡 SPIN" : t === "TIMER" ? "⏳ TIMER" : t === "BANNER" ? "🪧 BANNER" : "💬 POPUP"}</button>
+              ))}
             </div>
-          )}
-        </div>
-      )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक (Title)..." className="p-2 rounded bg-slate-800 border border-slate-600 text-white font-bold" />
+              <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विवरण (Description)..." className="p-2 rounded bg-slate-800 border border-slate-600 text-white" />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-bold text-cyan-300 text-[11px]">📐 साइज़:</span>
+              {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📸 बड़ा पोस्टर" }, { id: "FULL", name: "🖥️ फुल स्क्रीन" }].map((s) => (
+                <button key={s.id} onClick={() => { setAdSize(s.id); setAdCustomW(""); setAdCustomH(""); }} className={"px-2 py-1 rounded font-black text-[11px] " + (adSize === s.id ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300")}>{s.name}</button>
+              ))}
+              <input value={adCustomW} onChange={(e) => setAdCustomW(e.target.value)} placeholder="चौड़ाई (जैसे 350px)" className="w-28 p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+              <input value={adCustomH} onChange={(e) => setAdCustomH(e.target.value)} placeholder="ऊंचाई (जैसे 450px)" className="w-28 p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="font-bold text-emerald-300 text-[11px]">🔢 प्रतिदिन कितनी बार दिखे:</span>
+              {[1, 2, 3, 5, 10].map((n) => (
+                <button key={n} onClick={() => setAdMaxDaily(n)} className={"px-2 py-0.5 rounded font-black text-[11px] " + (adMaxDaily === n ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-white")}>{n} बार</button>
+              ))}
+              <button onClick={() => { const c = Number(prompt("प्रतिदिन कितनी बार दिखाना है?", String(adMaxDaily))); if (c >= 1) setAdMaxDaily(c); }} className="px-2 py-0.5 bg-slate-700 rounded text-[11px] font-bold">✏️ Custom</button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-bold text-amber-300 text-[11px]">⏰ समय स्लॉट:</span>
+              {[{ id: "ALL", n: "पूरा दिन" }, { id: "8AM", n: "8:00 AM" }, { id: "10AM", n: "10:00 AM" }, { id: "EVENING", n: "शाम (5-9 PM)" }].map((sl) => (
+                <button key={sl.id} onClick={() => setAdTimeSlot(sl.id)} className={"px-2 py-0.5 rounded font-black text-[11px] " + (adTimeSlot === sl.id ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-white")}>{sl.n}</button>
+              ))}
+              <button onClick={() => { const cs = prompt("घंटे लिखें (जैसे 9-12 या 18-22):", adTimeSlot); if (cs) setAdTimeSlot(cs); }} className="px-2 py-0.5 bg-slate-700 rounded text-[11px] font-bold">✏️ Custom Time</button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-bold text-rose-300 text-[11px]">📅 तारीख से:</span>
+              <input type="date" value={adStartDate} onChange={(e) => setAdStartDate(e.target.value)} className="p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+              <span className="font-bold text-rose-300 text-[11px]">तक:</span>
+              <input type="date" value={adEndDate} onChange={(e) => setAdEndDate(e.target.value)} className="p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="font-bold text-cyan-300 text-[11px]">🎯 क्लिक करने पर कहाँ जाए:</span>
+              <button onClick={() => setAdTargetMode("EXAM")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "EXAM" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>📚 चुनी हुई परीक्षा ({selSubExam})</button>
+              <button onClick={() => setAdTargetMode("LINK")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "LINK" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>🔗 कस्टम लिंक (URL)</button>
+              {adTargetMode === "LINK" && <input value={adLink} onChange={(e) => setAdLink(e.target.value)} placeholder="https://..." className="flex-1 min-w-[160px] p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />}
+            </div>
+            <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
+          </div>
+        )}
       {loginOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3">
