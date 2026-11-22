@@ -147,6 +147,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [adTargetCat, setAdTargetCat] = useState<string>("BPSC");
   const [adTargetSub, setAdTargetSub] = useState<string>("72वीं BPSC CCE");
   const [adTargetSec, setAdTargetSec] = useState<string>("Full Length Test");
+  const [qTimes, setQTimes] = useState<Record<number, number>>({});
+  const [examQLimits, setExamQLimits] = useState<Record<string, number>>({});
   const [adVer, setAdVer] = useState<number>(1);
   const [spinDeg, setSpinDeg] = useState<number>(0);
   const [spinWon, setSpinWon] = useState<string>("");
@@ -202,6 +204,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (d.adLink) setAdLink(d.adLink);
     if (typeof d.adVer === "number") setAdVer(d.adVer);
     if (d.bulkText) setBulkText(d.bulkText);
+    if (d.examQLimits) setExamQLimits(d.examQLimits);
   }, []);
   useEffect(() => {
     const payload = {
@@ -209,7 +212,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
       examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
       adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-      adLink, adVer, bulkText
+      adLink, adVer, bulkText, examQLimits
     };
     localStorage.setItem("cb_master_cfg_v1", JSON.stringify(payload));
   }, [
@@ -217,7 +220,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
     examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
     adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-    adLink, adVer, bulkText
+    adLink, adVer, bulkText, examQLimits
   ]);
   useEffect(() => {
     const sl = localStorage.getItem("cb_staff_list");
@@ -375,27 +378,122 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               ))}
             </div>
           )}
-            <div className="bg-white p-3 rounded-xl border-2 border-indigo-200 space-y-1.5 text-xs text-slate-950">
-              <div className="font-extrabold text-indigo-950">🧠 सब्जेक्ट-वाइज़ कमज़ोरी विश्लेषण:</div>
-              {Array.from(new Set(questions.map((q: any) => q.subject || "सामान्य ज्ञान"))).map((sub: any) => {
-                const subQs = questions.map((q, idx) => ({ ...q, idx })).filter((q: any) => (q.subject || "सामान्य ज्ञान") === sub);
-                const subRight = subQs.filter((q) => ans[q.idx] === q.correct).length;
-                const pct = Math.round((subRight / subQs.length) * 100);
-                return (
-                  <div key={sub} className="flex justify-between items-center p-2 rounded border bg-slate-50 font-bold">
-                    <span>{sub} ({subRight}/{subQs.length})</span>
-                    <span className={"px-2 py-0.5 rounded text-[11px] " + (pct < 50 ? "bg-rose-100 text-rose-800" : "bg-emerald-100 text-emerald-800")}>{pct}% {pct < 50 ? "⚠️ कमज़ोर विषय" : "💪 मज़बूत"}</span>
+            {(() => {
+                const yourSec = Object.values(qTimes).reduce((a: number, b: number) => a + b, 0) + 1;
+                const topperSec = Math.max(15, Math.round(activeList.length * 16));
+                const avgSec = Math.max(25, Math.round(activeList.length * 34));
+                const maxBar = Math.max(yourSec, topperSec, avgSec, 1);
+                const totalAttempts = 1284 + activeList.length * 7;
+                const pctRank = Math.min(99.8, Math.max(42.5, Number((55 + (right / Math.max(1, activeList.length)) * 44).toFixed(1))));
+                let sillyCnt = 0; let trapCnt = 0; let masterCnt = 0;
+                activeList.forEach((item: any, idx: number) => {
+                  const t = qTimes[idx] ? qTimes[idx] : 12;
+                  if (ans[idx] === item.correct && t <= 20) masterCnt++;
+                  else if (ans[idx] !== undefined && ans[idx] !== item.correct && t < 15) sillyCnt++;
+                  else if (t > 90) trapCnt++;
+                });
+                const subNames = Array.from(new Set(activeList.map((q: any) => q.sub ? q.sub : "सामान्य ज्ञान")));
+                const subStats = subNames.map((sub: any) => {
+                  const sq = activeList.filter((q: any) => (q.sub ? q.sub : "सामान्य ज्ञान") === sub);
+                  let sr = 0; let st = 0;
+                  activeList.forEach((q: any, idx: number) => {
+                    if ((q.sub ? q.sub : "सामान्य ज्ञान") === sub) {
+                      if (ans[idx] === q.correct) sr++;
+                      st += qTimes[idx] ? qTimes[idx] : 15;
+                    }
+                  });
+                  const pct = Math.round((sr / Math.max(1, sq.length)) * 100);
+                  return { sub, total: sq.length, right: sr, pct, avgT: Math.round(st / Math.max(1, sq.length)) };
+                });
+                const sortedSubs = [...subStats].sort((a, b) => b.pct - a.pct);
+                const strongest = sortedSubs.at(0);
+                const weakest = sortedSubs.at(sortedSubs.length - 1);
+                const cutoffPct = 66;
+                const myPct = Math.round((right / Math.max(1, activeList.length)) * 100);
+              return (
+                  <div className="space-y-3">
+                    <div className="p-3 bg-slate-900 text-white rounded-2xl border-2 border-cyan-500/60 space-y-2.5 text-xs">
+                      <div className="flex flex-wrap justify-between items-center gap-1">
+                        <span className="font-black text-cyan-300 text-sm">📈 समय तुलना व लाइव सहभागिता ग्राफ़</span>
+                        <span className="px-2 py-0.5 bg-emerald-600 rounded-full font-black text-[11px]">👥 कुल Attempt: {totalAttempts} छात्र • {pctRank}%ile</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 items-end h-28 pt-4 px-2 bg-slate-950/80 rounded-xl border border-slate-800">
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-black text-emerald-400">{Math.floor(topperSec / 60)}m {topperSec % 60}s</span>
+                          <div style={{ height: Math.max(18, Math.round((topperSec / maxBar) * 68)) + "px" }} className="w-10 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-lg shadow" />
+                          <span className="text-[10px] font-bold text-slate-300">🏆 Topper</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-black text-cyan-400">{Math.floor(yourSec / 60)}m {yourSec % 60}s</span>
+                          <div style={{ height: Math.max(18, Math.round((yourSec / maxBar) * 68)) + "px" }} className="w-10 bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t-lg shadow" />
+                          <span className="text-[10px] font-bold text-white">⏱️ आपका समय</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-black text-amber-400">{Math.floor(avgSec / 60)}m {avgSec % 60}s</span>
+                          <div style={{ height: Math.max(18, Math.round((avgSec / maxBar) * 68)) + "px" }} className="w-10 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-lg shadow" />
+                          <span className="text-[10px] font-bold text-slate-300">👥 Average</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gradient-to-br from-emerald-950 via-slate-900 to-indigo-950 text-white rounded-2xl border-2 border-emerald-500/60 space-y-2.5 text-xs">
+                      <div className="font-black text-emerald-300 text-sm">🏏 360° Cricket Wagon Wheel — Subject Strength & Weakness</div>
+                      <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <svg viewBox="0 0 220 220" className="w-52 h-52 shrink-0">
+                          <circle cx="110" cy="110" r="95" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
+                          <circle cx="110" cy="110" r="62" fill="none" stroke="#6ee7b7" strokeDasharray="4 3" strokeWidth="1.2" />
+                          <circle cx="110" cy="110" r="30" fill="none" stroke="#fbbf24" strokeDasharray="3 3" strokeWidth="1.2" />
+                          <rect x="105" y="96" width="10" height="28" fill="#fde68a" rx="2" />
+                          {subStats.map((st, idx) => {
+                            const ang = (idx / Math.max(1, subStats.length)) * 2 * Math.PI - Math.PI / 2;
+                            const rLen = 20 + (st.pct / 100) * 72;
+                            const x2 = 110 + rLen * Math.cos(ang);
+                            const y2 = 110 + rLen * Math.sin(ang);
+                            const lx = 110 + 84 * Math.cos(ang);
+                            const ly = 110 + 84 * Math.sin(ang);
+                            const col = st.pct >= 70 ? "#34d399" : st.pct >= 45 ? "#fbbf24" : "#f87171";
+                            return (
+                              <g key={st.sub}>
+                                <line x1="110" y1="110" x2={x2} y2={y2} stroke={col} strokeWidth="3.5" strokeLinecap="round" />
+                                <circle cx={x2} cy={y2} r="4" fill={col} />
+                                <text x={lx} y={ly} fill="#ffffff" fontSize="7.5" fontWeight="bold" textAnchor="middle">{st.sub.slice(0, 8)} ({st.pct}%)</text>
+                              </g>
+                            );
+                          })}
+                        </svg>
+                        <div className="flex-1 space-y-1.5 w-full">
+                          <div className="p-2 bg-slate-950/80 rounded-xl border border-emerald-500/40 space-y-1">
+                            <div className="font-black text-emerald-300">📋 Demographic & Strength-Weakness रिपोर्ट:</div>
+                            {strongest && <div className="text-emerald-200">💪 <b>सबसे मज़बूत विषय:</b> {strongest.sub} ({strongest.pct}% सटीकता • औसत {strongest.avgT}s/प्रश्न)</div>}
+                            {weakest && <div className="text-rose-300">⚠️ <b>सबसे कमज़ोर विषय:</b> {weakest.sub} ({weakest.pct}% सटीकता • औसत {weakest.avgT}s/प्रश्न)</div>}
+                            <div className="text-amber-200">🎯 <b>Cut-Off Predictor:</b> आपका स्कोर <b>{myPct}%</b> है (कट-ऑफ <b>{cutoffPct}%</b> — {myPct >= cutoffPct ? "🎉 सुरक्षित ज़ोन में!" : "📈 +" + (cutoffPct - myPct) + "% और चाहिए"})</div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1.5 text-center">
+                            <div className="p-1.5 bg-emerald-900/70 rounded-lg border border-emerald-500/40"><div className="font-black text-emerald-300">{masterCnt}</div><div className="text-[10px]">🎯 Mastery Shot</div></div>
+                            <div className="p-1.5 bg-amber-900/70 rounded-lg border border-amber-500/40"><div className="font-black text-amber-300">{sillyCnt}</div><div className="text-[10px]">⚡ Silly Mistake</div></div>
+                            <div className="p-1.5 bg-rose-900/70 rounded-lg border border-rose-500/40"><div className="font-black text-rose-300">{trapCnt}</div><div className="text-[10px]">🐢 Time Trap</div></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1 pt-1 border-t border-white/15">
+                        {subStats.map((st) => (
+                          <div key={st.sub} className="flex items-center justify-between gap-2 text-[11px] bg-black/30 px-2.5 py-1 rounded-lg">
+                            <span className="font-bold">{st.sub} ({st.right}/{st.total})</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-300">⏱️ {st.avgT}s/Q</span>
+                              <span className={"px-2 py-0.5 rounded font-black " + (st.pct >= 70 ? "bg-emerald-600 text-white" : st.pct >= 45 ? "bg-amber-500 text-slate-950" : "bg-rose-600 text-white")}>{st.pct >= 70 ? "💪 Strong (" + st.pct + "%)" : st.pct >= 45 ? "⚖️ Average (" + st.pct + "%)" : "⚠️ Weak (" + st.pct + "%)"}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button onClick={() => {
+                        const msg = "🏆 CrackBPSC Scorecard (" + selSubExam + ")\n📊 Score: " + score + " | Accuracy: " + myPct + "% | Percentile: " + pctRank + "%ile\n💪 Strongest: " + (strongest ? strongest.sub : "GS") + "\n⏱️ Time: " + Math.floor(yourSec / 60) + "m " + (yourSec % 60) + "s\n👉 Test दें: https://vercel.app";
+                        navigator.clipboard.writeText(msg);
+                        alert("📲 Topper Scorecard कॉपी हो गया!");
+                      }} className="w-full py-2 bg-amber-400 text-slate-950 rounded-xl font-black text-xs shadow">📲 1-Click Shareable Topper Scorecard कॉपी करें</button>
+                    </div>
                   </div>
                 );
-              })}
-            </div>
-              <div className="bg-slate-900 text-white p-3 rounded-xl space-y-1.5 text-xs">
-              <div className="font-extrabold text-amber-400">🏆 All-India टॉपर्स लीडरबोर्ड (Top 1, 2, 3 + आपकी रैंक):</div>
-              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥇 #1. अंकित राज (पटना)</span><span className="font-bold text-amber-300">{questions.length}.00 / {questions.length}</span></div>
-              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥈 #2. प्रिया कुमारी (गया)</span><span className="font-bold text-amber-300">{Math.max(0, questions.length - 0.33).toFixed(2)} / {questions.length}</span></div>
-              <div className="flex justify-between bg-white/10 px-2.5 py-1 rounded"><span>🥉 #3. सौरभ कुमार (नवादा)</span><span className="font-bold text-amber-300">{Math.max(0, questions.length - 0.66).toFixed(2)} / {questions.length}</span></div>
-              <div className="flex justify-between bg-emerald-600 px-2.5 py-1.5 rounded font-extrabold"><span>👤 आपकी रैंक (#{Number(score) >= questions.length ? 1 : Number(score) > 0 ? 4 : 182}) • {user || "आप"}</span><span>{score} / {questions.length}</span></div>
-            </div>
+              })()}
           </div>
           ) : (
             <div className={((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "bg-[#181A1F] text-slate-100 border-slate-700" : "bg-white text-slate-900 border-slate-300") + " rounded-2xl border-2 overflow-hidden shadow-xl"}>
@@ -825,7 +923,15 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               <button key={m} onClick={() => { setTestMins(m); setExamTimers({ ...examTimers, [selCat + "_" + selSubExam + "_" + selSection]: m }); }} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTimers[selCat + "_" + selSubExam + "_" + selSection] === m ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-white")}>{m} Min</button>
             ))}
             <button onClick={() => { const cm = Number(prompt(selSubExam + " (" + selSection + ") के लिए मिनट लिखें (जैसे 90, 150, 180):", String(testMins))); if (cm >= 1) { setTestMins(cm); setExamTimers({ ...examTimers, [selCat + "_" + selSubExam + "_" + selSection]: cm }); } }} className="px-2 py-0.5 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
-          </div>     
+          </div>
+                <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+            <span className="text-[11px] font-bold text-cyan-300">🔢 कुल प्रश्न सीमा ({selSubExam} • {selSection}): {examQLimits[selSubExam + "_" + selSection] ? examQLimits[selSubExam + "_" + selSection] + " प्रश्न" : "सभी उपलब्ध"}</span>
+            {Array.of(10, 20, 30, 50, 100, 120, 150, 200).map((qn) => (
+              <button key={qn} onClick={() => setExamQLimits({ ...examQLimits, [selSubExam + "_" + selSection]: qn })} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examQLimits[selSubExam + "_" + selSection] === qn ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>{qn} Q</button>
+            ))}
+            <button onClick={() => { const cq = Number(prompt("इस टेस्ट में कुल कितने प्रश्न भेजने हैं?", "150")); if (cq >= 1) setExamQLimits({ ...examQLimits, [selSubExam + "_" + selSection]: cq }); }} className="px-2 py-0.5 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
+            {examQLimits[selSubExam + "_" + selSection] && <button onClick={() => { const cp = { ...examQLimits }; delete cp[selSubExam + "_" + selSection]; setExamQLimits(cp); }} className="px-2 py-0.5 bg-rose-600 text-white rounded font-black text-[11px]">सभी दिखाएं</button>}
+          </div>
           </div>
               <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
