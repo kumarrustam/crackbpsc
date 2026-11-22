@@ -1579,7 +1579,6 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             </div>
             <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
           </div> 
-      
       )}
       {loginOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -1591,5 +1590,6 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
         </div>
       )}
     </div>
+  </div>
   );
 }
