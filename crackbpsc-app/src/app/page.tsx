@@ -201,7 +201,6 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (d.adTargetSec) setAdTargetSec(d.adTargetSec);
     if (d.adLink) setAdLink(d.adLink);
     if (typeof d.adVer === "number") setAdVer(d.adVer);
-    if (d.qText) setQText(d.qText);
     if (d.bulkText) setBulkText(d.bulkText);
   }, []);
   useEffect(() => {
@@ -210,7 +209,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
       examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
       adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-      adLink, adVer, qText, bulkText
+      adLink, adVer, bulkText
     };
     localStorage.setItem("cb_master_cfg_v1", JSON.stringify(payload));
   }, [
@@ -218,7 +217,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
     examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
     adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-    adLink, adVer, qText, bulkText
+    adLink, adVer, bulkText
   ]);
   useEffect(() => {
     const sl = localStorage.getItem("cb_staff_list");
