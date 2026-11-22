@@ -928,66 +928,99 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 {aiLoading ? "⏳ बन रहा है..." : "✨ AI से बनाएं"}
               </button>
             </div>
-                        <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => {
-                  const p = "Generate 15 Bilingual (Hindi & English) MCQs for " + selSubExam + " (" + selSection + ") mixing Standard MCQs, Match-the-Following, and Assertion-Reason. Use 4 options (A-D) or 5 options (A-E). Strictly use this format with a blank line between questions:\n\nQ: Question Hindi / English\nA: Opt A\nB: Opt B\nC: Opt C\nD: Opt D\nE: Opt E (optional)\nANS: A\nEXP: Explanation";
-                  navigator.clipboard.writeText(p);
-                  alert("📋 Gemini Prompt कॉपी हो गया! अब इसे Gemini में पेस्ट करें और उत्तर लाकर नीचे बॉक्स में पेस्ट कर दें।");
-                }}
-                className="px-2.5 py-1 bg-cyan-600 text-white rounded font-black text-[11px]"
-              >
-                📋 1-Click Gemini Prompt Copy करें
-              </button>
-            </div>
-            <textarea
-              rows={3}
-              value={bulkText}
-              onChange={(e) => setBulkText(e.target.value)}
-              placeholder={"📋 Gemini से कॉपी किए गए 150–200 प्रश्न यहाँ पेस्ट करें (4 या 5 विकल्प, कूट/मिलान, कथन/कारण सभी ऑटो-पहचान होंगे):\nQ: प्रश्न हिंदी / English\nA: विकल्प 1\nB: विकल्प 2\nC: विकल्प 3\nD: विकल्प 4\nE: विकल्प 5 (वैकल्पिक)\nANS: A\nEXP: व्याख्या यहाँ"}
-              className="w-full p-2 rounded bg-slate-900 border border-slate-600 text-white font-mono text-[11px]"
-            />
-            <button
-              onClick={() => {
-                const blocks = bulkText.replace(/\r/g, "").split(/\n(?=(?:Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])\s*)/i).filter((b) => b.trim().length > 5);
-                const added: any[] = [];
-                blocks.forEach((b, i) => {
-                  const lines = b.split("\n").map((l) => l.trim());
-                  const qIdxL = lines.findIndex((l) => /^(Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])/i.test(l));
-                  const qLine = qIdxL >= 0 ? lines[qIdxL] : lines.at(0);
-                  const getOpt = (ch: string) => {
-                    const re = new RegExp("^\\(?[" + ch + ch.toLowerCase() + "]\\)?[:.)]\\s*(.*)");
-                    const found = lines.find((l) => re.test(l));
-                    return found ? found.replace(re, "$1").trim() : "";
-                  };
-                  const oA = getOpt("A");
-                  const oB = getOpt("B");
-                  const oC = getOpt("C");
-                  const oD = getOpt("D");
-                  const oE = getOpt("E");
-                  const ansL = lines.find((l) => /^(ANS|ANSWER|उत्तर)[:.)]/i.test(l));
-                  const expL = lines.find((l) => /^(EXP|EXPLANATION|व्याख्या)[:.)]/i.test(l));
-                  if (qLine && oA && oB) {
-                    const cleanQ = qLine.replace(/^(Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])\s*/i, "").trim();
-                    const opts = [oA, oB, oC, oD].filter((x) => x.length > 0);
-                    if (oE) opts.push(oE);
-                    const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4 };
-                    const rawAns = ansL ? ansL.replace(/^(ANS|ANSWER|उत्तर)[:.)]\s*/i, "").trim().charAt(0).toUpperCase() : "A";
-                    const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
-                    const fullTxt = b.toLowerCase();
-                    const qType = fullTxt.includes("कथन") ? "AR" : fullTxt.includes("assertion") ? "AR" : fullTxt.includes("सूची") ? "MATCH" : fullTxt.includes("मिलान") ? "MATCH" : fullTxt.includes("list-i") ? "MATCH" : "STD";
-                    added.push({ id: Date.now() + i, cat: selCat, subEx: selSubExam, sec: selSection, sub: "सामान्य अध्ययन", type: qType, q: cleanQ, opts, correct: cIdx, exp: expL ? expL.replace(/^(EXP|EXPLANATION|व्याख्या)[:.)]\s*/i, "").trim() : "" });
-                  }
+             <div className="flex flex-wrap gap-1.5">
+          <button onClick={() => {
+            const p = "Generate 25 High-Level Bilingual (Hindi + English) Normal MCQs for " + selSubExam + " (" + selSection + "). Follow exact format:\nQ1. [Hindi Question]\n[English Question]\n(A) [Hindi / English]\n(B) [Hindi / English]\n(C) [Hindi / English]\n(D) [Hindi / English]\n(E) उपर्युक्त में से कोई नहीं / एक से अधिक (None/More than one)\nAns: A\nExp: [Detailed Bilingual Explanation in Hindi & English]";
+            navigator.clipboard.writeText(p);
+            alert("📝 साधारण प्रश्न (Bilingual) Prompt कॉपी हो गया! अब Gemini में पेस्ट करें।");
+          }} className="px-2.5 py-1 bg-cyan-600 text-white rounded-lg font-black text-[11px]">📝 साधारण प्रश्न Prompt</button>
+          <button onClick={() => {
+            const p = "Generate 25 Bilingual (Hindi + English) Assertion & Reason (कथन और कारण) MCQs for " + selSubExam + ". Follow exact format:\nQ1. नीचे दो कथन दिए गए हैं:\nकथन (A): [Hindi Assertion]\nकारण (R): [Hindi Reason]\nAssertion (A): [English Assertion]\nReason (R): [English Reason]\n(A) A और R दोनों सही हैं और R, A की सही व्याख्या है / Both A and R are true and R is correct explanation\n(B) A और R दोनों सही हैं परंतु R, A की सही व्याख्या नहीं है / Both true but R is not correct explanation\n(C) A सही है परंतु R गलत है / A is true but R is false\n(D) A गलत है परंतु R सही है / A is false but R is true\n(E) उपर्युक्त में से कोई नहीं / एक से अधिक\nAns: A\nExp: [Detailed Bilingual Explanation]";
+            navigator.clipboard.writeText(p);
+            alert("⚖️ कथन व कारण (Bilingual) Prompt कॉपी हो गया! अब Gemini में पेस्ट करें।");
+          }} className="px-2.5 py-1 bg-purple-600 text-white rounded-lg font-black text-[11px]">⚖️ कथन-कारण Prompt</button>
+          <button onClick={() => {
+            const p = "Generate 25 Bilingual (Hindi + English) Parallel Match-the-Following (कूट और मिलान) MCQs for " + selSubExam + ". Create a Parallel Vertical Table with List-I (A, B, C, D, E) on left and List-II (1, 2, 3, 4, 5) on right. Follow exact format:\nQ1. सूची-I को सूची-II से सुमेलित कीजिए / Match List-I with List-II:\nसूची-I / List-I | सूची-II / List-II\nA. [Item 1 Hindi/Eng] | 1. [Match 1 Hindi/Eng]\nB. [Item 2 Hindi/Eng] | 2. [Match 2 Hindi/Eng]\nC. [Item 3 Hindi/Eng] | 3. [Match 3 Hindi/Eng]\nD. [Item 4 Hindi/Eng] | 4. [Match 4 Hindi/Eng]\nE. [Item 5 Hindi/Eng] | 5. [Match 5 Hindi/Eng]\n(A) A-1, B-2, C-3, D-4, E-5\n(B) A-2, B-1, C-4, D-3, E-5\n(C) A-3, B-4, C-1, D-2, E-5\n(D) A-4, B-3, C-2, D-1, E-5\n(E) उपर्युक्त में से कोई नहीं / एक से अधिक\nAns: A\nExp: [Detailed Bilingual Explanation]";
+            navigator.clipboard.writeText(p);
+            alert("🔗 पैरेलल कूट-मिलान (List-I vs List-II) Prompt कॉपी हो गया! अब Gemini में पेस्ट करें।");
+          }} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded-lg font-black text-[11px]">🔗 पैरेलल कूट-मिलान Prompt</button>
+          <button onClick={() => {
+            const p = "Generate 30 Mixed Bilingual (Hindi + English) MCQs for " + selSubExam + " including Normal, Assertion-Reason (कथन-कारण), and Parallel Table Match-the-Following (सूची-I A,B,C,D,E | सूची-II 1,2,3,4,5) with 4 or 5 options (A to E), Ans: and Exp: in Hindi & English.";
+            navigator.clipboard.writeText(p);
+            alert("🌟 ऑल-इन-वन मिक्स (Bilingual) Prompt कॉपी हो गया!");
+          }} className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-black text-[11px]">🌟 All-in-One Combo</button>
+        </div>
+        <textarea
+          rows={4}
+          value={bulkText}
+          onChange={(e) => setBulkText(e.target.value)}
+          placeholder="📋 Gemini या कहीं से भी कॉपी किए गए 100-150+ प्रश्न यहाँ पेस्ट करें (साधारण, कथन-कारण, पैरेलल सूची-I vs सूची-II, और 4, 5, 6+ विकल्प सब ऑटो-पहचान होंगे)..."
+          className="w-full p-2 rounded bg-slate-900 border border-slate-600 text-white font-mono text-xs"
+        /> 
+        <button
+          onClick={() => {
+            const cleanRaw = bulkText.replace(/\r/g, "").trim();
+            if (!cleanRaw) { alert("⚠️ पहले बॉक्स में प्रश्न पेस्ट करें!"); return; }
+            const blocks = cleanRaw.split(/\n(?=(?:Q|Que|Question|प्रश्न|प्र\.|प्र)\s*\d*[\.\:\)\-]|\d+[\.\)]\s+)/i);
+            const added: any[] = [];
+            blocks.forEach((b, i) => {
+              const lines = b.split("\n").map((l) => l.trim()).filter((x) => x.length > 0);
+              if (lines.length < 3) return;
+              const optRe = /^[\(\[\{]?([A-Ha-h]|[1-8]|[क-ञ])[\)\]\}\.\:\-]\s*(.+)$/;
+              const ansRe = /^(?:Ans|Answer|Correct|Correct Answer|उत्तर|सही उत्तर)\s*[\:\-\=\.]?\s*[\(\[]?([A-Ha-h1-8क-ञ])/i;
+              const expRe = /^(?:Exp|Explanation|Solution|व्याख्या|हल|विवरण)\s*[\:\-\=\.]?\s*(.*)$/i;
+              const qLines: string[] = [];
+              const opts: string[] = [];
+              let rawAns = "";
+              let expText = "";
+              let inExp = false;
+              lines.forEach((ln, idx) => {
+                const am = ln.match(ansRe);
+                const em = ln.match(expRe);
+                const om = ln.match(optRe);
+                if (am && am.at(1)) {
+                  rawAns = (am.at(1) as string).toUpperCase();
+                  inExp = false;
+                } else if (em) {
+                  expText = em.at(1) ? (em.at(1) as string) : "";
+                  inExp = true;
+                } else if (inExp) {
+                  expText = expText + " " + ln;
+                } else if (om && om.at(2) && idx > 0 && !ln.includes("|")) {
+                  opts.push((om.at(2) as string).trim());
+                } else if (opts.length === 0) {
+                  qLines.push(idx === 0 ? ln.replace(/^(?:Q|Que|Question|प्रश्न|प्र\.|प्र)\s*\d*[\.\:\)\-]\s*|^\d+[\.\)]\s+/i, "") : ln);
+                }
+              });
+              if (qLines.length > 0 && opts.length >= 2) {
+                const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "क": 0, "ख": 1, "ग": 2, "घ": 3, "ङ": 4 };
+                const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
+                const fullQ = qLines.join("\n");
+                const low = fullQ.toLowerCase();
+                const qType = low.includes("कथन") ? "AR" : low.includes("assertion") ? "AR" : fullQ.includes("|") ? "MATCH" : low.includes("सूची") ? "MATCH" : low.includes("list-i") ? "MATCH" : "STD";
+                added.push({
+                  id: Date.now() + i,
+                  cat: selCat,
+                  subEx: selSubExam,
+                  sec: selSection,
+                  sub: newSub,
+                  type: qType,
+                  q: fullQ,
+                  opts: opts,
+                  correct: cIdx,
+                  exp: expText.trim()
                 });
-                if (added.length === 0) { alert("⚠️ फॉर्मेट जांचें! ऊपर '📋 1-Click Gemini Prompt Copy करें' दबाकर जेमिनी से प्रश्न बनवाएं और यहाँ पेस्ट करें।"); return; }
-                setQuestions([...added, ...questions]);
-                setBulkText("");
-                alert("✅ कुल " + added.length + " प्रश्न (4/5 विकल्प + पैटर्न ऑटो-डिटेक्ट) सीधे " + selSubExam + " में जुड़ गए!");
-              }}
-              className="w-full py-2 bg-emerald-600 text-white rounded-lg font-black"
-            >
-              ⚡ सभी प्रश्न एक साथ ऑटो-इम्पोर्ट करें
-            </button>
+              }
+            });
+            if (added.length === 0) { alert("⚠️ कोई मान्य प्रश्न नहीं मिला। ऊपर से कोई भी 1-Click Prompt कॉपी करके Gemini से प्रश्न बनवाएं!"); return; }
+            setQuestions([...added, ...questions]);
+            setBulkText("");
+            alert("🎉 कुल " + added.length + " प्रश्न (साधारण / कथन-कारण / पैरेलल मिलान • 4/5/6+ विकल्प) सीधे " + selSubExam + " में जुड़ गए!");
+          }}
+          className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow"
+        >
+          ⚡ सभी प्रश्न एक साथ ऑटो-इम्पोर्ट करें (100-150+ Universal Parser)
+        </button>
           </div>
                       <button onClick={() => {
                         const t = prompt("Live Test का नाम लिखें (जैसे: 72वीं BPSC Maha-Mock #2):"); if (!t || !t.trim()) return;
