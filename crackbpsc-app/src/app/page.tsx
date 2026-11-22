@@ -129,6 +129,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [bulkText, setBulkText] = useState<string>("");
   const [aiTopic, setAiTopic] = useState<string>("");
   const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [examTimers, setExamTimers] = useState<Record<string, number>>({});
+  const [testMins, setTestMins] = useState<number>(120);
   const [totalSec, setTotalSec] = useState<number>(1200);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
   const [repWrongOpt, setRepWrongOpt] = useState<string>("Option 1");
@@ -177,6 +179,7 @@ useEffect(() => {
           if (d.catOrder) setCatOrder(d.catOrder);
         if (d.hiddenCats) setHiddenCats(d.hiddenCats);
         if (d.geminiKey) setGeminiKey(d.geminiKey);
+        if (d.examTimers) setExamTimers(d.examTimers);  
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -218,11 +221,12 @@ useEffect(() => {
           qReports,
           catOrder,
           hiddenCats,
-          geminiKey
+          geminiKey,
+          examTimers
         }})
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey, examTimers]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -579,7 +583,8 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               setActiveList(matched);
               setQIdx(0);
               setQSec(0);
-              setTotalSec(matched.length * 60);
+              const savedMin = examTimers[selCat + "_" + selSubExam + "_" + selSection];
+              setTotalSec(savedMin ? savedMin * 60 : matched.length * 60);
               setAns({});
               setMarkedQs([]);
               setSubmitted(false);
@@ -693,6 +698,13 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               <button onClick={() => setExamTheme("LIGHT")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "LIGHT" ? "bg-amber-400 text-slate-950" : "bg-slate-700 text-slate-300")}>☀️ White Mode</button>
               <button onClick={() => setExamTheme("DARK")} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTheme === "DARK" ? "bg-sky-600 text-white" : "bg-slate-700 text-slate-300")}>🌙 Dark Mode</button>
             </div>
+           <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+            <span className="text-[11px] font-bold text-emerald-300">⏱️ समय ({selSubExam} • {selSection}): {examTimers[selCat + "_" + selSubExam + "_" + selSection] ? examTimers[selCat + "_" + selSubExam + "_" + selSection] + " मिनट" : "ऑटो (1 मिनट/प्रश्न)"}</span>
+            {Array.from([30, 60, 90, 120, 150]).map((m) => (
+              <button key={m} onClick={() => { setTestMins(m); setExamTimers({ ...examTimers, [selCat + "_" + selSubExam + "_" + selSection]: m }); }} className={"px-2 py-0.5 rounded font-black text-[11px] " + (examTimers[selCat + "_" + selSubExam + "_" + selSection] === m ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-white")}>{m} Min</button>
+            ))}
+            <button onClick={() => { const cm = Number(prompt(selSubExam + " (" + selSection + ") के लिए मिनट लिखें (जैसे 90, 150, 180):", String(testMins))); if (cm >= 1) { setTestMins(cm); setExamTimers({ ...examTimers, [selCat + "_" + selSubExam + "_" + selSection]: cm }); } }} className="px-2 py-0.5 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
+          </div>     
           </div>
               <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
@@ -816,7 +828,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             />
             <button
               onClick={() => {
-                const blocks = bulkText.split(/\n\s*\n/).filter((b) => b.trim().length > 5);
+                const blocks = bulkText.replace(/\r/g, "").split(/\n(?=(?:Q\d*[:.)]|प्रश्न\d*[:.)]|\d+[:.)])\s*)/i).filter((b) => b.trim().length > 5);
                 const added: any[] = [];
                 blocks.forEach((b, i) => {
                   const lines = b.split("\n").map((l) => l.trim());
