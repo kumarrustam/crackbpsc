@@ -346,7 +346,9 @@ useEffect(() => {
     return () => clearInterval(timer);
   }, [inExam, submitted, isPaused]);
   if (inExam) {
-    const activeList = examQs.length > 0 ? examQs : questions;
+    const rawList = examQs.length > 0 ? examQs : questions;
+    const qLim = examQLimits[selSubExam + "_" + selSection];
+    const activeList = qLim ? rawList.slice(0, qLim) : rawList;
     const q = activeList[qIdx];
     let right = 0, wrong = 0, skipped = 0;
 activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (ans[i] === item.correct) right++; else wrong++; });
@@ -810,11 +812,13 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
                 alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है!");
                 return;
               }
-              setActiveList(matched);
-              setQIdx(0);
-              setQSec(0);
-              const savedMin = examTimers[selCat + "_" + selSubExam + "_" + selSection];
-              setTotalSec(savedMin ? savedMin * 60 : matched.length * 60);
+              const limVal = examQLimits[selSubExam + "_" + selSection] ? examQLimits[selSubExam + "_" + selSection] : examQLimits[selCat + "_" + selSubExam + "_" + selSection];
+                const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                setActiveList(finalQs);
+                setQIdx(0);
+                setQSec(0);
+                const savedMin = examTimers[selSubExam + "_" + selSection] ? examTimers[selSubExam + "_" + selSection] : examTimers[selCat + "_" + selSubExam + "_" + selSection] ? examTimers[selCat + "_" + selSubExam + "_" + selSection] : testMins;
+                setTotalSec(savedMin ? savedMin * 60 : finalQs.length * 60);
               setAns({});
               setMarkedQs([]);
               setSubmitted(false);
@@ -1082,7 +1086,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             alert("⚖️ कथन व कारण (Bilingual) Prompt कॉपी हो गया! अब Gemini में पेस्ट करें।");
           }} className="px-2.5 py-1 bg-purple-600 text-white rounded-lg font-black text-[11px]">⚖️ कथन-कारण Prompt</button>
           <button onClick={() => {
-            const p = "Generate 25 Bilingual (Hindi + English) Parallel Match-the-Following (कूट और मिलान) MCQs for " + selSubExam + ". Create a Parallel Vertical Table with List-I (A, B, C, D, E) on left and List-II (1, 2, 3, 4, 5) on right. Follow exact format:\nQ1. सूची-I को सूची-II से सुमेलित कीजिए / Match List-I with List-II:\nसूची-I / List-I | सूची-II / List-II\nA. [Item 1 Hindi/Eng] | 1. [Match 1 Hindi/Eng]\nB. [Item 2 Hindi/Eng] | 2. [Match 2 Hindi/Eng]\nC. [Item 3 Hindi/Eng] | 3. [Match 3 Hindi/Eng]\nD. [Item 4 Hindi/Eng] | 4. [Match 4 Hindi/Eng]\nE. [Item 5 Hindi/Eng] | 5. [Match 5 Hindi/Eng]\n(A) A-1, B-2, C-3, D-4, E-5\n(B) A-2, B-1, C-4, D-3, E-5\n(C) A-3, B-4, C-1, D-2, E-5\n(D) A-4, B-3, C-2, D-1, E-5\n(E) उपर्युक्त में से कोई नहीं / एक से अधिक\nAns: A\nExp: [Detailed Bilingual Explanation]";
+            const p = "Generate 25 Bilingual (Hindi + English) Parallel Match-the-Following (कूट और मिलान) MCQs for " + selSubExam + ". IMPORTANT: Instead of generic 'List-I | List-II', ALWAYS use topic-specific parallel column headers like 'वंश / Dynasty | संस्थापक / Founder', 'शासक / Ruler | राजधानी / Capital', 'घास के मैदान / Grasslands | देश / Country', or 'उद्यान / National Park | राज्य / State'. Format:\nQ1. सूची-I को सूची-II से सुमेलित कीजिए / Match List-I with List-II:\nसूची-I (वंश) / List-I (Dynasty) | सूची-II (संस्थापक) / List-II (Founder)\nA. [Item 1 Hindi / Eng] | 1. [Match 1 Hindi / Eng]\nB. [Item 2 Hindi / Eng] | 2. [Match 2 Hindi / Eng]\nC. [Item 3 Hindi / Eng] | 3. [Match 3 Hindi / Eng]\nD. [Item 4 Hindi / Eng] | 4. [Match 4 Hindi / Eng]\nE. [Item 5 Hindi / Eng] | 5. [Match 5 Hindi / Eng]\n(A) A-1, B-2, C-3, D-4, E-5\n(B) A-2, B-1, C-4, D-3, E-5\n(C) A-3, B-4, C-1, D-2, E-5\n(D) A-4, B-3, C-2, D-1, E-5\n(E) उपर्युक्त में से कोई नहीं / एक से अधिक\nAns: A\nExp: [Detailed Bilingual Explanation]";
             navigator.clipboard.writeText(p);
             alert("🔗 पैरेलल कूट-मिलान (List-I vs List-II) Prompt कॉपी हो गया! अब Gemini में पेस्ट करें।");
           }} className="px-2.5 py-1 bg-amber-500 text-slate-950 rounded-lg font-black text-[11px]">🔗 पैरेलल कूट-मिलान Prompt</button>
@@ -1092,7 +1096,7 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
             alert("🌟 ऑल-इन-वन मिक्स (Bilingual) Prompt कॉपी हो गया!");
           }} className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-black text-[11px]">🌟 All-in-One Combo</button>
            <button onClick={() => {
-            const p = "Generate 50 High-Level Bilingual (Hindi + English) MCQs for " + selSubExam + " covering ALL subjects: History (इतिहास), Geography (भूगोल), Polity (राजव्यवस्था), Economics (इकोनॉमी), General Science (सामान्य विज्ञान), Environment (पर्यावरण), Bihar & State GK/Current Affairs (बिहार विशेष व करंट अफेयर्स), Maths (गणित), Reasoning (रीज़निंग), Pedagogy (शिक्षण शास्त्र), Hindi (हिंदी), English, Sanskrit (संस्कृत), Maithili (मैथिली), Urdu (उर्दू). Include Normal, Assertion-Reason (कथन-कारण), and Parallel Table Match (सूची-I A,B,C,D,E | सूची-II 1,2,3,4,5) with 4 or 5 options, Ans: and Exp: in Hindi & English.";
+            const p = "Generate 50 High-Level Bilingual (Hindi + English) MCQs for " + selSubExam + " covering ALL 16+ subjects: History (इतिहास), Geography (भूगोल), Polity (राजव्यवस्था), Economics (इकोनॉमी), General Science (सामान्य विज्ञान), Environment (पर्यावरण), Bihar & State GK/Current Affairs (बिहार विशेष व राज्य करंट अफेयर्स), Maths (गणित), Reasoning (रीज़निंग), Pedagogy (शिक्षण शास्त्र), Hindi (हिंदी), English, Sanskrit (संस्कृत), Maithili (मैथिली), Urdu (उर्दू). Include Normal, Assertion-Reason (कथन-कारण), and Parallel Table Match with topic-specific headers (e.g., वंश / Dynasty | संस्थापक / Founder, शासक / Ruler | राजधानी / Capital, राज्य / State | उद्यान / Park) with 4 or 5 options, Ans: and Exp: in Hindi & English.";
             navigator.clipboard.writeText(p);
             alert("📚 All-Subjects Master Bilingual Prompt (16+ विषय) कॉपी हो गया! अब Gemini में पेस्ट करें।");
           }} className="px-2.5 py-1 bg-emerald-500 text-slate-950 rounded-lg font-black text-[11px]">📚 All-Subjects Master Prompt</button>    
