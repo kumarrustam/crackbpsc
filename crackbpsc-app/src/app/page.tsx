@@ -1501,33 +1501,85 @@ activeList.forEach((item, i) => { if (ans[i] === undefined) skipped++; else if (
               ))}
             </div>
           )}
-            {allowAd && (
-            <div className="p-3 bg-slate-50 border rounded-xl space-y-2">
-              <div className="font-bold text-indigo-800">📢 Ad Studio (प्रकार और दिन चुनें):</div>
-              <div className="flex flex-wrap gap-1.5">
-                {["POPUP", "SPIN", "TIMER", "BANNER"].map((t) => (
-                  <button key={t} onClick={() => { if (t !== "BANNER" && !adCanPopup) { alert("🔒 Popup Ads बंद हैं!"); return; } setAdType(t); setPopupOpen(true); setAdHideToday(false); }} className={"px-2.5 py-1 rounded font-bold border " + (adType === t ? "bg-indigo-600 text-white" : "bg-white")}>{t}</button>
-                ))}
-              </div>
-              <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक..." className="w-full border rounded p-1.5 bg-white font-bold" />
-              <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विज्ञापन विवरण..." className="w-full border rounded p-1.5 bg-white" />
-              <div className="flex flex-wrap items-center gap-1.5">
-  <span className="font-bold">साइज़ (Size):</span>
-  {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📰 बड़ा पोस्टर" }, { id: "FULL", name: "📱 फुल स्क्रीन" }].map((s) => (
-    <button key={s.id} onClick={() => setAdSize(s.id)} className={"px-2 py-1 rounded font-bold border " + (adSize === s.id ? "bg-amber-500 text-black" : "bg-white")}>{s.name}</button>
-  ))}
-</div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-bold">अवधि:</span>
-                <button onClick={() => { setIsUnlimited(false); setAdDayCount(Math.max(1, adDayCount - 1)); }} className="bg-rose-600 text-white font-black px-3 py-1 rounded">−</button>
-                <span className="bg-white border px-3 py-1 rounded font-bold">{activeDaysText}</span>
-                <button onClick={() => { setIsUnlimited(false); setAdDayCount(adDayCount + 1); }} className="bg-emerald-600 text-white font-black px-3 py-1 rounded">+</button>
-                <button onClick={() => setIsUnlimited(!isUnlimited)} className={"px-2 py-1 rounded border font-bold " + (isUnlimited ? "bg-indigo-600 text-white" : "bg-white")}>♾️ Unlimited</button>
-              </div>
-              <button onClick={() => { setPopupOpen(true); setAdHideToday(false); alert("✅ विज्ञापन लाइव हो गया!"); }} className="w-full bg-emerald-600 text-white font-bold py-2 rounded">🚀 विज्ञापन लाइव करें</button>
+        {allowAd && (
+          <div className="p-3.5 bg-slate-900 text-white border-2 border-amber-400 rounded-2xl space-y-3 text-xs shadow-xl">
+            <div className="font-black text-amber-300 text-sm">📢 Pro Ad Campaign & Smart Scheduler</div>
+            <div className="flex flex-wrap gap-1.5">
+              {["POPUP", "SPIN", "TIMER", "BANNER"].map((t) => (
+                <button key={t} onClick={() => setAdType(t)} className={"px-2.5 py-1 rounded-lg font-black text-[11px] " + (adType === t ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-white")}>
+                  {t === "SPIN" ? "🎡 SPIN" : t === "TIMER" ? "⏳ TIMER" : t === "BANNER" ? "🪧 BANNER" : "💬 POPUP"}
+                </button>
+              ))}
             </div>
-          )}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <input value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="विज्ञापन शीर्षक (Title)..." className="p-2 rounded-lg bg-slate-800 border border-slate-600 text-white font-bold" />
+              <input value={adDesc} onChange={(e) => setAdDesc(e.target.value)} placeholder="विवरण (Description)..." className="p-2 rounded-lg bg-slate-800 border border-slate-600 text-white" />
+            </div>
+            <div className="space-y-2 pt-1 border-t border-slate-700">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-cyan-300 text-[11px]">📐 साइज़:</span>
+                {[{ id: "SMALL", name: "📏 छोटी पट्टी" }, { id: "MEDIUM", name: "🖼️ मध्यम" }, { id: "LARGE", name: "📸 बड़ा पोस्टर" }, { id: "FULL", name: "🖥️ फुल स्क्रीन" }].map((s) => (
+                  <button key={s.id} onClick={() => { setAdSize(s.id); setAdCustomW(""); setAdCustomH(""); }} className={"px-2 py-1 rounded-lg font-black text-[11px] " + (adSize === s.id ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300")}>
+                    {s.name}
+                  </button>
+                ))}
+                <button onClick={() => setAdSize(adSize === "CUSTOM" ? "MEDIUM" : "CUSTOM")} className={"px-2.5 py-1 rounded-lg font-black text-[11px] border " + (adSize === "CUSTOM" ? "bg-cyan-500 text-slate-950 border-cyan-300" : "bg-slate-800 text-cyan-300 border-cyan-700")}>
+                  ✏️ Custom Size
+                </button>
+              </div>
+              {adSize === "CUSTOM" && (
+                <div className="p-2.5 bg-slate-950/90 border border-cyan-500/60 rounded-xl space-y-2">
+                  <div className="flex justify-between items-center text-[11px] font-bold text-cyan-300">
+                    <span>🎛️ Custom Dimension Studio (चौड़ाई और ऊंचाई)</span>
+                    <button onClick={() => { setAdCustomW(""); setAdCustomH(""); }} className="text-rose-400 underline">रीसेट</button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input value={adCustomW} onChange={(e) => setAdCustomW(e.target.value)} placeholder="चौड़ाई (जैसे 360px)" className="w-full p-1.5 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold" />
+                    <input value={adCustomH} onChange={(e) => setAdCustomH(e.target.value)} placeholder="ऊंचाई (जैसे 480px)" className="w-full p-1.5 rounded-lg bg-slate-800 border border-cyan-700 text-white text-xs font-bold" />
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {[{ l: "1:1 Square", w: "360px", h: "360px" }, { l: "4:5 Portrait", w: "360px", h: "450px" }, { l: "9:16 Story", w: "340px", h: "580px" }].map((pr) => (
+                      <button key={pr.l} onClick={() => { setAdCustomW(pr.w); setAdCustomH(pr.h); }} className="px-2 py-0.5 bg-slate-800 text-cyan-200 rounded text-[10px] font-bold border border-slate-700">
+                        {pr.l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+           <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="font-bold text-emerald-300 text-[11px]">🔢 प्रतिदिन कितनी बार दिखे:</span>
+              {[1, 2, 3, 5, 10].map((n) => (
+                <button key={n} onClick={() => setAdMaxDaily(n)} className={"px-2 py-0.5 rounded font-black text-[11px] " + (adMaxDaily === n ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-white")}>
+                  {n} बार
+                </button>
+              ))}
+              <button onClick={() => { const c = Number(prompt("प्रतिदिन कितनी बार दिखाना है?", String(adMaxDaily))); if (c >= 1) setAdMaxDaily(c); }} className="px-2 py-0.5 bg-slate-700 rounded text-[11px] font-bold">✏️ Custom</button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-bold text-amber-300 text-[11px]">⏰ समय स्लॉट:</span>
+              {[{ id: "ALL", n: "पूरा दिन" }, { id: "8AM", n: "8:00 AM" }, { id: "10AM", n: "10:00 AM" }, { id: "EVENING", n: "शाम (5-9 PM)" }].map((sl) => (
+                <button key={sl.id} onClick={() => setAdTimeSlot(sl.id)} className={"px-2 py-0.5 rounded font-black text-[11px] " + (adTimeSlot === sl.id ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-white")}>
+                  {sl.n}
+                </button>
+              ))}
+              <button onClick={() => { const cs = prompt("घंटे लिखें (जैसे 9-12 या 18-22):", adTimeSlot); if (cs) setAdTimeSlot(cs); }} className="px-2 py-0.5 bg-slate-700 rounded text-[11px] font-bold">✏️ Custom Time</button>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-bold text-rose-300 text-[11px]">📅 तारीख से:</span>
+              <input type="date" value={adStartDate} onChange={(e) => setAdStartDate(e.target.value)} className="p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+              <span className="font-bold text-rose-300 text-[11px]">तक:</span>
+              <input type="date" value={adEndDate} onChange={(e) => setAdEndDate(e.target.value)} className="p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="font-bold text-cyan-300 text-[11px]">🎯 क्लिक करने पर कहाँ जाए:</span>
+              <button onClick={() => setAdTargetMode("EXAM")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "EXAM" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>📚 चुनी हुई परीक्षा ({selSubExam})</button>
+              <button onClick={() => setAdTargetMode("LINK")} className={"px-2 py-1 rounded font-black text-[11px] " + (adTargetMode === "LINK" ? "bg-cyan-500 text-slate-950" : "bg-slate-800 text-white")}>🔗 कस्टम लिंक (URL)</button>
+              {adTargetMode === "LINK" && <input value={adLink} onChange={(e) => setAdLink(e.target.value)} placeholder="https://..." className="flex-1 min-w-[160px] p-1 rounded bg-slate-800 border border-slate-600 text-white text-[11px]" />}
+            </div>
+            <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
+          </div> 
+      
       )}
       {loginOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
