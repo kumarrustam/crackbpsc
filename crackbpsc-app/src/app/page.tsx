@@ -546,11 +546,10 @@ useEffect(() => {
           </div>
           ) : solMode ? (
           <div
-              onTouchStart={(e) => { (e.currentTarget as any)._tx = e.touches[0].clientX; }}
-           onTouchEnd={(e) => {
-             const dx = e.changedTouches[0].clientX - ((e.currentTarget as any)._tx ? (e.currentTarget as any)._tx : 0);
+              onTouchStart={(e) => { (e.currentTarget as any)._tx = e.touches.item(0)?.clientX; }}
               onTouchEnd={(e) => {
-                const dx = e.changedTouches.clientX - ((e.currentTarget as any)._tx ? (e.currentTarget as any)._tx : 0);
+                const endX = e.changedTouches.item(0)?.clientX;
+                const dx = (endX !== undefined ? endX : 0) - ((e.currentTarget as any)._tx ? (e.currentTarget as any)._tx : 0);
                 if (dx < -50 && qIdx + 1 < activeList.length) setQIdx(qIdx + 1);
                 if (dx > 50 && qIdx > 0) setQIdx(qIdx - 1);
               }}
