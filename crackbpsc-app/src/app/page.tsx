@@ -545,18 +545,27 @@ useEffect(() => {
               })()}
           </div>
           ) : solMode ? (
-            <div className="p-3 sm:p-4 space-y-2.5">
+          <div
+              onTouchStart={(e) => { (e.currentTarget as any)._tx = e.touches.clientX; }}
+              onTouchEnd={(e) => {
+                const dx = e.changedTouches.clientX - ((e.currentTarget as any)._tx ? (e.currentTarget as any)._tx : 0);
+                if (dx < -50 && qIdx + 1 < activeList.length) setQIdx(qIdx + 1);
+                if (dx > 50 && qIdx > 0) setQIdx(qIdx - 1);
+              }}
+              className="p-3 sm:p-4 space-y-2.5"
+            >
               <div className="flex flex-wrap items-center justify-between gap-1.5 pb-1.5 border-b border-slate-700/80">
                 <span className="font-extrabold text-xs sm:text-sm text-cyan-300">📖 व्याख्या व उत्तर ({qIdx + 1}/{activeList.length})</span>
                 <div className="flex flex-wrap items-center gap-1 text-[10px] font-bold">
+                  <button onClick={() => setExamLang(examLang === "BO" ? "HI" : examLang === "HI" ? "EN" : "BO")} className="px-2 py-0.5 bg-cyan-600 text-white rounded-md">अ/A {examLang}</button>
                   <button onClick={() => setSolFilter("ALL")} className={"px-2 py-0.5 rounded-md " + (solFilter === "ALL" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300")}>सभी</button>
                   <button onClick={() => setSolFilter("RIGHT")} className={"px-2 py-0.5 rounded-md " + (solFilter === "RIGHT" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300")}>✓ सही</button>
                   <button onClick={() => setSolFilter("WRONG")} className={"px-2 py-0.5 rounded-md " + (solFilter === "WRONG" ? "bg-rose-600 text-white" : "bg-slate-800 text-slate-300")}>✕ गलत</button>
                   <button onClick={() => setSolFilter("SKIP")} className={"px-2 py-0.5 rounded-md " + (solFilter === "SKIP" ? "bg-amber-500 text-slate-950" : "bg-slate-800 text-slate-300")}>⏭ छोड़े</button>
-                  <button onClick={() => setSolMode(false)} className="px-2 py-0.5 bg-slate-700 text-amber-300 rounded-md ml-1">📊 रिजल्ट</button>
+                  <button onClick={() => setSolMode(false)} className="px-2 py-0.5 bg-slate-700 text-amber-300 rounded-md">📊 रिजल्ट</button>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto p-1.5 bg-slate-900/70 rounded-lg border border-slate-800">
+            <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto p-1.5 bg-slate-900/70 rounded-lg border border-slate-800">
                 {activeList.map((it: any, idx: number) => {
                   const isR = ans[idx] === it.correct;
                   const isW = ans[idx] !== undefined && ans[idx] !== it.correct;
@@ -568,39 +577,71 @@ useEffect(() => {
                   return <button key={idx} onClick={() => setQIdx(idx)} className={"w-6 h-6 rounded-md font-bold text-[10px] " + c}>{idx + 1}</button>;
                 })}
               </div>
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-700/80 space-y-2.5 text-white">
-                <div className="flex items-center justify-between text-[11px] font-bold">
-                  <span className="text-amber-300">प्रश्न #{qIdx + 1}</span>
-                  <span className={"px-2 py-0.5 rounded-full text-[10px] " + (ans[qIdx] === q.correct ? "bg-emerald-600/90" : ans[qIdx] !== undefined ? "bg-rose-600/90" : "bg-amber-500 text-slate-950")}>
-                    {ans[qIdx] === q.correct ? "✓ सही उत्तर" : ans[qIdx] !== undefined ? "✕ गलत उत्तर" : "⏭ छोड़ा गया"}
-                  </span>
-                </div>
-                <div className="font-bold text-sm leading-relaxed whitespace-pre-line">{q.q}</div>
-                <div className="space-y-1.5">
-                  {q.opts.map((o: any, idx: number) => {
-                    const isCorrectOpt = idx === q.correct;
-                    const isUserWrong = ans[qIdx] === idx && idx !== q.correct;
-                    const boxCls = isCorrectOpt ? "bg-emerald-900/70 border-emerald-400 text-emerald-100" : isUserWrong ? "bg-rose-900/70 border-rose-400 text-rose-100" : "bg-slate-800/70 border-slate-700 text-slate-300";
-                    return (
-                      <div key={idx} className={"py-2 px-2.5 rounded-lg border flex items-center justify-between gap-2 text-xs font-semibold " + boxCls}>
-                        <span><b>({String.fromCharCode(65 + idx)})</b> {o}</span>
-                        {isCorrectOpt && <span className="px-1.5 py-0.5 bg-emerald-500 text-slate-950 rounded font-bold text-[10px] shrink-0">✓ सही</span>}
-                        {isUserWrong && <span className="px-1.5 py-0.5 bg-rose-500 text-white rounded font-bold text-[10px] shrink-0">✕ आपका</span>}
+            {(() => {
+                const trLine = (txt: string) => {
+                  const parts = String(txt).split(" / ");
+                  if (parts.length < 2) return txt;
+                  if (examLang === "HI") return parts.at(0);
+                  if (examLang === "EN") return parts.slice(1).join(" / ");
+                  return txt;
+                };
+                const rawLines = String(q.q).split("\n").map((l: string) => l.trim()).filter((x: string) => x.length > 0);
+                const tableRows = rawLines.filter((l: string) => l.includes("|"));
+                const normalLines = rawLines.filter((l: string) => !l.includes("|"));
+                const rawExp = q.exp ? q.exp : q.explanation ? q.explanation : "इस प्रश्न की व्याख्या उपलब्ध नहीं है।";
+                return (
+                  <div className="p-3 bg-slate-900 rounded-xl border border-slate-700/80 space-y-2.5 text-white">
+                    <div className="flex items-center justify-between text-[11px] font-bold">
+                      <span className="text-amber-300">प्रश्न #{qIdx + 1}</span>
+                      <span className={"px-2 py-0.5 rounded-full text-[10px] " + (ans[qIdx] === q.correct ? "bg-emerald-600/90" : ans[qIdx] !== undefined ? "bg-rose-600/90" : "bg-amber-500 text-slate-950")}>
+                        {ans[qIdx] === q.correct ? "✓ सही उत्तर" : ans[qIdx] !== undefined ? "✕ गलत उत्तर" : "⏭ छोड़ा गया"}
+                      </span>
+                    </div>
+                    <div className="font-bold text-sm leading-relaxed space-y-1">
+                      {normalLines.map((ln: string, i: number) => <div key={i}>{trLine(ln)}</div>)}
+                    </div>
+                    {tableRows.length > 0 && (
+                      <div className="rounded-xl overflow-hidden border-2 border-indigo-400/60 bg-slate-950 text-white text-xs">
+                        {tableRows.map((row: string, rIdx: number) => {
+                          const cols = row.split("|");
+                          const leftCol = trLine(String(cols.at(0) ? cols.at(0) : "").trim());
+                          const rightCol = trLine(cols.slice(1).join("|").trim());
+                          return (
+                            <div key={rIdx} className={"grid grid-cols-2 divide-x divide-indigo-400/50 border-b border-indigo-400/30 last:border-b-0 " + (rIdx === 0 ? "bg-indigo-700 font-black text-amber-200" : "font-bold")}>
+                              <div className="p-2">{leftCol}</div>
+                              <div className="p-2">{rightCol}</div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
-                <div className="p-2.5 rounded-lg bg-indigo-950/80 border border-cyan-500/40 text-xs space-y-1">
-                  <div className="font-bold text-cyan-300">💡 विस्तृत व्याख्या:</div>
-                  <div className="text-slate-100 leading-relaxed whitespace-pre-line">{q.exp ? q.exp : q.explanation ? q.explanation : "इस प्रश्न की व्याख्या उपलब्ध नहीं है।"}</div>
-                </div>
-              </div>
+                    )}
+                   <div className="space-y-1.5">
+                      {q.opts.map((o: any, idx: number) => {
+                        const isCorrectOpt = idx === q.correct;
+                        const isUserWrong = ans[qIdx] === idx && idx !== q.correct;
+                        const boxCls = isCorrectOpt ? "bg-emerald-900/70 border-emerald-400 text-emerald-100" : isUserWrong ? "bg-rose-900/70 border-rose-400 text-rose-100" : "bg-slate-800/70 border-slate-700 text-slate-300";
+                        return (
+                          <div key={idx} className={"py-2 px-2.5 rounded-lg border flex items-center justify-between gap-2 text-xs font-semibold " + boxCls}>
+                            <span><b>({String.fromCharCode(65 + idx)})</b> {trLine(o)}</span>
+                            {isCorrectOpt && <span className="px-1.5 py-0.5 bg-emerald-500 text-slate-950 rounded font-bold text-[10px] shrink-0">✓ सही</span>}
+                            {isUserWrong && <span className="px-1.5 py-0.5 bg-rose-500 text-white rounded font-bold text-[10px] shrink-0">✕ आपका</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-indigo-950/80 border border-cyan-500/40 text-xs space-y-1">
+                      <div className="font-bold text-cyan-300">💡 विस्तृत व्याख्या:</div>
+                      <div className="text-slate-100 leading-relaxed whitespace-pre-line">{trLine(rawExp)}</div>
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="flex items-center justify-between gap-2 text-xs font-bold">
                 <button onClick={() => { if (qIdx > 0) setQIdx(qIdx - 1); }} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600">⬅ पिछला</button>
                 <button onClick={() => setSolMode(false)} className="px-3 py-1.5 bg-amber-400/90 hover:bg-amber-400 text-slate-950 rounded-lg">📊 रिजल्ट</button>
                 <button onClick={() => { if (qIdx + 1 < activeList.length) setQIdx(qIdx + 1); }} className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg">अगला ➔</button>
               </div>
-            </div>
+            </div> 
           ) : (
             <div className={((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "bg-[#181A1F] text-slate-100 border-slate-700" : "bg-white text-slate-900 border-slate-300") + " rounded-2xl border-2 overflow-hidden shadow-xl"}>
             <div className={((examTheme === "DARK" ? true : examTheme === "LIGHT" ? false : (new Date().getHours() >= 18 ? true : new Date().getHours() < 6)) ? "bg-[#111317] border-slate-800" : "bg-slate-100 border-slate-300") + " px-3 py-2.5 border-b flex justify-between items-center gap-2"}>
@@ -624,7 +665,15 @@ useEffect(() => {
                 <button onClick={() => setIsPaused(false)} className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-black text-xs">▶️ परीक्षा फिर से शुरू करें (Resume)</button>
               </div>
             ) : (
-              <div className="p-3 sm:p-4 space-y-3">
+              <div
+            onTouchStart={(e) => { (e.currentTarget as any)._tx = e.touches.clientX; }}
+            onTouchEnd={(e) => {
+              const dx = e.changedTouches.clientX - ((e.currentTarget as any)._tx ? (e.currentTarget as any)._tx : 0);
+              if (dx < -50 && qIdx + 1 < activeList.length) { setQIdx(qIdx + 1); setQSec(0); }
+              if (dx > 50 && qIdx > 0) { setQIdx(qIdx - 1); setQSec(0); }
+            }}
+            className="p-3 sm:p-4 space-y-3"
+          >
                 <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-700/50 text-xs">
                   <div className="flex items-center gap-2 font-black">
                     <span className="px-2 py-0.5 rounded bg-slate-700 text-white">{qIdx + 1} / {activeList.length}</span>
