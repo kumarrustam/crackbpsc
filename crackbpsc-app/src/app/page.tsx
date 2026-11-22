@@ -159,6 +159,13 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (u) setUser(u);
   }, []);
   useEffect(() => {
+    const sl = localStorage.getItem("cb_staff_list");
+    if (sl) setStaffList(JSON.parse(sl));
+  }, []);
+  useEffect(() => {
+    if (staffList && staffList.length > 0) localStorage.setItem("cb_staff_list", JSON.stringify(staffList));
+  }, [staffList]);
+  useEffect(() => {
     localStorage.setItem("cb_role", role);
   }, [role]);
   useEffect(() => {
