@@ -154,6 +154,9 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [optERules, setOptERules] = useState<Record<string, boolean>>({});
   const [reviewQs, setReviewQs] = useState<number[]>([]);
   const [solMode, setSolMode] = useState<boolean>(false);
+  const [examAttempts, setExamAttempts] = useState<Record<string, number>>({});
+  const [writerCanSetAttempts, setWriterCanSetAttempts] = useState<boolean>(true);
+  const [attemptHistory, setAttemptHistory] = useState<Record<string, any[]>>({});
   const [solFilter, setSolFilter] = useState<string>("ALL");
   const [adVer, setAdVer] = useState<number>(1);
   const [spinDeg, setSpinDeg] = useState<number>(0);
@@ -212,6 +215,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (d.bulkText) setBulkText(d.bulkText);
     if (d.examQLimits) setExamQLimits(d.examQLimits);
     if (d.optERules) setOptERules(d.optERules);
+    if (d.examAttempts) setExamAttempts(d.examAttempts);
+    if (d.writerCanSetAttempts !== undefined) setWriterCanSetAttempts(d.writerCanSetAttempts);
   }, []);
   useEffect(() => {
     const payload = {
@@ -219,7 +224,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
       examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
       adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-      adLink, adVer, bulkText, examQLimits, optERules
+      adLink, adVer, bulkText, examQLimits, optERules, examAttempts, writerCanSetAttempts
     };
     localStorage.setItem("cb_master_cfg_v1", JSON.stringify(payload));
   }, [
@@ -227,7 +232,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel,
     examTimers, testMins, liveTests, regLiveIds, adType, adTitle, adDesc, adSize, adCustomW, adCustomH,
     adMaxDaily, adTimeSlot, adStartDate, adEndDate, adTargetMode, adTargetCat, adTargetSub, adTargetSec,
-    adLink, adVer, bulkText, examQLimits, optERules
+    adLink, adVer, bulkText, examQLimits, optERules, examAttempts, writerCanSetAttempts
   ]);
   useEffect(() => {
     const sl = localStorage.getItem("cb_staff_list");
@@ -286,7 +291,9 @@ useEffect(() => {
         if (d.geminiKey) setGeminiKey(d.geminiKey);
         if (d.examTimers) setExamTimers(d.examTimers);
          if (d.examQLimits) setExamQLimits(d.examQLimits);
-          if (d.optERules) setOptERules(d.optERules); 
+          if (d.optERules) setOptERules(d.optERules);
+          if (d.examAttempts) setExamAttempts(d.examAttempts);
+    if (d.writerCanSetAttempts !== undefined) setWriterCanSetAttempts(d.writerCanSetAttempts);
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -307,7 +314,7 @@ useEffect(() => {
       localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
       localStorage.setItem("cb_pass", JSON.stringify({ showPass, passBadge, passTitle, passBtn, passMsg, passFeats }));
       localStorage.setItem("cb_pass_acc", JSON.stringify({ w: writerPass, m: modPass, a: adPass }));
-      fetch("https://supabase.co", {
+      const res = await fetch("https://supabase.co", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -330,11 +337,13 @@ useEffect(() => {
           geminiKey,
           examTimers,
             examQLimits,
-          optERules
+          optERules,
+          examAttempts,
+          writerCanSetAttempts
         }})
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey, examTimers]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey, examTimers, examQLimits, optERules, examAttempts, writerCanSetAttempts]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
@@ -382,17 +391,20 @@ useEffect(() => {
   <div className="max-w-3xl mx-auto bg-white text-slate-950 rounded-2xl border-2 border-slate-300 shadow-lg p-5 space-y-4">
           <div className="flex justify-between items-center border-b pb-3">
             <div className="flex flex-wrap items-center gap-1.5"><h2 className="font-bold text-blue-700">{goal}</h2><span className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-black">+{activePosMark} | {activeNegEnabled ? "-" + activeNegLabel + " Neg" : "No Negative"}</span></div>
-            {!submitted ? <button onClick={() => setSubmitted(true)} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Submit</button> : <button onClick={() => { setInExam(false); setSubmitted(false); }} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">Home</button>}
+            {!submitted ? <button onClick={() => { const hk = selSubExam + "_" + selSection; const pr = attemptHistory[hk] ? attemptHistory[hk] : []; setAttemptHistory({ ...attemptHistory, [hk]: [...pr, { score, right, wrong, skipped, ans: { ...ans }, date: new Date().toLocaleDateString() }] }); setSubmitted(true); }} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg font-bold">Submit</button> : null}
           </div>
           {submitted ? (
             <div className="space-y-3">
             <div className="p-4 bg-amber-100 border-2 border-amber-400 rounded-xl text-slate-950 font-black">🏆 कुल स्कोर: {score} / {questions.length}</div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-extrabold">
-              <div className="bg-emerald-600 text-white p-2 rounded-lg">✅ सही: {right} (+{posTotal.toFixed(2)})</div>
-              <div className="bg-rose-600 text-white p-2 rounded-lg">❌ गलत: {wrong} (-{negTotal.toFixed(2)})</div>
-              <div className="bg-slate-600 text-white p-2 rounded-lg">⏭️ छोड़े: {skipped}</div>
-              <div className="bg-indigo-700 text-white p-2 rounded-lg">🏆 कुल स्कोर: {score}</div>
+              <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] === it.correct); setSolFilter("RIGHT"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-lg text-left">✅ सही: {right} (+{posTotal.toFixed(2)}) ➔</button>
+                <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] !== undefined && ans[idx] !== it.correct); setSolFilter("WRONG"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="bg-rose-600 hover:bg-rose-500 text-white p-2 rounded-lg text-left">❌ गलत: {wrong} (-{negTotal.toFixed(2)}) ➔</button>
+                <button onClick={() => { const fi = activeList.findIndex((_: any, idx: number) => ans[idx] === undefined); setSolFilter("SKIP"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="bg-slate-600 hover:bg-slate-500 text-white p-2 rounded-lg text-left">⏭️ छोड़े: {skipped} ➔</button>
+                <button onClick={() => { setSolFilter("ALL"); setQIdx(0); setSubmitted(false); setSolMode(true); }} className="bg-indigo-700 hover:bg-indigo-600 text-white p-2 rounded-lg text-left">🏆 कुल स्कोर: {score} ➔</button>
             </div>
+              <button onClick={() => { setSolFilter("ALL"); setQIdx(0); setSubmitted(false); setSolMode(true); }} className="mt-2.5 w-full py-2 px-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2">
+                📖 Solution &amp; Explanation Page (सभी प्रश्न व व्याख्या देखें) ➔
+              </button>
               {bookmarkedQs.length > 0 && (
             <div className="bg-amber-50 p-3 rounded-xl border-2 border-amber-400 space-y-2 text-xs text-slate-950">
               <div className="font-black text-amber-900">⭐ आपके बुकमार्क किए गए प्रश्न ({bookmarkedQs.length}):</div>
@@ -438,6 +450,31 @@ useEffect(() => {
                 const myPct = Math.round((right / Math.max(1, activeList.length)) * 100);
               return (
                   <div className="space-y-3">
+                    {(() => {
+                        const maxM = Math.max(1, activeList.length * activePosMark);
+                        const myNum = Math.max(0, Number(score));
+                        const topNum = Number((maxM * 0.88).toFixed(2));
+                        const avgNum = Number((maxM * 0.54).toFixed(2));
+                        return (
+                          <div className="p-3 bg-slate-950/90 rounded-2xl border border-cyan-500/40 space-y-2 text-xs text-white">
+                            <div className="font-black text-cyan-300">📊 स्कोर तुलना ग्राफ़ (Topper vs आपका स्कोर vs Average)</div>
+                            <div className="space-y-1.5 font-bold">
+                              <div>
+                                <div className="flex justify-between text-[11px]"><span>🥇 Topper स्कोर</span><span className="text-amber-300">{topNum} / {maxM}</span></div>
+                                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-amber-400" style={{ width: "88%" }} /></div>
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-[11px]"><span>👤 आपका स्कोर</span><span className="text-emerald-300">{score} / {maxM}</span></div>
+                                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-emerald-400" style={{ width: Math.min(100, Math.round((myNum / maxM) * 100)) + "%" }} /></div>
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-[11px]"><span>👥 Average स्कोर</span><span className="text-indigo-300">{avgNum} / {maxM}</span></div>
+                                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-indigo-400" style={{ width: "54%" }} /></div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     <div className="p-3 bg-slate-900 text-white rounded-2xl border-2 border-cyan-500/60 space-y-2.5 text-xs">
                       <div className="flex flex-wrap justify-between items-center gap-1">
                         <span className="font-black text-cyan-300 text-sm">📈 समय तुलना व लाइव सहभागिता ग्राफ़</span>
@@ -511,11 +548,53 @@ useEffect(() => {
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => {
-                        const msg = "🏆 CrackBPSC Scorecard (" + selSubExam + ")\n📊 Score: " + score + " | Accuracy: " + myPct + "% | Percentile: " + pctRank + "%ile\n💪 Strongest: " + (strongest ? strongest.sub : "GS") + "\n⏱️ Time: " + Math.floor(yourSec / 60) + "m " + (yourSec % 60) + "s\n👉 Test दें: https://vercel.app";
-                        navigator.clipboard.writeText(msg);
-                        alert("📲 Topper Scorecard कॉपी हो गया!");
-                      }} className="w-full py-2 bg-amber-400 text-slate-950 rounded-xl font-black text-xs shadow">📲 1-Click Shareable Topper Scorecard कॉपी करें</button>
+                      <button
+                      onClick={() => {
+                        const c = document.createElement("canvas");
+                        c.width = 900;
+                        c.height = 520;
+                        const ctx = c.getContext("2d");
+                        if (ctx) {
+                          ctx.fillStyle = "#0f172a";
+                          ctx.fillRect(0, 0, 900, 520);
+                          ctx.fillStyle = "#f59e0b";
+                          ctx.fillRect(0, 0, 900, 14);
+                          ctx.fillStyle = "#38bdf8";
+                          ctx.font = "bold 34px sans-serif";
+                          ctx.fillText("🏆 CRACKBPSC ALL-INDIA SCORECARD", 40, 75);
+                          ctx.fillStyle = "#e2e8f0";
+                          ctx.font = "bold 24px sans-serif";
+                          ctx.fillText("परीक्षा: " + selSubExam + " (" + selSection + ")", 40, 125);
+                          ctx.fillStyle = "#10b981";
+                          ctx.font = "bold 46px sans-serif";
+                          ctx.fillText("आपका स्कोर: " + score + " / " + (activeList.length * activePosMark).toFixed(0), 40, 205);
+                          ctx.fillStyle = "#fbbf24";
+                          ctx.font = "bold 26px sans-serif";
+                          ctx.fillText("🥇 Topper स्कोर: " + (activeList.length * activePosMark * 0.88).toFixed(2) + "   |   👥 Avg: " + (activeList.length * activePosMark * 0.54).toFixed(2), 40, 260);
+                          ctx.fillStyle = "#f8fafc";
+                          ctx.font = "bold 24px sans-serif";
+                          ctx.fillText("✅ सही: " + right + "     ❌ गलत: " + wrong + "     ⏭️ छोड़े: " + skipped, 40, 325);
+                          ctx.fillStyle = "#818cf8";
+                          ctx.font = "bold 22px sans-serif";
+                          ctx.fillText("🌐 अभी लाइव टेस्ट दें: https://vercel.app", 40, 445);
+                          c.toBlob((blob) => {
+                            if (blob && navigator.share) {
+                              const file = new File([blob], "CrackBPSC-Scorecard.png", { type: "image/png" });
+                              navigator.share({ title: "CrackBPSC Scorecard", text: "मेरा स्कोर: " + score + " — अभी टेस्ट दें: https://vercel.app", files: [file] }).catch(() => {});
+                            } else {
+                              const link = document.createElement("a");
+                              link.download = "CrackBPSC-Scorecard.png";
+                              link.href = c.toDataURL("image/png");
+                              link.click();
+                              alert("✅ Scorecard कार्ड डाउनलोड हो गया है — अब आप इसे WhatsApp या Facebook पर शेयर कर सकते हैं!");
+                            }
+                          });
+                        }
+                      }}
+                      className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-xl font-black text-xs shadow-lg"
+                    >
+                      📲 WhatsApp / Facebook पर Scorecard कार्ड शेयर करें
+                    </button> 
                     </div>
                     <div className="p-2 bg-slate-950/85 rounded-xl border border-indigo-500/40 space-y-1.5">
                       <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] font-bold">
@@ -990,8 +1069,57 @@ useEffect(() => {
             </div>
           <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
           <h2 className="font-extrabold text-base">{goal}</h2>
+          {(() => {
+                    const hKey = selSubExam + "_" + selSection;
+                    const hist = attemptHistory[hKey] ? attemptHistory[hKey] : [];
+                    const maxLim = examAttempts[hKey] ? examAttempts[hKey] : 0;
+                    if (hist.length === 0) return null;
+                    const last = hist.at(-1);
+                    return (
+                      <div className="p-3 bg-slate-900 text-white rounded-xl border-2 border-indigo-500 space-y-2 text-xs">
+                        <div className="flex items-center justify-between font-black">
+                          <span className="text-amber-300">📊 पिछला स्कोरकार्ड (Attempt #{hist.length}{maxLim > 0 ? " / " + maxLim : " • ∞"})</span>
+                          <span className="text-emerald-400">स्कोर: {last.score}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1.5 text-center font-bold text-[11px]">
+                          <div className="p-1.5 bg-emerald-900/60 rounded-lg">✅ सही: {last.right}</div>
+                          <div className="p-1.5 bg-rose-900/60 rounded-lg">❌ गलत: {last.wrong}</div>
+                          <div className="p-1.5 bg-amber-900/60 rounded-lg">⏭️ छोड़े: {last.skipped}</div>
+                        </div>
+                        <div className="space-y-1 max-h-24 overflow-y-auto pt-1 border-t border-slate-700 text-[11px]">
+                          {hist.map((at: any, idx: number) => {
+                            const diff = idx > 0 ? (Number(at.score) - Number(hist[idx - 1].score)).toFixed(2) : null;
+                            return (
+                              <div key={idx} className="flex items-center justify-between bg-slate-800/80 px-2 py-1 rounded">
+                                <span><b>Attempt #{idx + 1}</b> ({at.date}): <b>{at.score} अंक</b></span>
+                                {diff !== null && <span className={Number(diff) >= 0 ? "text-emerald-400 font-black" : "text-rose-400 font-black"}>{Number(diff) >= 0 ? "▲ +" + diff + " सुधार" : "▼ " + diff}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <button
+                          onClick={() => {
+                            const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
+                            const limVal = examQLimits[hKey];
+                            setActiveList(limVal ? matched.slice(0, limVal) : matched);
+                            setAns(last.ans ? last.ans : {});
+                            setSubmitted(true);
+                            setSolMode(false);
+                            setInExam(true);
+                          }}
+                          className="w-full py-2 bg-cyan-500 text-slate-950 rounded-lg font-black"
+                        >
+                          📋 पूरा पिछला स्कोरकार्ड व व्याख्या खोलें
+                        </button>
+                      </div>
+                    );
+                  })()} 
           <button
             onClick={() => {
+             const hKeyChk = selSubExam + "_" + selSection;
+                      const maxLimChk = examAttempts[hKeyChk] ? examAttempts[hKeyChk] : 0;
+                      const usedChk = attemptHistory[hKeyChk] ? attemptHistory[hKeyChk].length : 0;
+                      if (maxLimChk > 0 && usedChk >= maxLimChk) { alert("🔒 इस परीक्षा के अधिकतम " + maxLimChk + " प्रयास पूरे हो चुके हैं! ऊपर दिए गए बटन से अपना पिछला स्कोरकार्ड व व्याख्या देखें।"); return; } 
               const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
               if (matched.length === 0) {
                 alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है!");
@@ -1166,6 +1294,22 @@ useEffect(() => {
             <button onClick={() => { const cq = Number(prompt("इस टेस्ट में कुल कितने प्रश्न भेजने हैं?", "150")); if (cq >= 1) setExamQLimits({ ...examQLimits, [selSubExam + "_" + selSection]: cq }); }} className="px-2 py-0.5 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
             {examQLimits[selSubExam + "_" + selSection] && <button onClick={() => { const cp = { ...examQLimits }; delete cp[selSubExam + "_" + selSection]; setExamQLimits(cp); }} className="px-2 py-0.5 bg-rose-600 text-white rounded font-black text-[11px]">सभी दिखाएं</button>}
           </div>
+          {(role === "ADMIN" || writerCanSetAttempts) && (
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
+              <span className="text-[11px] font-bold text-amber-300">🔄 प्रयास सीमा ({selSubExam}): <span className="text-white">{examAttempts[selSubExam + "_" + selSection] ? examAttempts[selSubExam + "_" + selSection] + " बार" : "∞ Unlimited"}</span></span>
+              {Array.of(0, 1, 2, 3, 4, 5, 10).map((atLim) => (
+                <button key={atLim} onClick={() => setExamAttempts({ ...examAttempts, [selSubExam + "_" + selSection]: atLim })} className={"px-2 py-0.5 rounded font-bold text-[10px] " + ((examAttempts[selSubExam + "_" + selSection] ? examAttempts[selSubExam + "_" + selSection] : 0) === atLim ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300")}>
+                  {atLim === 0 ? "∞ Unlimited" : atLim + " बार"}
+                </button>
+              ))}
+              <button onClick={() => { const ca = Number(prompt("अधिकतम प्रयास संख्या लिखें (0 = Unlimited):", "2")); if (!Number.isNaN(ca) && ca >= 0) setExamAttempts({ ...examAttempts, [selSubExam + "_" + selSection]: ca }); }} className="px-2 py-0.5 bg-slate-700 text-cyan-300 rounded font-bold text-[10px]">Custom</button>
+              {role === "ADMIN" && (
+                <button onClick={() => setWriterCanSetAttempts(!writerCanSetAttempts)} className={"px-2 py-0.5 rounded font-black text-[10px] ml-auto " + (writerCanSetAttempts ? "bg-emerald-500 text-slate-950" : "bg-rose-600 text-white")}>
+                  {writerCanSetAttempts ? "🔓 Writer Access: ON" : "🔒 Writer Access: OFF"}
+                </button>
+              )}
+            </div>
+          )}      
           </div>
               <div className="p-2.5 bg-indigo-50 border border-indigo-300 rounded-xl space-y-2">
                 <div className="text-[11px] font-extrabold text-indigo-950">🏛️ 1. आपकी अनुमत परीक्षा बोर्ड / Category ({activeStaff.cats.length}):</div>
