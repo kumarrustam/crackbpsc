@@ -1407,12 +1407,12 @@ useEffect(() => {
               </div>
 <div className="p-2 bg-amber-50 border border-amber-300 rounded-lg space-y-1.5 text-[11px]">
                       <div className="flex flex-wrap items-center justify-between gap-1 font-extrabold text-amber-950">
-                        <span>📚 कुल टेस्ट सीरीज़ ({selSubExam} • {selSection}): <span className="text-indigo-700">{seriesCounts[${selSubExam}_${selSection}] || 5} Sets</span></span>
+                        <span>📚 कुल टेस्ट सीरीज़ ({selSubExam} • {selSection}): <span className="text-indigo-700">{seriesCounts[selSubExam + "_" + selSection] ? seriesCounts[selSubExam + "_" + selSection] : 5} Sets</span></span>
                         <div className="flex flex-wrap gap-1">
                           {Array.of(5, 10, 50, 100, 500, 1000).map((cnt) => (
-                            <button key={cnt} onClick={() => setSeriesCounts({ ...seriesCounts, [${selSubExam}_${selSection}]: cnt })} className="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold">{cnt}</button>
+                            <button key={cnt} onClick={() => setSeriesCounts({ ...seriesCounts, [selSubExam + "_" + selSection]: cnt })} className="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold">{cnt}</button>
                           ))}
-                          <button onClick={() => { const cv = Number(prompt("कितनी टेस्ट सीरीज़ (1 से 2000+) सेट करनी है?", "100")); if (!Number.isNaN(cv) && cv >= 1) setSeriesCounts({ ...seriesCounts, [${selSubExam}_${selSection}]: cv }); }} className="px-2 py-0.5 bg-slate-800 text-amber-300 rounded font-bold">Custom</button>
+                          <button onClick={() => { const cv = Number(prompt("कितनी टेस्ट सीरीज़ (1 से 2000+) सेट करनी है?", "100")); if (!Number.isNaN(cv) && cv >= 1) setSeriesCounts({ ...seriesCounts, [selSubExam + "_" + selSection]: cv }); }} className="px-2 py-0.5 bg-slate-800 text-amber-300 rounded font-bold">Custom</button>
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-1 pt-1 border-t border-amber-200">
@@ -1423,7 +1423,7 @@ useEffect(() => {
                           <option>Class 9th &amp; 10th (TGT)</option>
                           <option>Class 11th &amp; 12th (PGT)</option>
                         </select>
-                        <button onClick={() => { const ns = prompt(${selTier} में नया विषय लिखें (जैसे History, Polity, SST):); if (ns && ns.trim()) { const k = ${selSubExam}_${selTier}; setCustomTierSubs({ ...customTierSubs, [k]: [...(customTierSubs[k] || []), ns.trim()] }); } }} className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold">+ नया विषय जोड़ें</button>
+                        <button onClick={() => { const ns = prompt(selTier + " में नया विषय लिखें (जैसे History, Polity, SST):"); if (ns && ns.trim()) { const k = selSubExam + "_" + selTier; const prevList = customTierSubs[k] ? customTierSubs[k] : []; setCustomTierSubs({ ...customTierSubs, [k]: [...prevList, ns.trim()] }); } }} className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold">+ नया विषय जोड़ें</button>
                       </div>
                     </div>
               <div className="flex flex-wrap gap-1 items-center">
