@@ -314,7 +314,7 @@ useEffect(() => {
       localStorage.setItem("cb_rl", JSON.stringify(regLiveIds));
       localStorage.setItem("cb_pass", JSON.stringify({ showPass, passBadge, passTitle, passBtn, passMsg, passFeats }));
       localStorage.setItem("cb_pass_acc", JSON.stringify({ w: writerPass, m: modPass, a: adPass }));
-      const res = await fetch("https://supabase.co", {
+      fetch("https://supabase.co", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
