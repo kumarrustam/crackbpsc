@@ -161,6 +161,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [adVer, setAdVer] = useState<number>(1);
   const [spinDeg, setSpinDeg] = useState<number>(0);
   const [spinWon, setSpinWon] = useState<string>("");
+  const [drillStep, setDrillStep] = useState<number>(1);
+  const [selTier, setSelTier] = useState<string>("Class 1 to 5 (PRT)");
+  const [selTierSub, setSelTierSub] = useState<string>("General (सामान्य)");
+  const [selCaMode, setSelCaMode] = useState<string>("Daily");
+  const [seriesCounts, setSeriesCounts] = useState<Record<string, number>>({});
+  const [customTierSubs, setCustomTierSubs] = useState<Record<string, string[]>>({});
   useEffect(() => {
     const r = localStorage.getItem("cb_role");
     if (r) setRole(r as any);
@@ -1087,110 +1093,195 @@ useEffect(() => {
               </div>
             </div>
           )}
-          <div className="p-4 bg-white rounded-xl border shadow-sm space-y-2.5">
-            <div className="font-extrabold text-sm text-indigo-950">🏛️ 1. परीक्षा बोर्ड / Category चुनें:</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {Object.keys(examTree)
-        .filter((c) => !hiddenCats.includes(c))
-        .sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))
-        .map((cat) => (
-                <button key={cat} onClick={() => { setSelCat(cat); const first = examTree[cat] ? examTree[cat].at(0) : ""; setSelSubExam(first); setGoal(first); }} className={"p-3 rounded-xl font-extrabold text-xs border text-left flex justify-between items-center " + (selCat === cat ? "bg-indigo-700 text-white border-indigo-800 shadow" : "bg-slate-50 text-slate-900 border-slate-200")}><span>🏛️ {cat}</span><span className="text-[10px] opacity-80">{examTree[cat] ? examTree[cat].length : 0} Exams ›</span></button>
-              ))}
-            </div>
-            <div className="font-extrabold text-xs text-purple-950 pt-1">🎯 2. उप-परीक्षा / Sub-Category चुनें ({selCat}):</div>
-            <div className="flex flex-wrap gap-1.5">
-              {(examTree[selCat] || []).map((subEx: string) => (
-                <button key={subEx} onClick={() => { setSelSubExam(subEx); setGoal(subEx); }} className={"px-2.5 py-1 rounded-lg font-bold text-xs border " + (selSubExam === subEx ? "bg-purple-700 text-white" : "bg-purple-50 text-purple-950")}>{subEx}</button>
-              ))}
-            </div>
-            <div className="font-extrabold text-xs text-amber-950 pt-1">📂 3. टेस्ट सेक्शन चुनें ({examSections.length} Sections):</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-              {examSections.map((sec) => (
-                <button key={sec} onClick={() => setSelSection(sec)} className={"p-2 rounded-lg font-extrabold text-xs border text-left " + (selSection === sec ? "bg-amber-600 text-white border-amber-700" : "bg-amber-50 text-amber-950 border-amber-200")}>
-                  📑 {sec}
-                </button>
-              ))}
-            </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
-          <h2 className="font-extrabold text-base">{goal}</h2>
           {(() => {
-                    const hKey = selSubExam + "_" + selSection;
-                    const hist = attemptHistory[hKey] ? attemptHistory[hKey] : [];
-                    const maxLim = examAttempts[hKey] ? examAttempts[hKey] : 0;
-                    if (hist.length === 0) return null;
-                    const last = hist.at(-1);
-                    return (
-                      <div className="p-3 bg-slate-900 text-white rounded-xl border-2 border-indigo-500 space-y-2 text-xs">
-                        <div className="flex items-center justify-between font-black">
-                          <span className="text-amber-300">📊 पिछला स्कोरकार्ड (Attempt #{hist.length}{maxLim > 0 ? " / " + maxLim : " • ∞"})</span>
-                          <span className="text-emerald-400">स्कोर: {last.score}</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1.5 text-center font-bold text-[11px]">
-                          <div className="p-1.5 bg-emerald-900/60 rounded-lg">✅ सही: {last.right}</div>
-                          <div className="p-1.5 bg-rose-900/60 rounded-lg">❌ गलत: {last.wrong}</div>
-                          <div className="p-1.5 bg-amber-900/60 rounded-lg">⏭️ छोड़े: {last.skipped}</div>
-                        </div>
-                        <div className="space-y-1 max-h-24 overflow-y-auto pt-1 border-t border-slate-700 text-[11px]">
-                          {hist.map((at: any, idx: number) => {
-                            const diff = idx > 0 ? (Number(at.score) - Number(hist[idx - 1].score)).toFixed(2) : null;
-                            return (
-                              <div key={idx} className="flex items-center justify-between bg-slate-800/80 px-2 py-1 rounded">
-                                <span><b>Attempt #{idx + 1}</b> ({at.date}): <b>{at.score} अंक</b></span>
-                                {diff !== null && <span className={Number(diff) >= 0 ? "text-emerald-400 font-black" : "text-rose-400 font-black"}>{Number(diff) >= 0 ? "▲ +" + diff + " सुधार" : "▼ " + diff}</span>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <button
-                          onClick={() => {
-                            const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
-                            const limVal = examQLimits[hKey];
-                            setActiveList(limVal ? matched.slice(0, limVal) : matched);
-                            setAns(last.ans ? last.ans : {});
-                            setSubmitted(true);
-                            setSolMode(false);
-                            setInExam(true);
-                          }}
-                          className="w-full py-2 bg-cyan-500 text-slate-950 rounded-lg font-black"
-                        >
-                          📋 पूरा पिछला स्कोरकार्ड व व्याख्या खोलें
+            const tierList = ["Class 1 to 5 (PRT)", "Class 6 to 8 (Middle)", "Class 9th & 10th (TGT)", "Class 11th & 12th (PGT)"];
+            const defaultTierSubs: Record<string, string[]> = {
+              "Class 1 to 5 (PRT)": ["General (सामान्य)", "Urdu (उर्दू)", "Bangla (बंगला)"],
+              "Class 6 to 8 (Middle)": ["Social Science (SST)", "Science & Math", "Hindi", "English", "Urdu", "Sanskrit"],
+              "Class 9th & 10th (TGT)": ["Social Science (SST)", "Science", "Mathematics", "Hindi", "English", "Urdu", "Sanskrit", "Computer", "Music", "Fine Arts"],
+              "Class 11th & 12th (PGT)": ["History", "Political Science", "Geography", "Economics", "Sociology", "Psychology", "Philosophy", "Home Science", "Physics", "Chemistry", "Biology", "Mathematics", "Computer Science", "Accountancy", "Business Studies", "Hindi", "English", "Urdu", "Sanskrit"]
+            };
+            const isMultiTier = selSubExam.toLowerCase().includes("tre")  selSubExam.toLowerCase().includes("teacher")  (customTierSubs[selSubExam] && customTierSubs[selSubExam].length > 0);
+            const activeSubs = [...(defaultTierSubs[selTier]  ["General"]), ...(customTierSubs[selSubExam + "_" + selTier]  [])];
+            const allSevenSecs = Array.from(new Set([...examSections, "Chapter-Wise Test"]));
+            const baseKey = isMultiTier ? ${selSubExam}_${selTier}_${selTierSub}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""} : ${selSubExam}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""};
+            const totalSeries = Math.max(1, seriesCounts[baseKey] || seriesCounts[${selSubExam}_${selSection}] || 5);
+            return (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border shadow-sm text-xs font-bold">
+                  <div className="flex flex-wrap items-center gap-1 text-slate-700">
+                    <button onClick={() => setDrillStep(1)} className="text-indigo-700 hover:underline">🏠 All Exams</button>
+                    {drillStep >= 2 && <><span>›</span><button onClick={() => setDrillStep(2)} className="text-indigo-700 hover:underline">{selCat}</button></>}
+                    {drillStep >= 3 && <><span>›</span><button onClick={() => setDrillStep(3)} className="text-indigo-700 hover:underline">{selSubExam}</button></>}
+                    {drillStep >= 4 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(4)} className="text-indigo-700 hover:underline">{selTier}</button></>}
+                    {drillStep >= 5 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(5)} className="text-indigo-700 hover:underline">{selTierSub}</button></>}
+                    {drillStep >= 6 && <><span>›</span><span className="text-amber-700 font-black">{selSection}{selSection === "Current Affairs" ?  (${selCaMode}) : ""}</span></>}
+                  </div>
+                  {drillStep > 1 && (
+                    <button onClick={() => setDrillStep(drillStep === 5 && !isMultiTier ? 2 : drillStep - 1)} className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-[11px] font-black">⬅ पीछे</button>
+                  )}
+                </div>
+                {drillStep === 1 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">1. Select Exam Category (परीक्षा बोर्ड चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {Object.keys(examTree)
+                        .filter((c) => !hiddenCats.includes(c))
+                        .sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))
+                        .map((cat) => (
+                          <button key={cat} onClick={() => { setSelCat(cat); const first = examTree[cat] ? examTree[cat] : ""; if (first) { setSelSubExam(first); setGoal(first); } setDrillStep(2); }} className="p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50/70 hover:bg-indigo-50 flex items-center justify-between text-left transition shadow-xs">
+                            <div>
+                              <div className="font-black text-xs sm:text-sm text-slate-900">🏛️ {cat}</div>
+                              <div className="text-[10px] font-bold text-slate-500">{(examTree[cat] || []).length} Exams</div>
+                            </div>
+                            <span className="text-slate-400 font-black">›</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+               {drillStep === 2 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">2. Select {selCat} Exam (उप-परीक्षा चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {(examTree[selCat] || []).map((subEx: string) => (
+                        <button key={subEx} onClick={() => { setSelSubExam(subEx); setGoal(subEx); const multi = subEx.toLowerCase().includes("tre")  subEx.toLowerCase().includes("teacher")  (customTierSubs[subEx] && customTierSubs[subEx].length > 0); setDrillStep(multi ? 3 : 5); }} className="p-3 rounded-xl border border-slate-200 hover:border-purple-500 bg-slate-50/70 hover:bg-purple-50 flex items-center justify-between text-left transition shadow-xs">
+                          <div>
+                            <div className="font-black text-xs sm:text-sm text-slate-900">🎯 {subEx}</div>
+                            <div className="text-[10px] font-bold text-purple-600">7 Test Sections ›</div>
+                          </div>
+                          <span className="text-slate-400 font-black">›</span>
                         </button>
-                      </div>
-                    );
-                  })()} 
-          <button
-            onClick={() => {
-             const hKeyChk = selSubExam + "_" + selSection;
-                      const maxLimChk = examAttempts[hKeyChk] ? examAttempts[hKeyChk] : 0;
-                      const usedChk = attemptHistory[hKeyChk] ? attemptHistory[hKeyChk].length : 0;
-                      if (maxLimChk > 0 && usedChk >= maxLimChk) { alert("🔒 इस परीक्षा के अधिकतम " + maxLimChk + " प्रयास पूरे हो चुके हैं! ऊपर दिए गए बटन से अपना पिछला स्कोरकार्ड व व्याख्या देखें।"); return; } 
-              const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
-              if (matched.length === 0) {
-                alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है!");
-                return;
-              }
-              const limVal = examQLimits[selSubExam + "_" + selSection] ? examQLimits[selSubExam + "_" + selSection] : examQLimits[selCat + "_" + selSubExam + "_" + selSection];
-                const finalQs = limVal ? matched.slice(0, limVal) : matched;
-                setActiveList(finalQs);
-                setQIdx(0);
-                setQSec(0);
-                const savedMin = examTimers[selSubExam + "_" + selSection] ? examTimers[selSubExam + "_" + selSection] : examTimers[selCat + "_" + selSubExam + "_" + selSection] ? examTimers[selCat + "_" + selSubExam + "_" + selSection] : testMins;
-                setTotalSec(savedMin ? savedMin * 60 : finalQs.length * 60);
-              setAns({});
-              setMarkedQs([]);
-              setSubmitted(false);
-              setActivePosMark(posMark);
-              setActiveNegEnabled(negEnabled);
-              setActiveNegVal(negVal);
-              setActiveNegLabel(negLabel);
-              setInExam(true);
-            }}
-            className="w-full py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg"
-          >
-            🎯 CBT परीक्षा शुरू करें →
-          </button>
-        </div>
-      </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+               {drillStep === 3 && isMultiTier && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">3. Select Class / Level ({selSubExam} वर्ग चुनें)</div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {tierList.map((tr) => (
+                        <button key={tr} onClick={() => { setSelTier(tr); setDrillStep(4); }} className="p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-100/70 flex items-center justify-between text-left">
+                          <div>
+                            <div className="font-black text-xs sm:text-sm text-indigo-950">🎓 {tr}</div>
+                            <div className="text-[10px] font-bold text-slate-500">सभी विषय उपलब्ध</div>
+                          </div>
+                          <span className="text-indigo-500 font-black">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {drillStep === 4 && isMultiTier && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">4. Select Subject ({selTier} विषय चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto pr-1">
+                      {activeSubs.map((sb) => (
+                        <button key={sb} onClick={() => { setSelTierSub(sb); setDrillStep(5); }} className="p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50 flex items-center justify-between text-left text-xs font-extrabold text-slate-800">
+                          <span>📘 {sb}</span>
+                          <span className="text-slate-400">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {drillStep === 5 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">5. Select Test Section (टेस्ट प्रकार चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {allSevenSecs.map((sec) => (
+                        <button key={sec} onClick={() => { setSelSection(sec); setDrillStep(6); }} className="p-3 rounded-xl border border-slate-200 hover:border-amber-500 bg-amber-50/40 hover:bg-amber-100/60 flex items-center justify-between text-left text-xs font-black text-slate-900">
+                          <span>📂 {sec}</span>
+                          <span className="text-amber-600">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {drillStep === 6 && (
+                  <div className="p-3.5 bg-slate-900 rounded-2xl border border-slate-700 shadow-lg space-y-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="text-xs sm:text-sm font-black text-white">🔥 {selSubExam}{isMultiTier ?  • ${selTierSub} : ""} — {selSection} <span className="text-amber-300 text-[11px]">(बाएँ ⇄ दाएँ स्वाइप करें)</span></div>
+                      {selSection === "Current Affairs" && (
+                        <div className="flex gap-1">
+                          {["Daily", "Weekly", "Monthly"].map((cm) => (
+                            <button key={cm} onClick={() => setSelCaMode(cm)} className={"px-2.5 py-1 rounded-lg text-[11px] font-black " + (selCaMode === cm ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300")}>{cm}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2">
+                      {Array.from({ length: totalSeries }, (_, i) => i + 1).map((sNum) => {
+                        const sKey = ${baseKey}_S${sNum};
+                        const hist = attemptHistory[sKey] ? attemptHistory[sKey] : [];
+                        const maxLim = examAttempts[baseKey] ? examAttempts[baseKey] : (examAttempts[${selSubExam}_${selSection}] || 0);
+                        const used = hist.length;
+                        const last = used > 0 ? hist.at(-1) : null;
+                        const isOver = maxLim > 0 && used >= maxLim;
+                        const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
+                        const limVal = examQLimits[${selSubExam}_${selSection}];
+                        const qCount = limVal ? Math.min(limVal, matched.length  limVal) : (matched.length  150);
+                        const tMins = examTimers[${selSubExam}_${selSection}] || Math.max(10, Math.round(qCount * 0.8));
+                        return (
+                          <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black">{selCat} • {selSection} #{sNum}</span>
+                                {used > 0 && <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Last: {last.score} • {used}/{maxLim > 0 ? maxLim : "∞"}</span>}
+                              </div>
+                              <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ?  (${selTierSub}) : ""} — {selSection === "PYQs" ? PYQ Paper #${sNum} : selSection === "Current Affairs" ? ${selCaMode} CA Set #${sNum} : Test #${sNum}}</div>
+                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * posMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
+                            </div>
+                          {used === 0 ? (
+                              <button
+                                onClick={() => {
+                                  if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                  const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                  setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                  setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                }}
+                                className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs shadow-sm"
+                              >
+                                ▶ Attempt
+                              </button>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2">
+                                <button
+                                  onClick={() => {
+                                    const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                    setActiveList(finalQs); setAns(last.ans ? last.ans : {}); setSubmitted(true); setSolMode(false); setInExam(true);
+                                  }}
+                                  className="py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 rounded-xl font-black text-xs"
+                                >
+                                  📊 Analysis
+                                </button>
+                          {isOver ? (
+                                  <button disabled className="py-2 bg-slate-200 text-slate-500 rounded-xl font-black text-xs cursor-not-allowed">🔒 Limit Over ({used}/{maxLim})</button>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                      const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                      setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                      setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                    }}
+                                    className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs"
+                                  >
+                                    🔄 Re-Attempt
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}      
+          </div>
        </div>     
               )}
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
@@ -1385,7 +1476,27 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-
+<div className="p-2 bg-amber-50 border border-amber-300 rounded-lg space-y-1.5 text-[11px]">
+                      <div className="flex flex-wrap items-center justify-between gap-1 font-extrabold text-amber-950">
+                        <span>📚 कुल टेस्ट सीरीज़ ({selSubExam} • {selSection}): <span className="text-indigo-700">{seriesCounts[${selSubExam}_${selSection}] || 5} Sets</span></span>
+                        <div className="flex flex-wrap gap-1">
+                          {Array.of(5, 10, 50, 100, 500, 1000).map((cnt) => (
+                            <button key={cnt} onClick={() => setSeriesCounts({ ...seriesCounts, [${selSubExam}_${selSection}]: cnt })} className="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold">{cnt}</button>
+                          ))}
+                          <button onClick={() => { const cv = Number(prompt("कितनी टेस्ट सीरीज़ (1 से 2000+) सेट करनी है?", "100")); if (!Number.isNaN(cv) && cv >= 1) setSeriesCounts({ ...seriesCounts, [${selSubExam}_${selSection}]: cv }); }} className="px-2 py-0.5 bg-slate-800 text-amber-300 rounded font-bold">Custom</button>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 pt-1 border-t border-amber-200">
+                        <span className="font-bold text-slate-700">🎓 TRE वर्ग/विषय जोड़ें:</span>
+                        <select value={selTier} onChange={(e) => setSelTier(e.target.value)} className="px-1.5 py-0.5 border rounded bg-white font-bold">
+                          <option>Class 1 to 5 (PRT)</option>
+                          <option>Class 6 to 8 (Middle)</option>
+                          <option>Class 9th &amp; 10th (TGT)</option>
+                          <option>Class 11th &amp; 12th (PGT)</option>
+                        </select>
+                        <button onClick={() => { const ns = prompt(${selTier} में नया विषय लिखें (जैसे History, Polity, SST):); if (ns && ns.trim()) { const k = ${selSubExam}_${selTier}; setCustomTierSubs({ ...customTierSubs, [k]: [...(customTierSubs[k] || []), ns.trim()] }); } }} className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold">+ नया विषय जोड़ें</button>
+                      </div>
+                    </div>
               <div className="flex flex-wrap gap-1 items-center">
                 {subjects.filter((s) => activeStaff.subs.includes(s)).map((s) => (
                   <button key={s} onClick={() => setNewSub(s)} className={"px-2 py-1 rounded font-bold border " + (newSub === s ? "bg-blue-600 text-white" : "bg-slate-50")}>{s}</button>
