@@ -248,6 +248,40 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     if (activeStaff) localStorage.setItem("cb_staff", JSON.stringify(activeStaff));
     else localStorage.removeItem("cb_staff");
   }, [activeStaff]);
+  useEffect(() => {
+    try {
+      const sh = localStorage.getItem("cb_att_hist");
+      if (sh) setAttemptHistory(JSON.parse(sh));
+      const ss = localStorage.getItem("cb_live_sess");
+      if (ss) {
+        const d = JSON.parse(ss);
+        if (d.selCat) setSelCat(d.selCat);
+        if (d.selSubExam) setSelSubExam(d.selSubExam);
+        if (d.selSection) setSelSection(d.selSection);
+        if (Array.isArray(d.activeList) && d.activeList.length > 0) setActiveList(d.activeList);
+        if (d.ans) setAns(d.ans);
+        if (Array.isArray(d.markedQs)) setMarkedQs(d.markedQs);
+        if (typeof d.qIdx === "number") setQIdx(d.qIdx);
+        if (d.submitted) setSubmitted(true);
+        if (d.solMode) setSolMode(true);
+        if (d.inExam) setInExam(true);
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      if (Object.keys(attemptHistory).length > 0) localStorage.setItem("cb_att_hist", JSON.stringify(attemptHistory));
+    } catch {}
+  }, [attemptHistory]);
+  useEffect(() => {
+    try {
+      if (inExam && activeList.length > 0) {
+        localStorage.setItem("cb_live_sess", JSON.stringify({ inExam, submitted, solMode, selCat, selSubExam, selSection, activeList, ans, markedQs, qIdx }));
+      } else if (!inExam) {
+        localStorage.removeItem("cb_live_sess");
+      }
+    } catch {}
+  }, [inExam, submitted, solMode, selCat, selSubExam, selSection, activeList, ans, markedQs, qIdx]);
   const [isLoaded, setIsLoaded] = useState(false);
 useEffect(() => {
     const loadAll = async () => {
@@ -619,6 +653,16 @@ useEffect(() => {
                         })}
                       </div>
                     </div>
+                    <button
+                      onClick={() => {
+                        setSubmitted(false);
+                        setSolMode(false);
+                        setInExam(false);
+                      }}
+                      className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/50 rounded-xl font-black text-xs shadow-md"
+                    >
+                      🏠 होम पर जाएं (Back to Home)
+                    </button>
                   </div>
                 );
               })()}
