@@ -17,7 +17,7 @@ export default function CrackBPSC() {
   const [negMark, setNegMark] = useState(0.33);
   const [allowWriter, setAllowWriter] = useState(true);
   const [writerCanDelete, setWriterCanDelete] = useState(false);
-  const [allowMod, setAllowMod] = useState(true);
+  const [allowMod, setAllowMod] = useState(true); 
   const [allowAd, setAllowAd] = useState(true);
   const [adCanPopup, setAdCanPopup] = useState(true);
   const [adCanUnlimited, setAdCanUnlimited] = useState(false);
