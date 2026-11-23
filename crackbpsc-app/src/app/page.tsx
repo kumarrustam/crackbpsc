@@ -1101,7 +1101,7 @@ useEffect(() => {
               "Class 9th & 10th (TGT)": ["Social Science (SST)", "Science", "Mathematics", "Hindi", "English", "Urdu", "Sanskrit", "Computer", "Music", "Fine Arts"],
               "Class 11th & 12th (PGT)": ["History", "Political Science", "Geography", "Economics", "Sociology", "Psychology", "Philosophy", "Home Science", "Physics", "Chemistry", "Biology", "Mathematics", "Computer Science", "Accountancy", "Business Studies", "Hindi", "English", "Urdu", "Sanskrit"]
             };
-            const isMultiTier = selSubExam.toLowerCase().includes("tre")  selSubExam.toLowerCase().includes("teacher")  (customTierSubs[selSubExam] && customTierSubs[selSubExam].length > 0);
+            const isMultiTier = selSubExam.toLowerCase().includes("tre") || selSubExam.toLowerCase().includes("teacher") || (customTierSubs[selSubExam] && customTierSubs[selSubExam].length > 0);
             const activeSubs = [...(defaultTierSubs[selTier]  ["General"]), ...(customTierSubs[selSubExam + "_" + selTier]  [])];
             const allSevenSecs = Array.from(new Set([...examSections, "Chapter-Wise Test"]));
             const baseKey = isMultiTier ? ${selSubExam}_${selTier}_${selTierSub}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""} : ${selSubExam}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""};
