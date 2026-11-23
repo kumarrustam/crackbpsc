@@ -1209,10 +1209,91 @@ useEffect(() => {
                   <div className="p-3.5 bg-slate-900 rounded-2xl border border-slate-700 shadow-lg space-y-2.5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="text-xs sm:text-sm font-black text-white">🔥 {selSubExam}{isMultiTier ? ` • ${selTierSub}` : ""} — {selSection} <span className="text-amber-300 text-[11px]">(बाएँ ⇄ दाएँ स्वाइप करें)</span></div>
+                      
                       {selSection === "Current Affairs" && (
                         <div className="flex gap-1">
-       </div>     
-              )}
+                          {["Daily", "Weekly", "Monthly"].map((cm) => (
+                            <button key={cm} onClick={() => setSelCaMode(cm)} className={"px-2.5 py-1 rounded-lg text-[11px] font-black " + (selCaMode === cm ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300")}>{cm}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2">
+                      {Array.from({ length: totalSeries }, (_, i) => i + 1).map((sNum) => {
+                        const sKey = baseKey + "_S" + sNum;
+                        const hist = attemptHistory[sKey] ? attemptHistory[sKey] : [];
+                        const maxLim = examAttempts[baseKey] ? examAttempts[baseKey] : (examAttempts[secSimpleKey] ? examAttempts[secSimpleKey] : 0);
+                        const used = hist.length;
+                        const last = used > 0 ? hist.at(-1) : null;
+                        const isOver = maxLim > 0 && used >= maxLim;
+                        const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
+                        const limVal = examQLimits[secSimpleKey];
+                        const qCount = limVal ? Math.min(limVal, matched.length ? matched.length : limVal) : (matched.length ? matched.length : 150);
+                        const tMins = examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8));
+                        const cardTitle = selSection === "PYQs" ? "PYQ Paper #" + sNum : (selSection === "Current Affairs" ? selCaMode + " CA Set #" + sNum : "Test #" + sNum);
+                        return (
+                          <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black">{selCat} • {selSection} #{sNum}</span>
+                                {used > 0 && <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Last: {last.score} • {used}/{maxLim > 0 ? maxLim : "∞"}</span>}
+                              </div>
+                              <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ? " (" + selTierSub + ")" : ""} — {cardTitle}</div>
+                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * posMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
+                            </div>
+                            {used === 0 ? (
+                              <button
+                                onClick={() => {
+                                  if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                  const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                  setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                  setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                }}
+                                className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs shadow-sm"
+                              >
+                                ▶ Attempt
+                              </button>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2">
+                                <button
+                                  onClick={() => {
+                                    const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                    setActiveList(finalQs); setAns(last.ans ? last.ans : {}); setSubmitted(true); setSolMode(false); setInExam(true);
+                                  }}
+                                  className="py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 rounded-xl font-black text-xs"
+                                >
+                                  📊 Analysis
+                                </button>
+                                {isOver ? (
+                                  <button disabled className="py-2 bg-slate-200 text-slate-500 rounded-xl font-black text-xs cursor-not-allowed">🔒 Limit Over ({used}/{maxLim})</button>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                      const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                      setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                      setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                    }}
+                                    className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs"
+                                  >
+                                    🔄 Re-Attempt
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
         if (typeof window === "undefined") return false;
         const d = new window.Date();
