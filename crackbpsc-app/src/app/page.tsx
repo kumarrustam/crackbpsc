@@ -521,10 +521,10 @@ useEffect(() => {
                       <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] font-bold">
                         <span className="text-cyan-300">📖 उत्तर व व्याख्या:</span>
                         <div className="flex flex-wrap gap-1">
-                          <button onClick={() => { setSolFilter("ALL"); setQIdx(0); setSolMode(true); }} className="px-2 py-0.5 bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-md">सभी ({activeList.length})</button>
-                          <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] === it.correct); setSolFilter("RIGHT"); setQIdx(fi >= 0 ? fi : 0); setSolMode(true); }} className="px-2 py-0.5 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded-md">✓ सही ({right})</button>
-                          <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] !== undefined && ans[idx] !== it.correct); setSolFilter("WRONG"); setQIdx(fi >= 0 ? fi : 0); setSolMode(true); }} className="px-2 py-0.5 bg-rose-600/90 hover:bg-rose-500 text-white rounded-md">✕ गलत ({wrong})</button>
-                          <button onClick={() => { const fi = activeList.findIndex((_: any, idx: number) => ans[idx] === undefined); setSolFilter("SKIP"); setQIdx(fi >= 0 ? fi : 0); setSolMode(true); }} className="px-2 py-0.5 bg-amber-500/90 hover:bg-amber-400 text-slate-950 rounded-md">⏭ छोड़े ({skipped})</button>
+                          <button onClick={() => { setSolFilter("ALL"); setQIdx(0); setSubmitted(false); setSolMode(true); }} className="px-2 py-0.5 bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-md">सभी ({activeList.length})</button>
+                          <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] === it.correct); setSolFilter("RIGHT"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="px-2 py-0.5 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded-md">✓ सही ({right})</button>
+                          <button onClick={() => { const fi = activeList.findIndex((it: any, idx: number) => ans[idx] !== undefined && ans[idx] !== it.correct); setSolFilter("WRONG"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="px-2 py-0.5 bg-rose-600/90 hover:bg-rose-500 text-white rounded-md">✕ गलत ({wrong})</button>
+                          <button onClick={() => { const fi = activeList.findIndex((_: any, idx: number) => ans[idx] === undefined); setSolFilter("SKIP"); setQIdx(fi >= 0 ? fi : 0); setSubmitted(false); setSolMode(true); }} className="px-2 py-0.5 bg-amber-500/90 hover:bg-amber-400 text-slate-950 rounded-md">⏭ छोड़े ({skipped})</button>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto pt-1 border-t border-slate-800/80">
@@ -533,7 +533,7 @@ useEffect(() => {
                           const isW = ans[idx] !== undefined && ans[idx] !== it.correct;
                           const bCls = isR ? "bg-emerald-600/90 text-white" : isW ? "bg-rose-600/90 text-white" : "bg-amber-500/90 text-slate-950";
                           return (
-                            <button key={idx} onClick={() => { setSolFilter("ALL"); setQIdx(idx); setSolMode(true); }} className={"w-6 h-6 rounded-md font-bold text-[10px] flex items-center justify-center " + bCls}>
+                            <button key={idx} onClick={() => { setSolFilter("ALL"); setQIdx(idx); setSubmitted(false); setSolMode(true); }} className={"w-6 h-6 rounded-md font-bold text-[10px] flex items-center justify-center " + bCls}>
                               {idx + 1}
                             </button>
                           );
@@ -563,7 +563,7 @@ useEffect(() => {
                   <button onClick={() => setSolFilter("RIGHT")} className={"px-2 py-0.5 rounded-md " + (solFilter === "RIGHT" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300")}>✓ सही</button>
                   <button onClick={() => setSolFilter("WRONG")} className={"px-2 py-0.5 rounded-md " + (solFilter === "WRONG" ? "bg-rose-600 text-white" : "bg-slate-800 text-slate-300")}>✕ गलत</button>
                   <button onClick={() => setSolFilter("SKIP")} className={"px-2 py-0.5 rounded-md " + (solFilter === "SKIP" ? "bg-amber-500 text-slate-950" : "bg-slate-800 text-slate-300")}>⏭ छोड़े</button>
-                  <button onClick={() => setSolMode(false)} className="px-2 py-0.5 bg-slate-700 text-amber-300 rounded-md">📊 रिजल्ट</button>
+                  <button onClick={() => { setSolMode(false); setSubmitted(true); }} className="px-2 py-0.5 bg-slate-700 text-amber-300 rounded-md">📊 रिजल्ट</button>
                 </div>
               </div>
             <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto p-1.5 bg-slate-900/70 rounded-lg border border-slate-800">
@@ -639,7 +639,7 @@ useEffect(() => {
               })()}
               <div className="flex items-center justify-between gap-2 text-xs font-bold">
                 <button onClick={() => { if (qIdx > 0) setQIdx(qIdx - 1); }} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600">⬅ पिछला</button>
-                <button onClick={() => setSolMode(false)} className="px-3 py-1.5 bg-amber-400/90 hover:bg-amber-400 text-slate-950 rounded-lg">📊 रिजल्ट</button>
+                <button onClick={() => { setSolMode(false); setSubmitted(true); }} className="px-3 py-1.5 bg-amber-400/90 hover:bg-amber-400 text-slate-950 rounded-lg">📊 रिजल्ट</button>
                 <button onClick={() => { if (qIdx + 1 < activeList.length) setQIdx(qIdx + 1); }} className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg">अगला ➔</button>
               </div>
             </div> 
@@ -807,12 +807,12 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-
-                <div className="pt-3 border-t border-slate-700/50 grid grid-cols-3 gap-2 text-xs font-black">
-                  <button onClick={() => { if (!markedQs.includes(qIdx)) setMarkedQs([...markedQs, qIdx]); setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2.5 rounded-xl bg-slate-700 text-white">Mark & Next</button>
-                  <button onClick={() => { const na = { ...ans }; delete na[qIdx]; setAns(na); }} className="py-2.5 rounded-xl bg-slate-600 text-white">Clear</button>
-                  <button onClick={() => { setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2.5 rounded-xl bg-sky-500 text-white">Save & Next</button>
-                </div>
+                <div className="pt-2.5 border-t border-slate-700/50 grid grid-cols-4 gap-1.5 text-[11px] font-bold">
+                      <button onClick={() => { if (qIdx > 0) { setQIdx(qIdx - 1); setQSec(0); } }} className="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-600">⬅ पिछला</button>
+                      <button onClick={() => { if (!markedQs.includes(qIdx)) setMarkedQs([...markedQs, qIdx]); setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2 px-2 bg-purple-700 hover:bg-purple-600 text-white rounded-xl">🔖 Review</button>
+                      <button onClick={() => { const na = { ...ans }; delete na[qIdx]; setAns(na); }} className="py-2 px-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl">✖ Clear</button>
+                      <button onClick={() => { setQIdx((qIdx + 1) % activeList.length); setQSec(0); }} className="py-2 px-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl">अगला ➔</button>
+                    </div>
               </div>
             )}
           </div>
