@@ -1294,7 +1294,7 @@ useEffect(() => {
             <button onClick={() => { const cq = Number(prompt("इस टेस्ट में कुल कितने प्रश्न भेजने हैं?", "150")); if (cq >= 1) setExamQLimits({ ...examQLimits, [selSubExam + "_" + selSection]: cq }); }} className="px-2 py-0.5 bg-amber-500 text-slate-950 rounded font-black text-[11px]">✏️ Custom Edit</button>
             {examQLimits[selSubExam + "_" + selSection] && <button onClick={() => { const cp = { ...examQLimits }; delete cp[selSubExam + "_" + selSection]; setExamQLimits(cp); }} className="px-2 py-0.5 bg-rose-600 text-white rounded font-black text-[11px]">सभी दिखाएं</button>}
           </div>
-          {(role === "ADMIN" || writerCanSetAttempts) && (
+          {(role === "HEAD" || writerCanSetAttempts) && (
             <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700">
               <span className="text-[11px] font-bold text-amber-300">🔄 प्रयास सीमा ({selSubExam}): <span className="text-white">{examAttempts[selSubExam + "_" + selSection] ? examAttempts[selSubExam + "_" + selSection] + " बार" : "∞ Unlimited"}</span></span>
               {Array.of(0, 1, 2, 3, 4, 5, 10).map((atLim) => (
@@ -1303,7 +1303,7 @@ useEffect(() => {
                 </button>
               ))}
               <button onClick={() => { const ca = Number(prompt("अधिकतम प्रयास संख्या लिखें (0 = Unlimited):", "2")); if (!Number.isNaN(ca) && ca >= 0) setExamAttempts({ ...examAttempts, [selSubExam + "_" + selSection]: ca }); }} className="px-2 py-0.5 bg-slate-700 text-cyan-300 rounded font-bold text-[10px]">Custom</button>
-              {role === "ADMIN" && (
+              {role === "HEAD" && (
                 <button onClick={() => setWriterCanSetAttempts(!writerCanSetAttempts)} className={"px-2 py-0.5 rounded font-black text-[10px] ml-auto " + (writerCanSetAttempts ? "bg-emerald-500 text-slate-950" : "bg-rose-600 text-white")}>
                   {writerCanSetAttempts ? "🔓 Writer Access: ON" : "🔒 Writer Access: OFF"}
                 </button>
