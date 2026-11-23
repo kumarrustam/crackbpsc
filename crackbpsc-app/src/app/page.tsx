@@ -1220,6 +1220,7 @@ useEffect(() => {
                     </div>
                     <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2">
                       {Array.from({ length: totalSeries }, (_, i) => i + 1).map((sNum) => {
+                    const secSimpleKey = selSubExam + "_" + selSection;
                         const sKey = baseKey + "_S" + sNum;
                         const hist = attemptHistory[sKey] ? attemptHistory[sKey] : [];
                         const maxLim = examAttempts[baseKey] ? examAttempts[baseKey] : (examAttempts[secSimpleKey] ? examAttempts[secSimpleKey] : 0);
