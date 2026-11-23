@@ -1104,7 +1104,7 @@ useEffect(() => {
             const isMultiTier = selSubExam.toLowerCase().includes("tre") || selSubExam.toLowerCase().includes("teacher") || (customTierSubs[selSubExam] && customTierSubs[selSubExam].length > 0);
             const activeSubs = [...(defaultTierSubs[selTier] || ["General"]), ...(customTierSubs[selSubExam + "_" + selTier] || [])];
             const allSevenSecs = Array.from(new Set([...examSections, "Chapter-Wise Test"]));
-            const baseKey = isMultiTier ? ${selSubExam}_${selTier}_${selTierSub}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""} : ${selSubExam}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""};
+            const baseKey = isMultiTier ? `${selSubExam}_${selTier}_${selTierSub}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""}` : `${selSubExam}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""}`;
             const totalSeries = Math.max(1, seriesCounts[baseKey] || seriesCounts[${selSubExam}_${selSection}] || 5);
             return (
               <div className="space-y-3">
