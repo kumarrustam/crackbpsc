@@ -169,6 +169,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [customTierSubs, setCustomTierSubs] = useState<Record<string, string[]>>({});
   const [activeSeriesKey, setActiveSeriesKey] = useState<string>("");
   const [pillIdxMap, setPillIdxMap] = useState<Record<string, number>>({});
+  const [targetSeriesNum, setTargetSeriesNum] = useState<number>(1);
+  const [shareScope, setShareScope] = useState<string>("SINGLE");
+  const [multiExamTargets, setMultiExamTargets] = useState<string[]>([]);
+  const [seriesMarks, setSeriesMarks] = useState<Record<string, number>>({});
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -1257,11 +1261,23 @@ useEffect(() => {
                         const used = hist.length;
                         const last = used > 0 ? hist.at(-1) : null;
                         const isOver = maxLim > 0 && used >= maxLim;
-                        const matched = questions.filter((q: any) => q.cat === selCat && q.subEx === selSubExam && q.sec === selSection);
-                        const limVal = examQLimits[secSimpleKey];
+                        const matched = questions.filter((q: any) => {
+                          if (q.sec !== selSection) return false;
+                          if (selSection === "Current Affairs" && q.caMode && q.caMode !== selCaMode) return false;
+                          if (q.seriesNum && q.seriesNum !== sNum) return false;
+                          if (q.shareScope === "GLOBAL") return true;
+                          if (q.shareScope === "CAT" && q.cat === selCat) return true;
+                          if (q.shareScope === "MULTI" && Array.isArray(q.targetExams) && q.targetExams.includes(selSubExam)) return true;
+                          if (q.cat !== selCat || q.subEx !== selSubExam) return false;
+                          if (isMultiTier && q.tier && q.tier !== selTier) return false;
+                          if (isMultiTier && q.tierSub && q.tierSub !== selTierSub) return false;
+                          return true;
+                        });
+                        const limVal = examQLimits[sKey] ? examQLimits[sKey] : examQLimits[secSimpleKey];
                         const qCount = limVal ? Math.min(limVal, matched.length ? matched.length : limVal) : (matched.length ? matched.length : 150);
-                        const tMins = examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8));
-                        const cardTitle = selSection === "PYQs" ? "PYQ Paper #" + sNum : (selSection === "Current Affairs" ? selCaMode + " CA Set #" + sNum : "Test #" + sNum);
+                        const tMins = examTimers[sKey] ? examTimers[sKey] : (examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8)));
+                        const cardPosMark = seriesMarks[sKey] ? seriesMarks[sKey] : posMark;
+                        const cardTitle = selSection === "PYQs" ? "PYQ Paper #" + sNum : (selSection === "Current Affairs" ? selCaMode + " CA Set #" + sNum : "Test #" + sNum);  
                         return (
                           <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
                             <div className="space-y-1">
@@ -1304,7 +1320,7 @@ useEffect(() => {
                                 })()}
                               </div>
                               <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ? " (" + selTierSub + ")" : ""} — {cardTitle}</div>
-                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * posMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
+                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * cardposMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
                             </div>
                             {used === 0 ? (
                               <button
@@ -1312,7 +1328,7 @@ useEffect(() => {
                                   if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
                                   setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                   setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
-                                  setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                  setActivePosMark(cardposMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                 }}
                                 className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs shadow-sm"
                               >
@@ -1337,7 +1353,7 @@ useEffect(() => {
                                       if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
                                       setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                       setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
-                                      setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                      setActivecardPosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                     }}
                                     className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs"
                                   >
