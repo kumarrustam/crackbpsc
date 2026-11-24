@@ -1353,7 +1353,7 @@ useEffect(() => {
                                       if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
                                       setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                       setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
-                                      setActivecardPosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                      setActivePosMark(cardPosMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                     }}
                                     className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs"
                                   >
