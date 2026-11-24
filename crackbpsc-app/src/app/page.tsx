@@ -1115,14 +1115,52 @@ useEffect(() => {
                                 { cat: "UPSC & Civil Services", ex: "UPSC CSE (IAS/IPS)" },
                                 { cat: "UPSC & Civil Services", ex: "CDS / NDA / CAPF" },
                                 { cat: "Central Teaching", ex: "CTET (Paper 1 & 2)" },
-                                { cat: "Central Teaching", ex: "UGC NET / JRF" },                                                                  
+                                { cat: "Central Teaching", ex: "UGC NET / JRF" },  
+              
+                                { cat: "Central Teaching", ex: "KVS / NVS / DSSSB" }
+                              ].map((item: any, idx: number) => (
+                                <button key={idx} type="button" onClick={() => {
+                                  if (examTree[item.cat]) { setSelCat(item.cat); }
+                                  setSelSubExam(item.ex);
+                                  setDrillStep(3);
+                                  setMenuOpen(false);
+                                }} className={"w-full p-1.5 rounded-lg border text-left flex items-center justify-between " + (selSubExam === item.ex ? "bg-emerald-50 border-emerald-400 text-emerald-950" : "bg-slate-50 hover:bg-indigo-50 border-slate-200")}>
+                                  <div>
+                                    <div className="font-black text-[11px]">{item.ex}</div>
+                                    <div className="text-[9px] text-slate-500">{item.cat}</div>
+                                  </div>
+                                  <span className="font-black text-[11px] text-indigo-600">{selSubExam === item.ex ? "✓" : "➔"}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <button type="button" onClick={() => { setMenuOpen(false); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5">🏠 होम डैशबोर्ड (Home)</button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("Practice Test"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center justify-between"><span>📝 मॉक टेस्ट सीरीज़ (Test Series)</span><span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px]">Active</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("PYQs"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center justify-between"><span>📜 पिछले वर्ष के प्रश्न (PYQs)</span><span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px]">Active</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("Current Affairs"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5"><span>📰 Daily Current Affairs</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5"><span>🔔 सूचना व अपडेट्स (Alerts)</span></button>
+                  </div>
+                </div>
+                <div className="p-3 border-t bg-slate-50 text-[11px]">
+                  {user ? (
+                    <button type="button" onClick={() => { setUser(""); setMenuOpen(false); }} className="w-full py-2 bg-rose-600 text-white rounded-lg font-black">🚪 लॉगआउट करें (Logout)</button>
+                  ) : (
+                    <div className="text-center text-slate-500 font-bold">लॉगिन करें और अपनी रैंक ट्रैक करें</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-slate-950/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-4 py-1.5 text-[10px] font-black text-slate-300">
             <button type="button" onClick={() => setDrillStep(3)} className="flex flex-col items-center gap-0.5 text-amber-400"><span>🏠</span><span>होम</span></button>
             <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📝</span><span>परीक्षण</span></button>
             <button type="button" onClick={() => { setSelSection("PYQs"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📜</span><span>PYQs</span></button>
             <button type="button" onClick={() => setShowGoalPicker(true)} className="flex flex-col items-center gap-0.5 text-indigo-300"><span>🎯</span><span>परीक्षा बदलें</span></button>
           </div>
-            </div>                  
+                          
  <div className="flex flex-wrap items-center gap-1">
           <button onClick={() => setNotifOpen(!notifOpen)} className="bg-slate-800 px-2 py-1 rounded-full">🔔 {notifs.length}</button>
           <button onClick={() => setRole("STUDENT")} className={"px-2 py-1 rounded font-bold " + (role === "STUDENT" ? "bg-blue-600" : "bg-slate-800")}>🎓 Student</button>
