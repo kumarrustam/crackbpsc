@@ -1321,7 +1321,7 @@ useEffect(() => {
                                 })()}
                               </div>
                               <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ? " (" + selTierSub + ")" : ""} — {cardTitle}</div>
-                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * cardposMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
+                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * cardPosMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
                             </div>
                             {used === 0 ? (
                               <button
@@ -1329,7 +1329,7 @@ useEffect(() => {
                                   if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
                                   setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                   setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
-                                  setActivePosMark(cardposMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                  setActivePosMark(cardPosMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                 }}
                                 className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs shadow-sm"
                               >
