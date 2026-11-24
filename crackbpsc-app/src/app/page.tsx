@@ -1693,36 +1693,56 @@ useEffect(() => {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        apiKey: geminiKey,
-                        prompt: "Generate BPSC MCQs on: " + aiTopic + " (max 25 questions per batch). Return ONLY a valid JSON array without markdown: [{\"q\":\"Hindi / English\",\"opts\":[\"A\",\"B\",\"C\",\"D\",\"E\"],\"correct\":0,\"exp\":\"Detailed Explanation in Hindi & English\"}]"
-                      })
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                      alert("❌ Google AI त्रुटि: " + (data.error ? data.error.message : "Key जांचें"));
-                      setAiLoading(false);
-                      return;
-                    }
-                    const raw = data.candidates.at(0).content.parts.at(0).text.replace(/`json|```/g, "").trim();
-                    const arr = JSON.parse(raw);
-                    const formatted = arr.map((item: any, idx: number) => ({
-                      id: Date.now() + idx,
-                      cat: selCat,
-                      subEx: selSubExam,
-                      sec: selSection,
-                      sub: "सामान्य अध्ययन",
-                      type: "STD",
-                      q: item.q,
-                      opts: item.opts,
-                      correct: item.correct,
-                      exp: item.exp,
-                      seriesNum: targetSeriesNum,
-                      tier: selTier,
-                      tierSub: selTierSub,
-                      caMode: selCaMode,
-                      shareScope: shareScope,
-                      targetExams: multiExamTargets
-                    }));
+                        apiKey: geminiKey,                    
+                          prompt: "You are a Master Exam Architect for UPSC/BPSC/TRE. Create high-standard bilingual MCQs on: " + aiTopic + " (max 25 questions) mixing Standard, Assertion-Reason, Multi-Statement, Pair-Match, and List-I/List-II Match questions. Return ONLY a valid JSON array where each object has: q (pure Hindi question ONLY, no English mixing, no markdown stars; for Match-List write 'सूची-I (Topic1) को सूची-II (Topic2) से सुमेलित कीजिए:' then rows with '|'), q_en (pure English question ONLY), opts_hi (array of 4 or 5 pure Hindi options), opts_en (array of 4 or 5 pure English options), correct (0-based integer index evenly distributed across 0, 1, 2, 3 so answers are never always 0), exp (pure Hindi explanation WITHOUT [हिन्दी] tag: 1. Core explanation 2. Comparative review + विकल्पों से जुड़े तथ्य: 1. Option 1 fact 2. Option 2 fact 3. Option 3 fact 4. Option 4 fact), exp_en (pure English explanation with Option facts 1-4)."
+                        })
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        alert("❌ Google AI त्रुटि: " + (data.error ? data.error.message : "Key जांचें"));
+                        setAiLoading(false);
+                        return;
+                      }
+                      const rawTxt = String(data?.candidates?.at(0)?.content?.parts?.at(0)?.text || "").trim();
+                      const jsonStart = rawTxt.indexOf("[");
+                      const jsonEnd = rawTxt.lastIndexOf("]");
+                      const cleanJson = jsonStart >= 0 && jsonEnd > jsonStart ? rawTxt.slice(jsonStart, jsonEnd + 1) : rawTxt;
+                      const arr = JSON.parse(cleanJson);
+                      const cleanSide = (s: any) => String(s || "").replace(/^[#*\u2022]+\s*/g, "").replace(/^\[(?:हिन्दी|हिंदी|English)\]\s*/gi, "").replace(/\*\*/g, "").trim();
+                      const splitPair = (val: any) => {
+                        const txt = cleanSide(val);
+                        const parts = txt.split(" / ");
+                        if (parts.length >= 2) return { hi: (parts.at(0) || "").trim(), en: parts.slice(1).join(" / ").trim() };
+                        return { hi: txt, en: txt };
+                      };
+                      const formatted = arr.map((item: any, idx: number) => {
+                        const qPair = item.q_en ? { hi: cleanSide(item.q), en: cleanSide(item.q_en) } : splitPair(item.q);
+                        const ePair = item.exp_en ? { hi: cleanSide(item.exp), en: cleanSide(item.exp_en) } : splitPair(item.exp);
+                        const hiArr: string[] = Array.isArray(item.opts_hi) ? item.opts_hi.map(cleanSide) : (Array.isArray(item.opts) ? item.opts.map((o: any) => splitPair(o).hi) : []);
+                        const enArr: string[] = Array.isArray(item.opts_en) ? item.opts_en.map(cleanSide) : (Array.isArray(item.opts) ? item.opts.map((o: any) => splitPair(o).en) : []);
+                        const mergedOpts = hiArr.map((h: string, i: number) => (enArr[i] && enArr[i] !== h ? (h + " / " + enArr[i]) : h));
+                        const qType = qPair.hi.includes("|") ? "MATCH" : (qPair.hi.includes("कथन") ? "AR" : "STD");
+                        return {
+                          id: Date.now() + idx,
+                          cat: selCat,
+                          subEx: selSubExam,
+                          sec: selSection,
+                          sub: "सामान्य अध्ययन",
+                          type: qType,
+                          q: qPair.hi,
+                          q_en: qPair.en,
+                          opts: mergedOpts,
+                          correct: typeof item.correct === "number" ? item.correct : 0,
+                          exp: ePair.hi,
+                          exp_en: ePair.en,
+                          seriesNum: targetSeriesNum,
+                          tier: selTier,
+                          tierSub: selTierSub,
+                          caMode: selCaMode,
+                          shareScope: shareScope,
+                          targetExams: multiExamTargets
+                        };
+                      });
                     setQuestions([...formatted, ...questions]);
                     setAiTopic("");
                     alert("✅ " + formatted.length + " Bilingual प्रश्न सीधे " + selSubExam + " में जुड़ गए!");
