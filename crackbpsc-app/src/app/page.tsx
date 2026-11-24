@@ -303,7 +303,7 @@ useEffect(() => {
         const sRL = localStorage.getItem("cb_rl"); if (sRL) setRegLiveIds(JSON.parse(sRL));
         const sPs = localStorage.getItem("cb_pass"); if (sPs) { const p = JSON.parse(sPs); setShowPass(p.showPass); setPassBadge(p.passBadge); setPassTitle(p.passTitle); setPassBtn(p.passBtn); setPassMsg(p.passMsg); setPassFeats(p.passFeats); }
         const sPA = localStorage.getItem("cb_pass_acc"); if (sPA) { const a = JSON.parse(sPA); setWriterPass(a.w); setModPass(a.m); setAdPass(a.a); }
-        const res = await fetch("https://supabase.co", {
+      const res = await fetch("https://supabase.co*", {
           headers: {
             apikey: "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go",
             Authorization: "Bearer sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"
@@ -334,6 +334,8 @@ useEffect(() => {
           if (d.optERules) setOptERules(d.optERules);
           if (d.examAttempts) setExamAttempts(d.examAttempts);
     if (d.writerCanSetAttempts !== undefined) setWriterCanSetAttempts(d.writerCanSetAttempts);
+        if (d.seriesCounts) setSeriesCounts(d.seriesCounts);
+        if (d.customTierSubs) setCustomTierSubs(d.customTierSubs);
         }
       } catch (e) {}
       setIsLoaded(true);
@@ -379,11 +381,13 @@ useEffect(() => {
             examQLimits,
           optERules,
           examAttempts,
-          writerCanSetAttempts
+          writerCanSetAttempts,
+            seriesCounts,
+          customTierSubs
         }})
       });
     } catch (e) {}
-  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey, examTimers, examQLimits, optERules, examAttempts, writerCanSetAttempts]);
+  }, [isLoaded, questions, staffList, examTree, examSections, subjects, deletedQs, deletedStaff, liveTests, regLiveIds, showPass, passBadge, passTitle, passBtn, passMsg, passFeats, writerPass, modPass, adPass, enableMobileView, enableDesktopView, posMark, negEnabled, negVal, negLabel, examTheme, qReports, catOrder, hiddenCats, geminiKey, examTimers, examQLimits, optERules, examAttempts, writerCanSetAttempts, seriesCounts, customTierSubs]);
   useEffect(() => {
     const t = setInterval(() => setLiveCount((c) => c + Math.floor(Math.random() * 5) - 2), 3000);
     return () => clearInterval(t);
