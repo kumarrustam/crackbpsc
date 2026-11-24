@@ -430,6 +430,7 @@ useEffect(() => {
     }, 1000);
     return () => clearInterval(timer);
   }, [inExam, submitted, isPaused]);
+  if (!isLoaded) return <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white gap-2"><div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div><div className="text-xs font-black tracking-wide text-amber-300">CrackBPSC लोड हो रहा है...</div></div>;
   if (inExam) {
     const rawList = examQs.length > 0 ? examQs : questions;
     const qLim = examQLimits[selSubExam + "_" + selSection];
