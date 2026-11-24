@@ -1122,6 +1122,7 @@ useEffect(() => {
             <button type="button" onClick={() => { setSelSection("PYQs"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📜</span><span>PYQs</span></button>
             <button type="button" onClick={() => setShowGoalPicker(true)} className="flex flex-col items-center gap-0.5 text-indigo-300"><span>🎯</span><span>परीक्षा बदलें</span></button>
           </div>
+            </div>                  
  <div className="flex flex-wrap items-center gap-1">
           <button onClick={() => setNotifOpen(!notifOpen)} className="bg-slate-800 px-2 py-1 rounded-full">🔔 {notifs.length}</button>
           <button onClick={() => setRole("STUDENT")} className={"px-2 py-1 rounded font-bold " + (role === "STUDENT" ? "bg-blue-600" : "bg-slate-800")}>🎓 Student</button>
