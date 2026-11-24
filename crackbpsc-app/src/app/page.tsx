@@ -168,6 +168,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [seriesCounts, setSeriesCounts] = useState<Record<string, number>>({});
   const [customTierSubs, setCustomTierSubs] = useState<Record<string, string[]>>({});
   const [activeSeriesKey, setActiveSeriesKey] = useState<string>("");
+  const [pillIdxMap, setPillIdxMap] = useState<Record<string, number>>({});
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -1264,8 +1265,42 @@ useEffect(() => {
                           <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
                             <div className="space-y-1">
                               <div className="flex items-center justify-between">
-                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black">{selCat} • {selSection} #{sNum}</span>
-                                {used > 0 && <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Last: {last.score} • {used}/{maxLim > 0 ? maxLim : "∞"}</span>}
+                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black">{selCat} • {selSection} #{sNum}</span>                               
+                                {used > 0 && (() => {
+                                  const rawIdx = pillIdxMap[sKey];
+                                  const curIdx = typeof rawIdx === "number" && rawIdx >= 0 && rawIdx < used ? rawIdx : used - 1;
+                                  const curItem = hist[curIdx] ? hist[curIdx] : last;
+                                  return (
+                                    <span className="inline-flex items-center gap-1 p-[1.5px] rounded-full bg-gradient-to-r from-indigo-500 via-teal-400 to-amber-400 shrink-0 shadow-xs">
+                                      <span className="inline-flex items-center gap-1 bg-slate-900/95 text-white px-1.5 py-0.5 rounded-full text-[10px] font-black">
+                                        <button
+                                          type="button"
+                                          onClick={(e) => { e.stopPropagation(); setPillIdxMap({ ...pillIdxMap, [sKey]: curIdx > 0 ? curIdx - 1 : used - 1 }); }}
+                                          className="px-0.5 text-cyan-300 hover:text-amber-300 leading-none"
+                                        >
+                                          ◀
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                            setActiveList(finalQs); setAns(curItem.ans ? curItem.ans : {}); setSubmitted(true); setSolMode(false); setInExam(true);
+                                          }}
+                                          className="hover:underline leading-none tracking-tight"
+                                        >
+                                          #{curIdx + 1}: <span className="text-amber-300">{curItem.score}</span> • {used}/{maxLim > 0 ? maxLim : "∞"}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => { e.stopPropagation(); setPillIdxMap({ ...pillIdxMap, [sKey]: curIdx < used - 1 ? curIdx + 1 : 0 }); }}
+                                          className="px-0.5 text-cyan-300 hover:text-amber-300 leading-none"
+                                        >
+                                          ▶
+                                        </button>
+                                      </span>
+                                    </span>
+                                  );
+                                })()}
                               </div>
                               <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ? " (" + selTierSub + ")" : ""} — {cardTitle}</div>
                               <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * posMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
