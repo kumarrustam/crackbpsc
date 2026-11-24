@@ -1698,7 +1698,7 @@ useEffect(() => {
                       q: item.q,
                       opts: item.opts,
                       correct: item.correct,
-                      exp: item.exp
+                      exp: item.exp,
                       seriesNum: targetSeriesNum,
                       tier: selTier,
                       tierSub: selTierSub,
@@ -1825,7 +1825,7 @@ useEffect(() => {
                   q: fullQ,
                   opts: opts,
                   correct: cIdx,
-                  exp: expText.trim()
+                  exp: expText.trim(),
                   seriesNum: targetSeriesNum,
                       tier: selTier,
                       tierSub: selTierSub,
