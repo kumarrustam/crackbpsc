@@ -167,6 +167,30 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [selCaMode, setSelCaMode] = useState<string>("Daily");
   const [seriesCounts, setSeriesCounts] = useState<Record<string, number>>({});
   const [customTierSubs, setCustomTierSubs] = useState<Record<string, string[]>>({});
+  const [activeSeriesKey, setActiveSeriesKey] = useState<string>("");
+  useEffect(() => {
+    try {
+      const navRaw = localStorage.getItem("cb_nav_lock");
+      if (navRaw) {
+        const n = JSON.parse(navRaw);
+        if (n.selCat) setSelCat(n.selCat);
+        if (n.selSubExam) setSelSubExam(n.selSubExam);
+        if (n.selTier) setSelTier(n.selTier);
+        if (n.selTierSub) setSelTierSub(n.selTierSub);
+        if (n.selSection) setSelSection(n.selSection);
+        if (n.selCaMode) setSelCaMode(n.selCaMode);
+        if (n.activeSeriesKey) setActiveSeriesKey(n.activeSeriesKey);
+        if (typeof n.drillStep === "number" && n.drillStep >= 1) setDrillStep(n.drillStep);
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem("cb_nav_lock", JSON.stringify({ drillStep, selCat, selSubExam, selTier, selTierSub, selSection, selCaMode, activeSeriesKey }));
+    } catch {}
+  }, [drillStep, selCat, selSubExam, selTier, selTierSub, selSection, selCaMode, activeSeriesKey]);
+
+  
   useEffect(() => {
     const r = localStorage.getItem("cb_role");
     if (r) setRole(r as any);
@@ -435,7 +459,7 @@ useEffect(() => {
   <div className="max-w-3xl mx-auto bg-white text-slate-950 rounded-2xl border-2 border-slate-300 shadow-lg p-5 space-y-4">
           <div className="flex justify-between items-center border-b pb-3">
             <div className="flex flex-wrap items-center gap-1.5"><h2 className="font-bold text-blue-700">{goal}</h2><span className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-black">+{activePosMark} | {activeNegEnabled ? "-" + activeNegLabel + " Neg" : "No Negative"}</span></div>
-            {!submitted ? <button onClick={() => { const hk = selSubExam + "_" + selSection; const pr = attemptHistory[hk] ? attemptHistory[hk] : []; setAttemptHistory({ ...attemptHistory, [hk]: [...pr, { score, right, wrong, skipped, ans: { ...ans }, date: new Date().toLocaleDateString() }] }); setSubmitted(true); }} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg font-bold">Submit</button> : null}
+          {!submitted ? <button onClick={() => { const hk = activeSeriesKey ? activeSeriesKey : (selSubExam + "_" + selSection); const rec = { score, right, wrong, skipped, ans: { ...ans }, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }; setAttemptHistory((prev) => ({ ...prev, [hk]: [...(prev[hk] ? prev[hk] : []), rec], [selSubExam + "_" + selSection]: [...(prev[selSubExam + "_" + selSection] ? prev[selSubExam + "_" + selSection] : []), rec] })); setSubmitted(true); }} className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold">टेस्ट सबमिट करें</button> : <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-bold">Submitted</span>}
           </div>
           {submitted ? (
             <div className="space-y-3">
@@ -1250,7 +1274,7 @@ useEffect(() => {
                               <button
                                 onClick={() => {
                                   if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
-                                  const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                  setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                   setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
                                   setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                 }}
@@ -1275,7 +1299,7 @@ useEffect(() => {
                                   <button
                                     onClick={() => {
                                       if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
-                                      const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                      setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
                                       setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
                                       setActivePosMark(posMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
                                     }}
