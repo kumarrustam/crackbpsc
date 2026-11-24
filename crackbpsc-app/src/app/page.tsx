@@ -762,7 +762,8 @@ useEffect(() => {
                         const m1 = joinedNorm.match(/(?:सूची|List)\s*[-–]?\s*(?:I|1)\s*\(([^)]+)\)/i);
                         const m2 = joinedNorm.match(/(?:सूची|List)\s*[-–]?\s*(?:II|2)\s*\(([^)]+)\)/i);
                         if (m1 && m1.at(1)) h1 = (examLang === "EN" ? "List-I (" : "सूची-I (") + (m1.at(1) as string).trim() + ")";
-                        if (m2 && m2.at(1)) h2 = (examLang === "EN" ? "List-II (" : "सूची-II (") + (m2.at(1) as string).trim() + ")";
+                        if (m2 && m2.at(1)) h2 = (examLang === "EN" ? "List-II (" : "सूची-II (") + (m2.at(1) as string).trim() + ")";              
+                        const rawExp = String(examLang === "EN" && q.exp_en ? q.exp_en : (q.exp || q.explanation || "इस प्रश्न की व्याख्या उपलब्ध नहीं है।")).replace(/^\[(?:हिन्दी|हिंदी|English)\]\s*/gi, "").trim();         
                         return (
                           <div className="p-3 bg-slate-900 rounded-xl border border-slate-700/80 space-y-2">
                             <div className="flex items-center justify-between text-[11px] font-bold">
