@@ -173,6 +173,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [shareScope, setShareScope] = useState<string>("SINGLE");
   const [multiExamTargets, setMultiExamTargets] = useState<string[]>([]);
   const [seriesMarks, setSeriesMarks] = useState<Record<string, number>>({});
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [showGoalPicker, setShowGoalPicker] = useState<boolean>(false);
+  const [goalRegion, setGoalRegion] = useState<string>("STATE");
+  const [selectedState, setSelectedState] = useState<string>("Bihar");
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -1002,12 +1006,148 @@ useEffect(() => {
     );
   }
   const activeDaysText = isUnlimited ? "Unlimited" : adDayCount + " Days";
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="bg-slate-900 text-white p-2.5 flex flex-wrap justify-between items-center text-xs gap-1">
-        <span className="font-bold text-amber-400">⚡ CrackBPSC</span>
-        <div className="flex flex-wrap items-center gap-1">
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setMenuOpen(true)} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-sm font-black text-white flex items-center gap-1" title="Menu">☰ <span className="hidden sm:inline text-xs">मेनू</span></button>
+            <span className="font-bold text-amber-400">⚡ CrackBPSC</span>
+            <button type="button" onClick={() => setShowGoalPicker(true)} className="px-2.5 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black border border-indigo-400 flex items-center gap-1">
+              <span>📍 {goalRegion === "CENTRAL" ? "All-India" : selectedState} • {selSubExam}</span>
+              <span>▾</span>
+            </button>
+          </div>
+          {menuOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex" onClick={() => setMenuOpen(false)}>
+              <div className="w-72 max-w-[85vw] bg-white text-slate-900 h-full flex flex-col justify-between shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div>
+                  <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 bg-amber-400 text-slate-950 rounded text-[10px] font-black">⚡ PRO PASS ACTIVE</span>
+                      <button type="button" onClick={() => setMenuOpen(false)} className="px-2 py-0.5 bg-white/10 rounded text-xs">✕</button>
+                    </div>
+                    <div className="flex items-center gap-2.5 pt-1">
+                      <div className="w-11 h-11 rounded-full bg-indigo-600 border-2 border-amber-400 flex items-center justify-center font-black text-base text-white">{user ? user.slice(0, 1).toUpperCase() : "S"}</div>
+                      <div>
+                        <div className="font-black text-sm">{user || "Student Guest"}</div>
+                        <div className="text-[10px] text-indigo-200">🎯 {selSubExam}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3 space-y-1 text-xs font-bold">
+                    <div className="p-2.5 bg-indigo-50 border border-indigo-200 rounded-xl mb-2 space-y-1">
+                      <div className="text-[10px] text-indigo-700 font-black">वर्तमान लक्ष्य परीक्षा ({goalRegion === "CENTRAL" ? "Central" : selectedState}):</div>
+                      <div className="font-black text-slate-900">{selCat} ➔ {selSubExam}</div>
+                      <button type="button" onClick={() => { setMenuOpen(false); setShowGoalPicker(true); }} className="w-full py-1.5 bg-indigo-600 text-white rounded-lg text-[11px] font-black">🎯 राज्य / परीक्षा बदलें (Switch Exam)</button>
+                    </div>
+                    <button type="button" onClick={() => { setMenuOpen(false); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5">🏠 होम डैशबोर्ड (Home)</button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setGoalRegion("STATE"); setShowGoalPicker(true); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5">📍 State-Wise Exams ({selectedState})</button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setGoalRegion("CENTRAL"); setShowGoalPicker(true); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5">🇮🇳 Central / All-India Exams</button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("Practice Test"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center justify-between"><span>📝 Test Series (मॉक टेस्ट)</span><span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px]">Active</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("PYQs"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center justify-between"><span>📜 Previous Year Papers</span><span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px]">Active</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setSelSection("Current Affairs"); setDrillStep(3); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5"><span>📰 Daily Current Affairs</span></button>
+                    <button type="button" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5"><span>🔔 सूचना व अपडेट्स (Alerts)</span></button>
+                  </div>
+                </div>
+                <div className="p-3 border-t bg-slate-50 text-[11px]">
+                  {user ? (
+                    <button type="button" onClick={() => { setUser(""); setMenuOpen(false); }} className="w-full py-2 bg-rose-600 text-white rounded-lg font-black">🚪 लॉगआउट करें (Logout)</button>
+                  ) : (
+                    <div className="text-center text-slate-500 font-bold">लॉगिन करें और अपनी रैंक ट्रैक करें</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          {(showGoalPicker || (user && typeof window !== "undefined" && !window.localStorage.getItem("cb_goal_done"))) && (
+            <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xs flex items-center justify-center p-3 overflow-y-auto">
+              <div className="w-full max-w-2xl bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 p-4 space-y-3 my-auto">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div>
+                    <div className="font-black text-base text-slate-900">🎯 अपना लक्ष्य चुनें | Select Your Target Exam</div>
+                    <div className="text-[11px] text-slate-500">Testbook स्टाइल स्मार्ट फ़िल्टर — पहले राज्य या केंद्रीय परीक्षा चुनें</div>
+                  </div>
+                  <button type="button" onClick={() => { try { window.localStorage.setItem("cb_goal_done", "1"); } catch {} setShowGoalPicker(false); }} className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-black">✕ बंद करें</button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => setGoalRegion("STATE")} className={"py-2 px-3 rounded-xl font-black text-xs border-2 " + (goalRegion === "STATE" ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 text-slate-700 border-slate-200")}>📍 State-Wise Exams (राज्यवार)</button>
+                  <button type="button" onClick={() => setGoalRegion("CENTRAL")} className={"py-2 px-3 rounded-xl font-black text-xs border-2 " + (goalRegion === "CENTRAL" ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 text-slate-700 border-slate-200")}>🇮🇳 Central / All-India Exams</button>
+                </div>
+                {goalRegion === "STATE" ? (
+                  <div className="space-y-2.5">
+                    <div className="flex flex-wrap gap-1.5">
+                      {["Bihar", "Uttar Pradesh", "Jharkhand", "Madhya Pradesh", "Rajasthan", "Delhi", "Haryana", "West Bengal"].map((st) => (
+                        <button key={st} type="button" onClick={() => setSelectedState(st)} className={"px-2.5 py-1 rounded-full text-[11px] font-black border " + (selectedState === st ? "bg-amber-400 text-slate-950 border-amber-500" : "bg-slate-100 text-slate-700 border-slate-200")}>{st}</button>
+                      ))}
+                    </div>
+                    <div className="p-2.5 bg-slate-50 rounded-xl border space-y-2 max-h-64 overflow-y-auto">
+                      <div className="text-[11px] font-black text-indigo-800">📍 {selectedState} की प्रमुख परीक्षाएं:</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        {(selectedState === "Bihar"
+                          ? Object.entries(examTree).filter(([c]) => /bpsc|tre|bihar|bssc|police|daroga|stet/i.test(c)).flatMap(([c, list]: any) => list.map((ex: string) => ({ cat: c, ex })))
+                          : selectedState === "Uttar Pradesh"
+                          ? [{ cat: "UPPSC & UP Exams", ex: "UPPSC PCS" }, { cat: "UPPSC & UP Exams", ex: "UP RO/ARO" }, { cat: "UPPSC & UP Exams", ex: "UP Police Constable & SI" }, { cat: "UPPSC & UP Exams", ex: "UPSSSC PET" }, { cat: "UPPSC & UP Exams", ex: "UPTET / Super TET" }]
+                          : selectedState === "Jharkhand"
+                          ? [{ cat: "JPSC & JSSC", ex: "JPSC Civil Services" }, { cat: "JPSC & JSSC", ex: "JSSC CGL" }, { cat: "JPSC & JSSC", ex: "Jharkhand Police & TET" }]
+                          : [{ cat: selectedState + " PSC", ex: selectedState + " State PSC" }, { cat: selectedState + " Exams", ex: selectedState + " Police & SI" }, { cat: selectedState + " Exams", ex: selectedState + " TET / Teacher" }]
+                        ).map((item: any, idx: number) => (
+                          <button key={idx} type="button" onClick={() => {
+                            if (examTree[item.cat]) { setSelCat(item.cat); }
+                            setSelSubExam(item.ex);
+                            setDrillStep(3);
+                            try { window.localStorage.setItem("cb_goal_done", "1"); } catch {}
+                            setShowGoalPicker(false);
+                            
+                          }} className="p-2 bg-white hover:bg-indigo-50 border border-slate-200 rounded-lg text-left flex items-center justify-between">
+                            <div>
+                              <div className="font-black text-xs text-slate-900">{item.ex}</div>
+                              <div className="text-[10px] text-slate-500">{item.cat}</div>
+                            </div>
+                            <span className="text-indigo-600 font-black text-xs">➔</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-2.5 bg-slate-50 rounded-xl border space-y-2 max-h-64 overflow-y-auto">
+                    <div className="text-[11px] font-black text-indigo-800">🇮🇳 भारत की सभी केंद्रीय परीक्षाएं (UPSC, SSC, Railway, Banking, Central Teaching):</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                      {[
+                        ...Object.entries(examTree).filter(([c]) => !/bpsc|tre|bihar|bssc/i.test(c)).flatMap(([c, list]: any) => list.map((ex: string) => ({ cat: c, ex }))),
+                        { cat: "UPSC & Civil Services", ex: "UPSC CSE (IAS/IPS)" },
+                        { cat: "UPSC & Civil Services", ex: "CDS / NDA / CAPF" },
+                        { cat: "Central Teaching", ex: "CTET (Paper 1 & 2)" },
+                        { cat: "Central Teaching", ex: "UGC NET / JRF" },
+                        { cat: "Central Teaching", ex: "KVS / NVS / DSSSB" }
+                      ].map((item: any, idx: number) => (
+                        <button key={idx} type="button" onClick={() => {
+                          if (examTree[item.cat]) { setSelCat(item.cat); }
+                          setSelSubExam(item.ex);
+                          setDrillStep(3);
+                          try { window.localStorage.setItem("cb_goal_done", "1"); } catch {}
+                          setShowGoalPicker(false);
+                        }} className="p-2 bg-white hover:bg-indigo-50 border border-slate-200 rounded-lg text-left flex items-center justify-between">
+                          <div>
+                            <div className="font-black text-xs text-slate-900">{item.ex}</div>
+                            <div className="text-[10px] text-slate-500">{item.cat}</div>
+                          </div>
+                          <span className="text-indigo-600 font-black text-xs">➔</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-slate-950/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-4 py-1.5 text-[10px] font-black text-slate-300">
+            <button type="button" onClick={() => setDrillStep(3)} className="flex flex-col items-center gap-0.5 text-amber-400"><span>🏠</span><span>होम</span></button>
+            <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📝</span><span>परीक्षण</span></button>
+            <button type="button" onClick={() => { setSelSection("PYQs"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📜</span><span>PYQs</span></button>
+            <button type="button" onClick={() => setShowGoalPicker(true)} className="flex flex-col items-center gap-0.5 text-indigo-300"><span>🎯</span><span>परीक्षा बदलें</span></button>
+          </div>
+ <div className="flex flex-wrap items-center gap-1">
           <button onClick={() => setNotifOpen(!notifOpen)} className="bg-slate-800 px-2 py-1 rounded-full">🔔 {notifs.length}</button>
           <button onClick={() => setRole("STUDENT")} className={"px-2 py-1 rounded font-bold " + (role === "STUDENT" ? "bg-blue-600" : "bg-slate-800")}>🎓 Student</button>
           <button onClick={() => setRole("WRITER")} className={"px-2 py-1 rounded font-bold " + (role === "WRITER" ? "bg-blue-600" : "bg-slate-800")}>✍️ Writer</button>
@@ -1016,14 +1156,12 @@ useEffect(() => {
           <button onClick={() => setRole("ADMIN")} className={"px-2 py-1 rounded font-bold " + (role === "ADMIN" ? "bg-blue-600" : "bg-slate-800")}>👑 Head Admin</button>
         </div>
       </div>
-
       {notifOpen && (
         <div className="fixed top-12 right-3 bg-white border shadow-xl rounded-xl p-3 w-64 z-50 text-xs space-y-2">
           <div className="flex justify-between font-bold"><span>🔔 सूचनाएं</span><button onClick={() => setNotifOpen(false)}>✕</button></div>
           {notifs.map((n, i) => <div key={i} className="p-2 bg-slate-50 rounded border">{n}</div>)}
         </div>
       )}
-
       {role === "STUDENT" && (
           <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>
           <div className="flex justify-between items-center">
