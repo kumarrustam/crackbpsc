@@ -312,7 +312,7 @@ useEffect(() => {
         const rows = await res.json();
         if (Array.isArray(rows) && rows.length > 0 && rows.at(0).data) {
           const d = rows.at(0).data;
-          if (d.questions) setQuestions(d.questions);
+          if (Array.isArray(d.questions)) setQuestions((prev) => { const delSet = new Set(d.deletedQs ? d.deletedQs : []); const map = new Map(); [...d.questions, ...prev].forEach((item: any) => { if (item && item.id && !delSet.has(item.id)) map.set(item.id, item); }); return Array.from(map.values()); });
           if (d.staffList) setStaffList(d.staffList);
           if (d.examTree) setExamTree(d.examTree);
           if (d.examSections) setExamSections(d.examSections);
