@@ -1264,7 +1264,7 @@ useEffect(() => {
                         const matched = questions.filter((q: any) => {
                           if (q.sec !== selSection) return false;
                           if (selSection === "Current Affairs" && q.caMode && q.caMode !== selCaMode) return false;
-                          if (q.seriesNum && q.seriesNum !== sNum) return false;
+                          if ((q.seriesNum ? q.seriesNum : 1) !== sNum) return false;
                           if (q.shareScope === "GLOBAL") return true;
                           if (q.shareScope === "CAT" && q.cat === selCat) return true;
                           if (q.shareScope === "MULTI" && Array.isArray(q.targetExams) && q.targetExams.includes(selSubExam)) return true;
@@ -1607,6 +1607,60 @@ useEffect(() => {
                           {showLive ? "👁️ Student पर Live: ON" : "🙈 Student पर Live: OFF"}
                         </button>
                       )}
+                     
+                    <div className="p-2.5 bg-indigo-50 border-2 border-indigo-300 rounded-xl space-y-2 text-[11px]">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-black text-indigo-950">🎯 टारगेट सीरीज़:</span>
+                        <select value={targetSeriesNum} onChange={(e) => setTargetSeriesNum(Number(e.target.value))} className="px-2 py-0.5 border border-indigo-300 rounded bg-white font-black text-indigo-800">
+                          {Array.from({ length: Math.min(200, seriesCounts[selSubExam + "_" + selSection] ? seriesCounts[selSubExam + "_" + selSection] : 10) }, (_, i) => i + 1).map((n) => (
+                            <option key={n} value={n}>Test #{n}</option>
+                          ))}
+                        </select>
+                        {selSection === "Current Affairs" && (
+                          <select value={selCaMode} onChange={(e) => setSelCaMode(e.target.value)} className="px-2 py-0.5 border border-amber-400 rounded bg-amber-100 font-black text-amber-950">
+                            <option value="Daily">Daily CA</option>
+                            <option value="Weekly">Weekly CA</option>
+                            <option value="Monthly">Monthly CA</option>
+                          </select>
+                        )}
+                        <button type="button" onClick={() => {
+                          const isMt = selSubExam.toLowerCase().includes("tre") || selSubExam.toLowerCase().includes("teacher");
+                          const bKey = isMt ? (selSubExam + "_" + selTier + "_" + selTierSub + "_" + selSection + (selSection === "Current Affairs" ? "_" + selCaMode : "")) : (selSubExam + "_" + selSection + (selSection === "Current Affairs" ? "_" + selCaMode : ""));
+                          const sk = bKey + "_S" + targetSeriesNum;
+                          const qv = Number(prompt("Test #" + targetSeriesNum + " के लिए कुल प्रश्न (Qs) लिखें:", "10"));
+                          const mv = Number(prompt("प्रति प्रश्न अंक (Marks) लिखें (जैसे 1 या 2):", "1"));
+                          const tv = Number(prompt("कुल समय (Minutes) लिखें (जैसे 10 या 60):", "10"));
+                          if (!Number.isNaN(qv) && qv > 0) setExamQLimits({ ...examQLimits, [sk]: qv });
+                          if (!Number.isNaN(mv) && mv > 0) setSeriesMarks({ ...seriesMarks, [sk]: mv });
+                          if (!Number.isNaN(tv) && tv > 0) setExamTimers({ ...examTimers, [sk]: tv });
+                          alert("✅ Test #" + targetSeriesNum + " के प्रश्न, अंक और मिनट लॉक हो गए!");
+                        }} className="px-2.5 py-0.5 bg-slate-900 text-amber-300 rounded font-black">⚙️ Test #{targetSeriesNum} के Qs/Marks/Min सेट करें</button>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="font-black text-slate-800">🌐 कहाँ जोड़ें:</span>
+                        {[
+                          { id: "SINGLE", label: "🎯 केवल यही परीक्षा" },
+                          { id: "MULTI", label: "☑️ चुनी हुई कई परीक्षाएं" },
+                          { id: "CAT", label: "🏛️ पूरी कैटेगरी (" + selCat + ")" },
+                          { id: "GLOBAL", label: "🌐 सभी परीक्षाएं (All)" }
+                        ].map((sc) => (
+                          <button key={sc.id} type="button" onClick={() => setShareScope(sc.id)} className={"px-2 py-0.5 rounded font-black " + (shareScope === sc.id ? "bg-indigo-600 text-white" : "bg-white border text-slate-700")}>{sc.label}</button>
+                        ))}
+                      </div>
+                      {shareScope === "MULTI" && (
+                        <div className="flex flex-wrap gap-1.5 p-1.5 bg-white rounded border border-indigo-200">
+                          {Object.values(examTree).flat().map((exName: any) => {
+                            const checked = multiExamTargets.includes(exName);
+                            return (
+                              <label key={exName} className="inline-flex items-center gap-1 text-[10px] font-bold cursor-pointer bg-slate-50 px-1.5 py-0.5 rounded border">
+                                <input type="checkbox" checked={checked} onChange={() => setMultiExamTargets(checked ? multiExamTargets.filter((x) => x !== exName) : [...multiExamTargets, exName])} />
+                                <span>{exName}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>          
                       <div className="p-3 bg-emerald-950 text-white border-2 border-emerald-400 rounded-xl space-y-2 text-xs">
             <div className="font-black text-amber-300">🤖 AI Question Generator & 📋 Gemini Bulk Importer (Bilingual + Explanation)</div>
             <div className="flex flex-wrap gap-1.5">
@@ -1645,6 +1699,12 @@ useEffect(() => {
                       opts: item.opts,
                       correct: item.correct,
                       exp: item.exp
+                      seriesNum: targetSeriesNum,
+                      tier: selTier,
+                      tierSub: selTierSub,
+                      caMode: selCaMode,
+                      shareScope: shareScope,
+                      targetExams: multiExamTargets
                     }));
                     setQuestions([...formatted, ...questions]);
                     setAiTopic("");
@@ -1766,6 +1826,12 @@ useEffect(() => {
                   opts: opts,
                   correct: cIdx,
                   exp: expText.trim()
+                  seriesNum: targetSeriesNum,
+                      tier: selTier,
+                      tierSub: selTierSub,
+                      caMode: selCaMode,
+                      shareScope: shareScope,
+                      targetExams: multiExamTargets
                 });
               }
             });
@@ -1883,7 +1949,7 @@ useEffect(() => {
                   setEditQId(null);
                   alert("✅ प्रश्न सफलतापूर्वक अपडेट (Edit) हो गया!");
                 } else {
-                  setQuestions([...questions, { id: Date.now(), subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp, tags: [autoTag], liveIds: lIds }]);
+                  setQuestions([...questions, { id: Date.now(), cat: selCat, subEx: selSubExam, sec: selSection, seriesNum: targetSeriesNum, tier: selTier, tierSub: selTierSub, caMode: selCaMode, shareScope: shareScope, targetExams: multiExamTargets, subject: newSub, text: baseQ, opts: combinedOpts, correct: correctIdx, exp: combinedExp, tag: autoTag, liveIds: lIds }]);
                   alert(targetLiveId > 0 ? "✅ प्रश्न सामान्य परीक्षा और 🔴 Live Test दोनों में जुड़ गया!" : "✅ प्रश्न सामान्य परीक्षा में सेव हो गया!");
                 }
                 setNewQ(""); setNewQEn(""); setAssertBox(""); setAssertBoxEn(""); setReasonBox(""); setReasonBoxEn(""); setListLeft(["", "", "", ""]); setListRight(["", "", "", ""]); setListLeftEn(["", "", "", ""]); setListRightEn(["", "", "", ""]); setNewOpts(["", "", "", ""]); setNewOptsEn(["", "", "", ""]); setNewExp(""); setNewExpEn(""); setCorrectIdx(0);
