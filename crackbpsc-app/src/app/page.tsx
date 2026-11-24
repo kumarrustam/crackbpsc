@@ -1275,9 +1275,9 @@ useEffect(() => {
                         });
                         const limVal = examQLimits[sKey] ? examQLimits[sKey] : examQLimits[secSimpleKey];
                         const qCount = limVal ? Math.min(limVal, matched.length ? matched.length : limVal) : (matched.length ? matched.length : 150);
-                        const cardPosMark = seriesMarks[sKey] ? seriesMarks[sKey] : posMark;;
-                        const tMins = examTimers[sKey] ? examTimers[sKey] : (examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8)));
                         const cardPosMark = seriesMarks[sKey] ? seriesMarks[sKey] : posMark;
+                        const tMins = examTimers[sKey] ? examTimers[sKey] : (examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8)));
+                      
                         const cardTitle = selSection === "PYQs" ? "PYQ Paper #" + sNum : (selSection === "Current Affairs" ? selCaMode + " CA Set #" + sNum : "Test #" + sNum);  
                         return (
                           <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
