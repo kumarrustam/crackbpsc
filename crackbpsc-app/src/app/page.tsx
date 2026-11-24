@@ -741,44 +741,60 @@ useEffect(() => {
                   return <button key={idx} onClick={() => setQIdx(idx)} className={"w-6 h-6 rounded-md font-bold text-[10px] " + c}>{idx + 1}</button>;
                 })}
               </div>
-            {(() => {
-                const trLine = (txt: string) => {
-                  const parts = String(txt).split(" / ");
-                  if (parts.length < 2) return txt;
-                  if (examLang === "HI") return parts.at(0);
-                  if (examLang === "EN") return parts.slice(1).join(" / ");
-                  return txt;
-                };
-                const rawLines = String(q.q).split("\n").map((l: string) => l.trim()).filter((x: string) => x.length > 0);
-                const tableRows = rawLines.filter((l: string) => l.includes("|"));
-                const normalLines = rawLines.filter((l: string) => !l.includes("|"));
-                const rawExp = q.exp ? q.exp : q.explanation ? q.explanation : "इस प्रश्न की व्याख्या उपलब्ध नहीं है।";
-                return (
-                  <div className="p-3 bg-slate-900 rounded-xl border border-slate-700/80 space-y-2.5 text-white">
-                    <div className="flex items-center justify-between text-[11px] font-bold">
-                      <span className="text-amber-300">प्रश्न #{qIdx + 1}</span>
-                      <span className={"px-2 py-0.5 rounded-full text-[10px] " + (ans[qIdx] === q.correct ? "bg-emerald-600/90" : ans[qIdx] !== undefined ? "bg-rose-600/90" : "bg-amber-500 text-slate-950")}>
-                        {ans[qIdx] === q.correct ? "✓ सही उत्तर" : ans[qIdx] !== undefined ? "✕ गलत उत्तर" : "⏭ छोड़ा गया"}
-                      </span>
-                    </div>
-                    <div className="font-bold text-sm leading-relaxed space-y-1">
-                      {normalLines.map((ln: string, i: number) => <div key={i}>{trLine(ln)}</div>)}
-                    </div>
-                    {tableRows.length > 0 && (
-                      <div className="rounded-xl overflow-hidden border-2 border-indigo-400/60 bg-slate-950 text-white text-xs">
-                        {tableRows.map((row: string, rIdx: number) => {
-                          const cols = row.split("|");
-                          const leftCol = trLine(String(cols.at(0) ? cols.at(0) : "").trim());
-                          const rightCol = trLine(cols.slice(1).join("|").trim());
-                          return (
-                            <div key={rIdx} className={"grid grid-cols-2 divide-x divide-indigo-400/50 border-b border-indigo-400/30 last:border-b-0 " + (rIdx === 0 ? "bg-indigo-700 font-black text-amber-200" : "font-bold")}>
-                              <div className="p-2">{leftCol}</div>
-                              <div className="p-2">{rightCol}</div>
+            
+                      {(() => {
+                        const rawQ = examLang === "EN" && q.q_en ? String(q.q_en) : String(q.q || "");
+                        const trLine = (txt: string) => {
+                          const s = String(txt || "").replace(/^\[(?:हिन्दी|हिंदी|English)\]\s*/i, "").trim();
+                          const parts = s.split(" / ");
+                          if (parts.length >= 2) return examLang === "EN" ? parts.slice(1).join(" / ").trim() : (parts.at(0) || "").trim();
+                          return s;
+                        };
+                        const allLines = rawQ.split("\n").map((l: string) => l.replace(/^[#*\u2022]+\s*/, "").trim()).filter((x: string) => x.length > 0 && !/^(?:कूट|code|codes)\s*:?$/i.test(x));
+                        const isHiLine = (l: string) => /[\u0900-\u097F]/.test(l);
+                        const hasBothLangs = !q.q_en && allLines.some(isHiLine) && allLines.some((l: string) => !isHiLine(l) && /[a-zA-Z]{3,}/.test(l));
+                        const langLines = hasBothLangs ? allLines.filter((l: string) => l.includes("|") || (examLang === "EN" ? !isHiLine(l) : isHiLine(l))) : allLines;
+                        const tableRows = langLines.filter((l: string) => l.includes("|") && !/^\|?[-:\s|]+\|?$/.test(l));
+                        const normalLines = langLines.filter((l: string) => !l.includes("|"));
+                        let h1 = examLang === "EN" ? "List-I" : "सूची-I (List-I)";
+                        let h2 = examLang === "EN" ? "List-II" : "सूची-II (List-II)";
+                        const joinedNorm = normalLines.join(" ");
+                        const m1 = joinedNorm.match(/(?:सूची|List)\s*[-–]?\s*(?:I|1)\s*\(([^)]+)\)/i);
+                        const m2 = joinedNorm.match(/(?:सूची|List)\s*[-–]?\s*(?:II|2)\s*\(([^)]+)\)/i);
+                        if (m1 && m1.at(1)) h1 = (examLang === "EN" ? "List-I (" : "सूची-I (") + (m1.at(1) as string).trim() + ")";
+                        if (m2 && m2.at(1)) h2 = (examLang === "EN" ? "List-II (" : "सूची-II (") + (m2.at(1) as string).trim() + ")";
+                        return (
+                          <div className="p-3 bg-slate-900 rounded-xl border border-slate-700/80 space-y-2">
+                            <div className="flex items-center justify-between text-[11px] font-bold">
+                              <span className="text-amber-300">प्रश्न #{qIdx + 1}</span>
+                              <span className={"px-2 py-0.5 rounded-full text-[10px] " + (ans[qIdx] === q.correct ? "bg-emerald-500/20 text-emerald-300" : ans[qIdx] !== undefined ? "bg-rose-500/20 text-rose-300" : "bg-slate-700 text-slate-300")}>
+                                {ans[qIdx] === q.correct ? "✓ सही उत्तर" : ans[qIdx] !== undefined ? "✗ गलत उत्तर" : "— छोड़ा गया"}
+                              </span>
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                            <div className="font-bold text-sm leading-relaxed space-y-1">
+                              {normalLines.map((ln: string, i: number) => <div key={i}>{trLine(ln)}</div>)}
+                            </div>
+                            {tableRows.length > 0 && (
+                              <div className="rounded-xl overflow-hidden border-2 border-indigo-400/60 text-xs">
+                                <div className="grid grid-cols-2 divide-x divide-indigo-300/40 bg-indigo-700 text-white font-black px-2 py-1.5 text-[11px]">
+                                  <div className="pr-1">{h1}</div>
+                                  <div className="pl-2">{h2}</div>
+                                </div>
+                                {tableRows.map((row: string, rIdx: number) => {
+                                  const cleanR = row.replace(/^\||\|$/g, "");
+                                  const cols = cleanR.split("|");
+                                  const leftCol = trLine(String(cols.at(0) || "").trim());
+                                  const rightCol = trLine(cols.slice(1).join("|").trim());
+                                  if (/^(?:सूची|List)\s*[-–]?\s*(?:I|1)/i.test(leftCol)) return null;
+                                  return (
+                                    <div key={rIdx} className="grid grid-cols-2 divide-x divide-indigo-400/30 bg-slate-800/80">
+                                      <div className="p-2">{leftCol}</div>
+                                      <div className="p-2">{rightCol}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                    <div className="space-y-1.5">
                       {q.opts.map((o: any, idx: number) => {
                         const isCorrectOpt = idx === q.correct;
@@ -1027,7 +1043,7 @@ useEffect(() => {
             </div>
           )}
           {showLive && (
-<div className="p-4 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 text-white rounded-xl border-2 border-rose-500 shadow space-y-2.5">
+         <div className="p-4 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 text-white rounded-xl border-2 border-rose-500 shadow space-y-2.5">
             <div className="flex flex-wrap justify-between items-center gap-2 border-b border-white/15 pb-1.5">
               <span className="font-extrabold text-sm text-amber-300">🔴 All-India Live & Upcoming Tests (Pre-Registration)</span>
               <span className="text-[10px] bg-rose-600 px-2 py-0.5 rounded-full font-bold">सीट पक्की करें</span>
@@ -1779,62 +1795,114 @@ useEffect(() => {
               if (/उर्दू|ग़ज़ल|नज़्म|क़सीदा/.test(s) || /[\u0600-\u06FF]/.test(txt)) return "उर्दू";
               return newSub;
             };
-            const added: any[] = [];
-            blocks.forEach((b, i) => {
-              const lines = b.split("\n").map((l) => l.trim()).filter((x) => x.length > 0);
-              if (lines.length < 3) return;
-              const optRe = /^[\(\[\{]?([A-Ha-h]|[1-8]|[क-ञ])[\)\]\}\.\:\-]\s*(.+)$/;
-              const ansRe = /^(?:Ans|Answer|Correct|Correct Answer|उत्तर|सही उत्तर)\s*[\:\-\=\.]?\s*[\(\[]?([A-Ha-h1-8क-ञ])/i;
-              const expRe = /^(?:Exp|Explanation|Solution|व्याख्या|हल|विवरण)\s*[\:\-\=\.]?\s*(.*)$/i;
-              const qLines: string[] = [];
-              const opts: string[] = [];
-              let rawAns = "";
-              let expText = "";
-              let inExp = false;
-              lines.forEach((ln, idx) => {
-                const am = ln.match(ansRe);
-                const em = ln.match(expRe);
-                const om = ln.match(optRe);
-                if (am && am.at(1)) {
-                  rawAns = (am.at(1) as string).toUpperCase();
-                  inExp = false;
-                } else if (em) {
-                  expText = em.at(1) ? (em.at(1) as string) : "";
-                  inExp = true;
-                } else if (inExp) {
-                  expText = expText + " " + ln;
-                } else if (om && om.at(2) && idx > 0 && !ln.includes("|")) {
-                  opts.push((om.at(2) as string).trim());
-                } else if (opts.length === 0) {
-                  qLines.push(idx === 0 ? ln.replace(/^(?:Q|Que|Question|प्रश्न|प्र\.|प्र)\s*\d*[\.\:\)\-]\s*|^\d+[\.\)]\s+/i, "") : ln);
-                }
-              });
-              if (qLines.length > 0 && opts.length >= 2) {
-                const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "क": 0, "ख": 1, "ग": 2, "घ": 3, "ङ": 4 };
-                const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
-                const fullQ = qLines.join("\n");
-                const low = fullQ.toLowerCase();
-                const qType = low.includes("कथन") ? "AR" : low.includes("assertion") ? "AR" : fullQ.includes("|") ? "MATCH" : low.includes("सूची") ? "MATCH" : low.includes("list-i") ? "MATCH" : "STD";
-                added.push({
-                  id: Date.now() + i,
-                  cat: selCat,
-                  subEx: selSubExam,
-                  sec: selSection,
-                  sub: getAutoSub(fullQ),
-                  type: qType,
-                  q: fullQ,
-                  opts: opts,
-                  correct: cIdx,
-                  exp: expText.trim(),
-                  seriesNum: targetSeriesNum,
-                      tier: selTier,
-                      tierSub: selTierSub,
-                      caMode: selCaMode,
-                      shareScope: shareScope,
-                      targetExams: multiExamTargets
-                });
-              }
-            });
+            
+                      const added: any[] = [];
+                      const isMasterFmt = /---START OF QUESTION---|QUESTION_HI\s*:/i.test(cleanRaw);
+                      if (isMasterFmt) {
+                        const mBlocks = cleanRaw.split(/---START OF QUESTION---|(?=Q_NO\s*:)/i).filter((x: string) => /QUESTION_HI\s*:/i.test(x));
+                        mBlocks.forEach((mb: string, bIdx: number) => {
+                          const body = mb.split(/---END OF QUESTION---/i).at(0) || mb;
+                          const getSec = (tag: string, nextTags: string) => {
+                            const rx = new RegExp(tag + "\\s*:([\\s\\S]*?)(?=" + nextTags + "|$)", "i");
+                            const m = body.match(rx);
+                            return m && m.at(1) ? (m.at(1) as string).trim() : "";
+                          };
+                          const qHi = getSec("QUESTION_HI", "QUESTION_EN\\s*:|OPTIONS_HI\\s*:");
+                          const qEn = getSec("QUESTION_EN", "OPTIONS_HI\\s*:|OPTIONS_EN\\s*:");
+                          const oHiRaw = getSec("OPTIONS_HI", "OPTIONS_EN\\s*:|CORRECT_ANSWER\\s*:");
+                          const oEnRaw = getSec("OPTIONS_EN", "CORRECT_ANSWER\\s*:|EXPLANATION_HI\\s*:");
+                          const ansStr = getSec("CORRECT_ANSWER", "EXPLANATION_HI\\s*:|EXPLANATION_EN\\s*:");
+                          const eHi = getSec("EXPLANATION_HI", "EXPLANATION_EN\\s*:|---END");
+                          const eEn = getSec("EXPLANATION_EN", "---END|$");
+                          const parseOptList = (rawO: string) => rawO.split("\n").map((l: string) => l.replace(/^[#*\u2022]+\s*/, "").replace(/^[(\[]?(?:[A-Ea-e1-5क-ङ0])[)\].:\-]\s*/, "").trim()).filter((x: string) => x.length > 0).slice(0, 5);
+                          const hiOpts = parseOptList(oHiRaw);
+                          const enOpts = parseOptList(oEnRaw);
+                          const finalOpts = hiOpts.map((h: string, i: number) => enOpts[i] && enOpts[i] !== h ? (h + " / " + enOpts[i]) : h);
+                          const aM = ansStr.match(/([1-5A-Ea-eक-ङ])/);
+                          const aMap: any = { "1": 0, A: 0, "क": 0, "2": 1, B: 1, "ख": 1, "3": 2, C: 2, "ग": 2, "4": 3, D: 3, "घ": 3, "5": 4, E: 4, "ङ": 4 };
+                          const ansKey = aM && aM.at(1) ? (aM.at(1) as string).toUpperCase() : "";
+                          const cIdx = aMap[ansKey] !== undefined ? aMap[ansKey] : 0;
+                          if (qHi && finalOpts.length >= 2) {
+                            added.push({
+                              id: Date.now() + bIdx,
+                              cat: selCat,
+                              subEx: selSubExam,
+                              sec: selSection,
+                              sub: getAutoSub(qHi + " " + qEn),
+                              type: qHi.includes("|") ? "MATCH" : (qHi.includes("कथन") ? "AR" : "STD"),
+                              q: qHi,
+                              q_en: qEn,
+                              opts: finalOpts,
+                              correct: cIdx,
+                              exp: eHi,
+                              exp_en: eEn,
+                              seriesNum: targetSeriesNum,
+                              tier: selTier,
+                              tierSub: selTierSub,
+                              caMode: selCaMode,
+                              shareScope: shareScope,
+                              targetExams: multiExamTargets
+                            });
+                          }
+                        });
+                      } else {
+                        blocks.forEach((b, i) => {
+                          const lines = b.split("\n").map((l) => l.replace(/^[#*\u2022]+\s*/, "").replace(/^\*+|\*+$/g, "").trim()).filter((x) => x.length > 0 && !/^[-=_]{3,}$/.test(x));
+                          if (lines.length < 3) return;
+                          const optRe = /^[(\[]?([A-Ha-h]|[1-8]|[क-ङ]|0)[)\].:\-]\s*(.+)$/;
+                          const ansRe = /^(?:\*+)?(?:Ans|Answer|Correct|Correct Answer|उत्तर|सही उत्तर)\s*[*:\-–=.]+\s*[(\[]?([A-Ha-h1-8क-ङ])[)\].]?\s*(.*)$/i;
+                          const expRe = /^(?:\*+)?(?:Exp|Explanation|Solution|व्याख्या|हल|विवरण|विस्तृत व्याख्या)\s*[*:\-–=.]+\s*(.*)$/i;
+                          const qLines: string[] = [];
+                          const opts: string[] = [];
+                          let rawAns = "";
+                          let expText = "";
+                          let inExp = false;
+                          lines.forEach((ln, idx) => {
+                            const am = ln.match(ansRe);
+                            const em = ln.match(expRe);
+                            const om = ln.match(optRe);
+                            if (am && am.at(1)) {
+                              rawAns = (am.at(1) as string).toUpperCase();
+                              inExp = false;
+                            } else if (em) {
+                              expText = em.at(1) ? (em.at(1) as string) : "";
+                              inExp = true;
+                            } else if (inExp) {
+                              expText = expText + "\n" + ln;
+                            } else if (om && om.at(2) && idx > 0 && !ln.includes("|")) {
+                              opts.push((om.at(2) as string).trim());
+                            } else if (opts.length === 0) {
+                              const cleanedQ = idx === 0 ? ln.replace(/^(?:Q|Que|Question|प्रश्न|प्र\.|प्र)\s*\.?\s*\d+\s*[:.)\-/]*\s*/i, "") : ln;
+                              if (cleanedQ) qLines.push(cleanedQ);
+                            }
+                          });
+                          if (qLines.length > 0 && opts.length >= 2) {
+                            const mapAns: any = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "क": 0, "ख": 1, "ग": 2, "घ": 3, "ङ": 4 };
+                            const cIdx = mapAns[rawAns] !== undefined ? mapAns[rawAns] : 0;
+                            const fullQ = qLines.join("\n");
+                            const low = fullQ.toLowerCase();
+                            const qType = low.includes("कथन") ? "AR" : low.includes("assertion") ? "AR" : fullQ.includes("|") ? "MATCH" : "STD";
+                            added.push({
+                              id: Date.now() + i,
+                              cat: selCat,
+                              subEx: selSubExam,
+                              sec: selSection,
+                              sub: getAutoSub(fullQ),
+                              type: qType,
+                              q: fullQ,
+                              opts: opts,
+                              correct: cIdx,
+                              exp: expText.replace(/^\[(?:हिन्दी|हिंदी|English)\]\s*/gi, "").trim(),
+                              seriesNum: targetSeriesNum,
+                              tier: selTier,
+                              tierSub: selTierSub,
+                              caMode: selCaMode,
+                              shareScope: shareScope,
+                              targetExams: multiExamTargets
+                            });
+                          }
+                        });
+                      }
             if (added.length === 0) { alert("⚠️ कोई मान्य प्रश्न नहीं मिला। ऊपर से कोई भी 1-Click Prompt कॉपी करके Gemini से प्रश्न बनवाएं!"); return; }
             setQuestions([...added, ...questions]);
             setBulkText("");
