@@ -181,6 +181,80 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [addMoreExamsMode, setAddMoreExamsMode] = useState<boolean>(false);
   const [enrolledExams, setEnrolledExams] = useState<Array<{ cat: string; ex: string }>>([{ cat: "BPSC", ex: "72वीं BPSC CCE" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 6–8)" }, { cat: "Bihar Teaching", ex: "Bihar STET (Paper 1 & 2)" }, { cat: "Bihar Police", ex: "Bihar Police SI (दरोगा)" }]);
   const [checkedExams, setCheckedExams] = useState<string[]>([]);
+  const [bottomTab, setBottomTab] = useState<string>("HOME");
+  const [caPeriod, setCaPeriod] = useState<string>("DAILY");
+  const [caDate, setCaDate] = useState<string>("2026-11-25");
+  const [caWeek, setCaWeek] = useState<string>("Week 4 (22–28 Nov)");
+  const [caMonth, setCaMonth] = useState<string>("November 2026");
+  const [caSubject, setCaSubject] = useState<string>("All");
+  const [caCardLang, setCaCardLang] = useState<string>("HI");
+  const [flippedCardId, setFlippedCardId] = useState<string>("");
+  const flipNewsItems = [
+    {
+      id: "fn1",
+      subject: "Bihar Special",
+      date: "2026-11-25",
+      week: "Week 4 (22–28 Nov)",
+      month: "November 2026",
+      title_hi: "बिहार में नई सेमीकंडक्टर और आईटी पार्क नीति 2026 को मंजूरी",
+      title_en: "Bihar Cabinet Approves New Semiconductor & IT Park Policy 2026",
+      summary_hi: "बिहार कैबिनेट ने राज्य को पूर्वी भारत का इलेक्ट्रॉनिक और आईटी हब बनाने के लिए नई सेमीकंडक्टर व आईटी पार्क नीति 2026 को मंजूरी दी है। यह नीति ₹5,000 करोड़ के निवेश और 50,000 नए रोजगार सृजन का लक्ष्य रखती है।",
+      summary_en: "Bihar Cabinet has approved the New Semiconductor & IT Park Policy 2026 to develop the state as Eastern India's electronics hub, targeting ₹5,000 crore investment and 50,000 jobs.",
+      tip_hi: "Prelims: बिहार IT नीति 2026, सेमीकंडक्टर क्लस्टर, इलेक्ट्रॉनिक्स संवर्धन फंड; Mains: बिहार में औद्योगिक विकास व रोजगार सृजन।",
+      tip_en: "Prelims: Bihar IT Policy 2026, Semiconductor Cluster; Mains: Industrial growth & employment generation in Bihar.",
+      details_hi: ["बिहार कैबिनेट ने ₹5,000 करोड़ निवेश व 50,000 रोजगार के लिए नई नीति को मंजूरी दी।", "इसके तहत इलेक्ट्रॉनिक विनिर्माण क्लस्टर (EMC), भूमि सब्सिडी और 100% स्टाम्प ड्यूटी छूट मिलेगी।", "प्रीलिम्स तथ्य: भारत सेमीकंडक्टर मिशन (ISM) 2021 में शुरू हुआ; बिहार की पहली IT नीति 2011 में आई थी।"],
+      details_en: ["Approved with ₹5,000 Cr investment target and 50,000 new jobs.", "Provides Electronic Manufacturing Clusters (EMC), land subsidy & 100% stamp duty exemption.", "Prelims Fact: India Semiconductor Mission (ISM) launched in 2021; Bihar's first IT policy came in 2011."],
+      tags: ["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL"]
+    },
+    {
+      id: "fn2",
+      subject: "Politics",
+      date: "2026-11-25",
+      week: "Week 4 (22–28 Nov)",
+      month: "November 2026",
+      title_hi: "संसद के शीतकालीन सत्र और अनुच्छेद 85 के तहत सत्रावसान की प्रक्रिया",
+      title_en: "Winter Session of Parliament & Prorogation Process under Article 85",
+      summary_hi: "राष्ट्रपति द्वारा केंद्रीय मंत्रिमंडल की सलाह पर संसद के सत्र को आहूत (Summon) और सत्रावसान (Prorogue) किया जाता है। स्थगन (Adjournment) केवल बैठक को निलंबित करता है, जबकि सत्रावसान पूरे सत्र को समाप्त करता है।",
+      summary_en: "The President summons and prorogues Parliament sessions on Cabinet advice under Article 85. Adjournment suspends a sitting, whereas prorogation terminates the entire session.",
+      tip_hi: "Prelims: अनुच्छेद 85, स्थगन बनाम सत्रावसान बनाम विघटन; Mains: संसदीय कार्यप्रणाली व विधायी दक्षता।",
+      tip_en: "Prelims: Article 85, Adjournment vs Prorogation vs Dissolution; Mains: Parliamentary functioning.",
+      details_hi: ["अनुच्छेद 85(1): संसद के दो सत्रों के बीच 6 माह से अधिक का अंतराल नहीं हो सकता।", "स्थगन (Adjournment) पीठासीन अधिकारी (अध्यक्ष/सभापति) द्वारा किया जाता है, सत्रावसान राष्ट्रपति द्वारा।", "सत्रावसान से सदन में लंबित विधेयक (Pending Bills) समाप्त (Lapse) नहीं होते।"],
+      details_en: ["Article 85(1): Maximum gap between two sessions cannot exceed 6 months.", "Adjournment is done by Presiding Officer; Prorogation is done by the President.", "Prorogation does not cause pending bills in the House to lapse."],
+      tags: ["UPSC CSE", "72वीं BPSC CCE", "UPPSC"]
+    },
+    {
+      id: "fn3",
+      subject: "Economy",
+      date: "2026-11-24",
+      week: "Week 4 (22–28 Nov)",
+      month: "November 2026",
+      title_hi: "RBI की मौद्रिक नीति समिति (MPC) और रेपो रेट का मुद्रास्फीति पर प्रभाव",
+      title_en: "RBI Monetary Policy Committee (MPC) & Repo Rate Impact on Inflation",
+      summary_hi: "भारतीय रिजर्व बैंक की 6-सदस्यीय मौद्रिक नीति समिति (MPC) उपभोक्ता मूल्य सूचकांक (CPI) आधारित मुद्रास्फीति को 4% (±2%) के दायरे में रखने के लिए नीतिगत रेपो दर का निर्धारण करती है।",
+      summary_en: "RBI's 6-member Monetary Policy Committee (MPC) sets the policy Repo Rate to keep CPI inflation within the 4% (±2%) target band.",
+      tip_hi: "Prelims: उर्जित पटेल समिति, MPC संरचना (3 RBI + 3 सरकार), CPI बनाम WPI; Mains: मौद्रिक नीति संचरण।",
+      tip_en: "Prelims: Urjit Patel Committee, MPC composition (3 RBI + 3 Govt), CPI vs WPI.",
+      details_hi: ["MPC का गठन RBI अधिनियम 1934 की धारा 45ZB के तहत 2016 में किया गया था।", "रेपो रेट बढ़ने से बैंकों की उधार लागत बढ़ती है और बाजार में तरलता (Liquidity) कम होती है।", "RBI गवर्नर MPC के पदेन अध्यक्ष (Ex-officio Chairperson) होते हैं और उनके पास निर्णायक मत होता है।"],
+      details_en: ["MPC was constituted in 2016 under Section 45ZB of the RBI Act, 1934.", "A hike in Repo Rate increases borrowing cost and absorbs excess liquidity.", "RBI Governor is the ex-officio Chairperson of MPC with a casting vote."],
+      tags: ["UPSC CSE", "BPSC", "Banking", "SSC CGL"]
+    },
+    {
+      id: "fn4",
+      subject: "Sci & Tech",
+      date: "2026-11-20",
+      week: "Week 3 (15–21 Nov)",
+      month: "November 2026",
+      title_hi: "ISRO का गगनयान मिशन और क्रू एस्केप सिस्टम का सफल परीक्षण",
+      title_en: "ISRO Gaganyaan Mission & Crew Escape System Successful Flight Test",
+      summary_hi: "भारतीय अंतरिक्ष अनुसंधान संगठन (ISRO) ने श्रीहरिकोटा से गगनयान मानव अंतरिक्ष मिशन के क्रू एस्केप सिस्टम (CES) का सफल परीक्षण किया, जो आपात स्थिति में अंतरिक्ष यात्रियों की सुरक्षित वापसी सुनिश्चित करता है।",
+      summary_en: "ISRO successfully tested the Crew Escape System (CES) for the Gaganyaan human spaceflight mission from Sriharikota to ensure astronaut safety during emergencies.",
+      tip_hi: "Prelims: LVM3 रॉकेट, व्योममित्र रोबोट, निम्न पृथ्वी कक्षा (LEO 400 km); Mains: भारत की अंतरिक्ष अर्थव्यवस्था।",
+      tip_en: "Prelims: LVM3 rocket, Vyommitra robot, Low Earth Orbit (400 km); Mains: India's Space Economy.",
+      details_hi: ["गगनयान भारत का पहला स्वदेशी मानव अंतरिक्ष उड़ान कार्यक्रम है (3 सदस्य, 3 दिन, 400 किमी LEO कक्षा)।", "इस मिशन में मानव-रेटेड LVM3 (HLVM3) प्रक्षेपण यान का उपयोग किया जा रहा है।", "सफलता के बाद भारत अमेरिका, रूस और चीन के बाद चौथा देश बन जाएगा।"],
+      details_en: ["Gaganyaan is India's first indigenous human spaceflight (3 crew, 3 days, 400 km LEO).", "Uses Human-Rated LVM3 (HLVM3) launch vehicle.", "India will become the 4th nation after US, Russia, and China to send humans to space."],
+      tags: ["UPSC CSE", "BPSC", "SSC", "Railway"]
+    }
+  ];
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -202,8 +276,6 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       localStorage.setItem("cb_nav_lock", JSON.stringify({ drillStep, selCat, selSubExam, selTier, selTierSub, selSection, selCaMode, activeSeriesKey }));
     } catch {}
   }, [drillStep, selCat, selSubExam, selTier, selTierSub, selSection, selCaMode, activeSeriesKey]);
-
-  
   useEffect(() => {
     const r = localStorage.getItem("cb_role");
     if (r) setRole(r as any);
@@ -1249,13 +1321,46 @@ useEffect(() => {
               </div>
             </div>
           )}
-          <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-slate-950/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-4 py-1.5 text-[10px] font-black text-slate-300">
-            <button type="button" onClick={() => setDrillStep(3)} className="flex flex-col items-center gap-0.5 text-amber-400"><span>🏠</span><span>होम</span></button>
-            <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📝</span><span>परीक्षण</span></button>
-            <button type="button" onClick={() => { setSelSection("PYQs"); setDrillStep(3); }} className="flex flex-col items-center gap-0.5"><span>📜</span><span>PYQs</span></button>
-            <button type="button" onClick={() => setShowGoalPicker(true)} className="flex flex-col items-center gap-0.5 text-indigo-300"><span>🎯</span><span>परीक्षा बदलें</span></button>
+          
+          <div className="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 shadow-2xl">
+            <div className="max-w-3xl mx-auto grid grid-cols-5">
+              <button type="button" onClick={() => { setBottomTab("HOME"); setDrillStep(3); }} className={"relative py-2 flex flex-col items-center justify-center gap-1 transition " + (bottomTab === "HOME" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-slate-200")}>
+                {bottomTab === "HOME" && <span className="absolute top-0 inset-x-3 h-0.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]" />}
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5" /><path d="M5 9.5V20h14V9.5" /><path d="M9.5 20v-6h5v6" /></svg>
+                <span className="text-[10px] font-bold tracking-wide">Home</span>
+              </button>
+
+              <button type="button" onClick={() => { setBottomTab("TESTS"); setSelSection("Practice Test"); setDrillStep(3); }} className={"relative py-2 flex flex-col items-center justify-center gap-1 transition " + (bottomTab === "TESTS" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-slate-200")}>
+                {bottomTab === "TESTS" && <span className="absolute top-0 inset-x-3 h-0.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]" />}
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 3v2h6V3" /><path d="M8.5 10l1.5 1.5 2.5-2.5" /><line x1="14" y1="10.5" x2="16.5" y2="10.5" /><path d="M8.5 15l1.5 1.5 2.5-2.5" /><line x1="14" y1="15.5" x2="16.5" y2="15.5" /></svg>
+                <span className="text-[10px] font-bold tracking-wide">Tests</span>
+              </button>
+
+              <button type="button" onClick={() => { setBottomTab("FREE"); setSelSection("PYQs"); setDrillStep(3); }} className={"relative py-2 flex flex-col items-center justify-center gap-1 transition " + (bottomTab === "FREE" ? "text-emerald-400 bg-emerald-500/10" : "text-slate-400 hover:text-slate-200")}>
+                {bottomTab === "FREE" && <span className="absolute top-0 inset-x-3 h-0.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#34d399]" />}
+                <div className="relative">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 12 8 12 8s3-5 4.5-5a2.5 2.5 0 0 1 0 5" /></svg>
+                  <span className="absolute -top-1.5 -right-5 px-1 py-0.2 bg-emerald-500 text-slate-950 rounded text-[7px] font-black leading-tight shadow">FREE</span>
+                </div>
+                <span className="text-[10px] font-bold tracking-wide">Free</span>
+              </button>
+
+              <button type="button" onClick={() => setBottomTab("PASS")} className={"relative py-2 flex flex-col items-center justify-center gap-1 transition " + (bottomTab === "PASS" ? "text-amber-300 bg-amber-500/15" : "text-amber-400/90 hover:text-amber-300")}>
+                {bottomTab === "PASS" && <span className="absolute top-0 inset-x-3 h-0.5 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24]" />}
+                <div className="px-2 py-0.5 rounded border border-amber-400/80 bg-amber-500/15 shadow-[0_0_10px_rgba(251,191,36,0.25)] flex items-center justify-center">
+                  <span className="text-[9px] font-black tracking-wider text-amber-300 leading-none">PASS</span>
+                </div>
+                <span className="text-[10px] font-bold tracking-wide">Pass</span>
+              </button>
+
+              <button type="button" onClick={() => { setBottomTab("CA"); setSelSection("Current Affairs"); }} className={"relative py-2 flex flex-col items-center justify-center gap-1 transition " + (bottomTab === "CA" ? "text-sky-400 bg-sky-500/15" : "text-slate-400 hover:text-slate-200")}>
+                {bottomTab === "CA" && <span className="absolute top-0 inset-x-2 h-0.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]" />}
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" /><circle cx="13" cy="8" r="2.5" /><line x1="10" y1="14" x2="18" y2="14" /><line x1="10" y1="18" x2="18" y2="18" /></svg>
+                <span className="text-[10px] font-black tracking-tight whitespace-nowrap">Current Affairs</span>
+              </button>
+            </div>
           </div>
-                          
+
  <div className="flex flex-wrap items-center gap-1">
           <button onClick={() => setNotifOpen(!notifOpen)} className="bg-slate-800 px-2 py-1 rounded-full">🔔 {notifs.length}</button>
           <button onClick={() => setRole("STUDENT")} className={"px-2 py-1 rounded font-bold " + (role === "STUDENT" ? "bg-blue-600" : "bg-slate-800")}>🎓 Student</button>
@@ -1273,6 +1378,30 @@ useEffect(() => {
       )}
       {role === "STUDENT" && (
           <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>
+                              <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow">
+                    <span>▶ Start {caPeriod === "DAILY" ? caDate : caPeriod === "WEEKLY" ? caWeek : caMonth} Full CA MCQ Quiz</span>
+                  </button>
+                </div>
+
+                <div className="p-3 space-y-4 max-h-[75vh] overflow-y-auto snap-y snap-mandatory">
+                  {flipNewsItems
+                    .filter((n) => (caSubject === "All" || n.subject === caSubject) && (caPeriod === "MONTHLY" ? n.month === caMonth : caPeriod === "WEEKLY" ? n.week === caWeek : true))
+                    .map((card) => {
+                      const isFlipped = flippedCardId === card.id;
+                      const shareText = encodeURIComponent((caCardLang === "HI" ? card.title_hi : card.title_en) + " — CrackBPSC Current Affairs");
+                      return (
+                        <div key={card.id} className="snap-start bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-xl">
+                          <div onClick={() => setFlippedCardId(isFlipped ? "" : card.id)} className="cursor-pointer p-4 space-y-3">
+                            <div className="flex items-center justify-between text-[10px] font-black">
+                              <span className="px-2.5 py-0.5 bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-full uppercase">{card.subject}</span>
+                              <span className="text-slate-400">📅 {card.date} • 🔄 Tap to Flip</span>
+                            </div>
+
+                            {!isFlipped ? (
+                              <div className="space-y-3">
+                                <h3 className="font-black text-base sm:text-lg text-white leading-snug">{caCardLang === "HI" ? card.title_hi : card.title_en}</h3>
+                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{caCardLang === "HI" ? card.summary_hi : card.summary_en}</p>
+                                <div className="p-3 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-1">
           <div className="flex justify-between items-center">
             
             <div className="flex items-center gap-2">
