@@ -189,7 +189,23 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [caSubject, setCaSubject] = useState<string>("All");
   const [caCardLang, setCaCardLang] = useState<string>("HI");
   const [flippedCardId, setFlippedCardId] = useState<string>("");
-  const flipNewsItems = [
+  const [tabHistory, setTabHistory] = useState<string[]>([]);
+  const openPage = (nextTab: string) => {
+    if (nextTab === bottomTab) return;
+    if (nextTab === "HOME") { setTabHistory([]); setBottomTab("HOME"); return; }
+    setTabHistory((prev) => [...prev, bottomTab]);
+    setBottomTab(nextTab);
+  };
+  const goBackPage = () => {
+    if (tabHistory.length === 0) { setBottomTab("HOME"); return; }
+    const last = tabHistory[tabHistory.length - 1];
+    setTabHistory((prev) => prev.slice(0, -1));
+    setBottomTab(last || "HOME");
+  };
+  const [aiNewsTopic, setAiNewsTopic] = useState<string>("");
+  const [aiNewsLoading, setAiNewsLoading] = useState<boolean>(false);
+  const [draftNews, setDraftNews] = useState<any>({ subject: "Bihar Special", examStage: "", title_hi: "", title_en: "", summary_hi: "", summary_en: "", tip_hi: "", tip_en: "", d1_hi: "", d2_hi: "", d3_hi: "", d1_en: "", d2_en: "", d3_en: "", tags: "72वीं BPSC CCE, BPSC TRE 4.0" });
+  const [flipNewsItems, setFlipNewsItems] = useState<any[]>([ 
     {
       id: "fn1",
       subject: "Bihar Special",
@@ -258,7 +274,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       details_en: ["Gaganyaan is India's first indigenous human spaceflight (3 crew, 3 days, 400 km LEO).", "Uses Human-Rated LVM3 (HLVM3) launch vehicle.", "India will become the 4th nation after US, Russia, and China to send humans to space."],
       tags: ["UPSC CSE", "BPSC", "SSC", "Railway"]
     }
-  ];
+  ]);
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -1381,154 +1397,247 @@ useEffect(() => {
         </div>
       )}
       {role === "STUDENT" && (
-          <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>
-                              
-            {bottomTab === "FREE" && (
-              <div className="p-4 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white rounded-2xl border border-emerald-500/40 shadow-xl space-y-3 mb-14">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 bg-emerald-400 text-slate-950 rounded-full text-xs font-black">🎁 100% FREE ZONE</span>
-                  <span className="text-[11px] text-emerald-300 font-bold">निःशुल्क अभ्यास सामग्री</span>
+          <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>                                                                                  
+
+
+            {bottomTab === "TESTS" && (
+              <div className="min-h-[84vh] pb-20 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-2.5 bg-slate-900/95 backdrop-blur border border-slate-800 rounded-2xl text-white flex items-center justify-between shadow-lg">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600/80 flex items-center justify-center text-white shadow-xs shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-black tracking-wider uppercase">CRACKBPSC</span>
+                    <span className="font-black text-sm text-white">Test Series</span>
+                  </div>
+                  <span className="text-[11px] text-amber-300 font-black truncate max-w-[130px]">{selSubExam}</span>
                 </div>
-                <div className="text-base font-black text-white">सभी छात्रों के लिए मुफ़्त Live Tests, PYQs और Daily CA क्विज़</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                  <button type="button" onClick={() => { setSelSection("Practice Test"); setBottomTab("TESTS"); setDrillStep(3); }} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
-                    <div className="font-black text-emerald-300">📝 Free Mock Tests</div>
-                    <div className="text-[11px] text-slate-300">72वीं BPSC व TRE 4.0 के निःशुल्क प्रैक्टिस सेट</div>
-                  </button>
-                  <button type="button" onClick={() => { setSelSection("PYQs"); setBottomTab("TESTS"); setDrillStep(3); }} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
-                    <div className="font-black text-amber-300">📜 Free Previous Year Papers</div>
-                    <div className="text-[11px] text-slate-300">पिछले वर्षों के हल प्रश्नपत्र और व्याख्या</div>
-                  </button>
-                  <button type="button" onClick={() => setBottomTab("CA")} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
-                    <div className="font-black text-sky-300">📰 Free Daily CA Cards</div>
-                    <div className="text-[11px] text-slate-300">रोज़ाना Flip न्यूज़ कार्ड्स व डेली क्विज़</div>
-                  </button>
+
+                <div className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3 shadow-xl">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                    <div>
+                      <div className="text-[11px] text-slate-400 font-bold">लक्ष्य परीक्षा (Target Exam)</div>
+                      <div className="text-base font-black text-amber-400">{selSubExam}</div>
+                    </div>
+                    <div className="flex gap-1.5 text-xs font-black">
+                      {["Practice Test", "PYQs", "Current Affairs"].map((sec) => (
+                        <button key={sec} type="button" onClick={() => setSelSection(sec)} className={"px-3 py-1.5 rounded-xl border " + (selSection === sec ? "bg-blue-600 text-white border-blue-400" : "bg-slate-950 text-slate-300 border-slate-700")}>{sec}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-black">FULL MOCK TEST</span>
+                        <span className="text-slate-400 font-bold">150 Qs • 120 Min</span>
+                      </div>
+                      <div className="font-black text-sm text-white">{selSubExam} — Full Length Mock #1</div>
+                      <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); openPage("HOME"); }} className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs">▶ टेस्ट शुरू करें (Start Test)</button>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[10px] font-black">PREVIOUS YEAR PAPER</span>
+                        <span className="text-slate-400 font-bold">PYQ CBT Mode</span>
+                      </div>
+                      <div className="font-black text-sm text-white">{selSubExam} — Solved PYQ Paper</div>
+                      <button type="button" onClick={() => { setSelSection("PYQs"); setDrillStep(3); openPage("HOME"); }} className="w-full py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs">▶ PYQ पेपर हल करें (Attempt PYQ)</button>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded text-[10px] font-black">CURRENT AFFAIRS QUIZ</span>
+                        <span className="text-slate-400 font-bold">Daily / Weekly / Monthly</span>
+                      </div>
+                      <div className="font-black text-sm text-white">Latest Current Affairs MCQ Test</div>
+                      <button type="button" onClick={() => { setSelSection("Current Affairs"); setDrillStep(3); openPage("HOME"); }} className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs">▶ CA क्विज़ शुरू करें (Start CA Quiz)</button>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 bg-sky-500/20 text-sky-300 rounded text-[10px] font-black">SUBJECT & TOPIC TEST</span>
+                        <span className="text-slate-400 font-bold">Quick Revision</span>
+                      </div>
+                      <div className="font-black text-sm text-white">विषय-वार मिनी टेस्ट (Subject Quiz)</div>
+                      <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); openPage("HOME"); }} className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 rounded-xl font-black text-xs">▶ सभी विषय खोलें (Open Subjects)</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {bottomTab === "FREE" && (
+              <div className="min-h-[84vh] pb-20 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-2.5 bg-emerald-950/95 backdrop-blur border border-emerald-500/40 rounded-2xl text-white flex items-center justify-between shadow-lg">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-emerald-400/40 flex items-center justify-center text-white shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="font-black text-sm text-emerald-300">100% FREE ZONE (निःशुल्क अभ्यास)</span>
+                  </div>
+                  <span className="px-2 py-0.5 bg-emerald-400 text-slate-950 rounded-full text-[10px] font-black">FREE</span>
+                </div>
+                <div className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3">
+                  <div className="text-base font-black">सभी छात्रों के लिए मुफ़्त Live Tests, PYQs और Daily CA क्विज़</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                    <button type="button" onClick={() => openPage("TESTS")} className="p-3.5 bg-slate-950 hover:bg-slate-800 rounded-xl text-left space-y-1 border border-slate-800">
+                      <div className="font-black text-emerald-400">Free Mock Tests</div>
+                      <div className="text-[11px] text-slate-300">72वीं BPSC व TRE 4.0 के निःशुल्क प्रैक्टिस सेट</div>
+                    </button>
+                    <button type="button" onClick={() => openPage("TESTS")} className="p-3.5 bg-slate-950 hover:bg-slate-800 rounded-xl text-left space-y-1 border border-slate-800">
+                      <div className="font-black text-amber-400">Free Previous Year Papers</div>
+                      <div className="text-[11px] text-slate-300">पिछले वर्षों के हल प्रश्नपत्र और व्याख्या</div>
+                    </button>
+                    <button type="button" onClick={() => openPage("CA")} className="p-3.5 bg-slate-950 hover:bg-slate-800 rounded-xl text-left space-y-1 border border-slate-800">
+                      <div className="font-black text-sky-400">Free Daily CA Cards</div>
+                      <div className="text-[11px] text-slate-300">रोज़ाना Flip न्यूज़ कार्ड्स व डेली क्विज़</div>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
             {bottomTab === "PASS" && (
-              <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-amber-400/40 shadow-xl space-y-3 mb-14">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 rounded-full text-xs font-black">🎫 CRACKBPSC PASS</span>
+              <div className="min-h-[84vh] pb-20 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-2.5 bg-indigo-950/95 backdrop-blur border border-amber-400/40 rounded-2xl text-white flex items-center justify-between shadow-lg">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-amber-400/40 flex items-center justify-center text-white shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="font-black text-sm text-amber-300">CRACKBPSC PASS</span>
+                  </div>
                   <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 rounded text-[11px] font-black">✓ ACTIVE</span>
                 </div>
-                <div className="text-lg font-black text-amber-300">एक पास — भारत की सभी परीक्षाओं के अनलिमिटेड मॉक टेस्ट!</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>All-India & State Exams</b> के सभी फुल मॉक टेस्ट अनलॉक</div>
-                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>Previous Year Papers (PYQs)</b> और विस्तृत 4-विकल्प व्याख्या</div>
-                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>Daily / Weekly / Monthly CA</b> Flip Cards व लाइव रैंक</div>
+                
+                <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-amber-400/30 shadow-xl space-y-3">
+                  <div className="text-lg font-black text-amber-300">एक पास — भारत की सभी परीक्षाओं के अनलिमिटेड मॉक टेस्ट!</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="p-3 bg-white/10 rounded-xl">✅ <b>All-India & State Exams</b> के सभी फुल मॉक टेस्ट अनलॉक</div>
+                    <div className="p-3 bg-white/10 rounded-xl">✅ <b>Previous Year Papers (PYQs)</b> और विस्तृत 4-विकल्प व्याख्या</div>
+                    <div className="p-3 bg-white/10 rounded-xl">✅ <b>Daily / Weekly / Monthly CA</b> Flip Cards व लाइव रैंक</div>
+                  </div>
+                  <button type="button" onClick={() => openPage("TESTS")} className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-sm">अभी टेस्ट शुरू करें (Start Mock Test) ➔</button>
                 </div>
-                <button type="button" onClick={() => setBottomTab("TESTS")} className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-sm">📝 अभी टेस्ट शुरू करें (Start Mock Test) ➔</button>
               </div>
             )}
 
             {bottomTab === "CA" && (
-              <div className="bg-slate-950 text-white rounded-2xl border border-slate-800 shadow-2xl overflow-hidden mb-16">
-                <div className="p-3 bg-slate-900 border-b border-slate-800 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-black">INSHORTS + TESTBOOK</span>
-                      <span className="font-black text-sm">Current Affairs</span>
+              <div className="fixed inset-x-0 top-12 bottom-14 z-30 bg-slate-950 text-white flex flex-col overflow-hidden overscroll-contain">
+                <div className="shrink-0 p-2.5 bg-slate-900 border-b border-slate-800 space-y-2 shadow-lg">
+                  <div className="max-w-3xl mx-auto flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600/80 flex items-center justify-center text-white shadow-xs shrink-0 transition active:scale-95">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                      </button>
+                      <span className="px-2.5 py-0.5 bg-blue-600 text-white rounded text-[11px] font-black tracking-wider uppercase">CRACKBPSC</span>
+                      <span className="font-black text-sm text-white">Current Affairs</span>
                     </div>
-                    <button type="button" onClick={() => setCaCardLang(caCardLang === "HI" ? "EN" : "HI")} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-black text-amber-300">अ/A {caCardLang === "HI" ? "हि ➔ EN" : "EN ➔ हि"}</button>
+                    <div className="flex items-center gap-1.5">
+                      <button type="button" onClick={() => { setSelSection("Current Affairs"); openPage("TESTS"); }} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-black">▶ CA Quiz</button>
+                      <button type="button" onClick={() => setCaCardLang(caCardLang === "HI" ? "EN" : "HI")} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-black text-amber-300">अ/A {caCardLang === "HI" ? "हि ➔ EN" : "EN ➔ हि"}</button>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                    {[{ id: "DAILY", label: "📅 Daily" }, { id: "WEEKLY", label: "🗓️ Weekly" }, { id: "MONTHLY", label: "📆 Monthly" }].map((tab) => (
-                      <button key={tab.id} type="button" onClick={() => setCaPeriod(tab.id)} className={"py-1.5 rounded-lg text-xs font-black transition " + (caPeriod === tab.id ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white")}>{tab.label}</button>
+                  <div className="max-w-3xl mx-auto grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    {[{ id: "DAILY", label: "Daily" }, { id: "WEEKLY", label: "Weekly" }, { id: "MONTHLY", label: "Monthly" }].map((tab) => (
+                      <button key={tab.id} type="button" onClick={() => setCaPeriod(tab.id)} className={"py-1 rounded-lg text-xs font-black transition " + (caPeriod === tab.id ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white")}>{tab.label}</button>
                     ))}
                   </div>
 
                   {caPeriod === "DAILY" && (
-                    <div className="flex items-center justify-between bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-black">
+                    <div className="max-w-3xl mx-auto flex items-center justify-between bg-slate-950 px-3 py-1 rounded-xl border border-slate-800 text-xs font-black">
                       <button type="button" onClick={() => setCaDate(caDate === "2026-11-25" ? "2026-11-24" : "2026-11-20")} className="px-2 py-0.5 bg-slate-800 rounded hover:bg-slate-700">‹ पिछला दिन</button>
-                      <span className="text-amber-400">📅 {caDate}</span>
+                      <span className="text-amber-400">{caDate}</span>
                       <button type="button" onClick={() => setCaDate("2026-11-25")} className="px-2 py-0.5 bg-slate-800 rounded hover:bg-slate-700">आज ›</button>
                     </div>
                   )}
                   {caPeriod === "WEEKLY" && (
-                    <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
+                    <div className="max-w-3xl mx-auto flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
                       {["Week 4 (22–28 Nov)", "Week 3 (15–21 Nov)", "Week 2 (8–14 Nov)", "Week 1 (1–7 Nov)"].map((wk) => (
                         <button key={wk} type="button" onClick={() => setCaWeek(wk)} className={"px-2.5 py-1 rounded-lg whitespace-nowrap border " + (caWeek === wk ? "bg-amber-400 text-slate-950 border-amber-500" : "bg-slate-900 text-slate-300 border-slate-700")}>{wk}</button>
                       ))}
                     </div>
                   )}
                   {caPeriod === "MONTHLY" && (
-                    <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
+                    <div className="max-w-3xl mx-auto flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
                       {["November 2026", "October 2026", "September 2026"].map((mo) => (
                         <button key={mo} type="button" onClick={() => setCaMonth(mo)} className={"px-2.5 py-1 rounded-lg whitespace-nowrap border " + (caMonth === mo ? "bg-amber-400 text-slate-950 border-amber-500" : "bg-slate-900 text-slate-300 border-slate-700")}>{mo}</button>
                       ))}
                     </div>
                   )}
 
-                  <div className="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-black">
+                  <div className="max-w-3xl mx-auto flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
                     {["All", "Bihar Special", "Politics", "Economy", "Sci & Tech", "Environment", "Defence", "International", "History & Culture"].map((sub) => (
                       <button key={sub} type="button" onClick={() => setCaSubject(sub)} className={"px-2.5 py-1 rounded-full whitespace-nowrap border " + (caSubject === sub ? "bg-blue-600 text-white border-blue-400" : "bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500")}>{sub}</button>
                     ))}
                   </div>
-
-                  <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow">
-                    <span>▶ Start {caPeriod === "DAILY" ? caDate : caPeriod === "WEEKLY" ? caWeek : caMonth} Full CA MCQ Quiz</span>
-                  </button>
                 </div>
 
-                <div className="p-3 space-y-4 max-h-[75vh] overflow-y-auto snap-y snap-mandatory">
-                  {flipNewsItems
-                    .filter((n) => (caSubject === "All" || n.subject === caSubject) && (caPeriod === "MONTHLY" ? n.month === caMonth : caPeriod === "WEEKLY" ? n.week === caWeek : true))
-                    .map((card) => {
-                      const isFlipped = flippedCardId === card.id;
-                      const shareText = encodeURIComponent((caCardLang === "HI" ? card.title_hi : card.title_en) + " — CrackBPSC Current Affairs");
-                      return (
-                        <div key={card.id} className="snap-start bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-xl">
-                          <div onClick={() => setFlippedCardId(isFlipped ? "" : card.id)} className="cursor-pointer p-4 space-y-3">
-                            <div className="flex items-center justify-between text-[10px] font-black">
-                              <span className="px-2.5 py-0.5 bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-full uppercase">{card.subject}</span>
-                              <span className="text-slate-400">📅 {card.date} • 🔄 Tap to Flip</span>
+                <div className="flex-1 overflow-y-auto snap-y snap-mandatory overscroll-contain p-3 space-y-4">
+                  <div className="max-w-3xl mx-auto space-y-4">
+                    {flipNewsItems
+                      .filter((n) => (caSubject === "All" || n.subject === caSubject) && (caPeriod === "MONTHLY" ? n.month === caMonth : caPeriod === "WEEKLY" ? n.week === caWeek : true))
+                      .map((card) => {
+                        const isFlipped = flippedCardId === card.id;
+                        const shareText = encodeURIComponent((caCardLang === "HI" ? card.title_hi : card.title_en) + " — CrackBPSC Current Affairs");
+                        return (
+                          <div key={card.id} className="snap-start min-h-[62vh] flex flex-col justify-between bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-xl">
+                            <div style={{ perspective: "1200px" }} onClick={() => setFlippedCardId(isFlipped ? "" : card.id)} className="flex-1 cursor-pointer flex flex-col">
+                              <div style={{ transformStyle: "preserve-3d", transition: "transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1)", transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }} className="relative grid flex-1">
+                                <div style={{ backfaceVisibility: "hidden", gridArea: "1 / 1" }} className="p-4 space-y-3 bg-slate-900 flex flex-col justify-between">
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between text-[10px] font-black">
+                                      <span className="px-2.5 py-0.5 bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-full uppercase">{card.subject}</span>
+                                      <span className="text-slate-400">{card.date} • Tap to Flip</span>
+                                    </div>
+                                    <h3 className="font-black text-base sm:text-lg text-white leading-snug">{caCardLang === "HI" ? card.title_hi : card.title_en}</h3>
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{caCardLang === "HI" ? card.summary_hi : card.summary_en}</p>
+                                    {(caCardLang === "HI" ? card.tip_hi : card.tip_en) && (
+                                      <div className="p-3 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-1">
+                                        <div className="text-[11px] font-black text-amber-400">EXAM TIP{card.examStage ? " (" + card.examStage + ")" : ""}</div>
+                                        <div className="text-xs text-amber-100 leading-relaxed">{caCardLang === "HI" ? card.tip_hi : card.tip_en}</div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-wrap gap-1.5 pt-2">
+                                    {card.tags.map((tg: string, i: number) => (
+                                      <span key={i} className="px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px] font-bold">{tg}</span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                
+                                <div style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", gridArea: "1 / 1" }} className="p-4 space-y-3 bg-slate-900 flex flex-col justify-between">
+                                  <div className="space-y-3">
+                                    <div className="text-center font-black text-sm text-amber-400 tracking-wide">KEY DETAILS (मुख्य परीक्षा बिंदु)</div>
+                                    <ul className="space-y-2 text-xs sm:text-sm text-slate-200 list-disc pl-5">
+                                      {(caCardLang === "HI" ? card.details_hi : card.details_en).map((pt: string, i: number) => (
+                                        <li key={i} className="leading-relaxed">{pt}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div className="text-center pt-2 text-[11px] font-black text-blue-400">TAP TO FLIP BACK (वापस पलटें)</div>
+                                </div>
+                              </div>
                             </div>
 
-                            
-                            {!isFlipped ? (
-                              <div className="space-y-3">
-                                <h3 className="font-black text-base sm:text-lg text-white leading-snug">{caCardLang === "HI" ? card.title_hi : card.title_en}</h3>
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{caCardLang === "HI" ? card.summary_hi : card.summary_en}</p>
-                                <div className="p-3 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-1">
-                                  <div className="text-[11px] font-black text-amber-400">EXAM TIP{card.examStage ? " (" + card.examStage + ")" : ""}</div>
-                                  <div className="text-xs text-amber-100 leading-relaxed">{caCardLang === "HI" ? card.tip_hi : card.tip_en}</div>
-                                </div>
-                                <div className="flex flex-wrap gap-1.5 pt-1">
-                                  {card.tags.map((tg, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px] font-bold">{tg}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-3 py-2">
-                                <div className="text-center font-black text-sm text-amber-400 tracking-wide">KEY DETAILS (मुख्य परीक्षा बिंदु)</div>
-                                <ul className="space-y-2 text-xs sm:text-sm text-slate-200 list-disc pl-5">
-                                  {(caCardLang === "HI" ? card.details_hi : card.details_en).map((pt, i) => (
-                                    <li key={i} className="leading-relaxed">{pt}</li>
-                                  ))}
-                                </ul>
-                                <div className="text-center pt-2 text-[11px] font-black text-blue-400">TAP TO FLIP BACK (वापस पलटें)</div>
-                              </div>
-                            )}
+                            <div className="px-4 py-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2">
+                              <button type="button" onClick={() => { setSelSection("Current Affairs"); openPage("TESTS"); }} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs text-center">इस खबर पर आधारित MCQs हल करें (Start Quiz)</button>
+                              <a href={"https://wa.me" + shareText} target="_blank" rel="noreferrer" className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs">Share</a>
+                            </div>
                           </div>
-
-                          <div className="px-4 py-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2">
-                            <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs text-center">इस खबर पर आधारित MCQs हल करें (Start Quiz)</button>
-                            <a href={"https://wa.me" + shareText} target="_blank" rel="noreferrer" className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs">Share</a>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    <div className="text-center text-[11px] text-slate-500 font-bold py-2">↑ अगली खबर के लिए ऊपर स्क्रॉल करें ↑</div>
+                  </div>
                 </div>
               </div>
             )}
 
+            {bottomTab === "HOME" && (<>
 
- <div className="flex justify-between items-center">
-            
+   <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
                 <span className="text-amber-300">क</span><span className="text-slate-400">⇄</span><span>A</span>
@@ -1890,6 +1999,7 @@ useEffect(() => {
               </div>
             );
           })()}
+            </>)}
         </div>
                       
       )}
@@ -1950,6 +2060,130 @@ useEffect(() => {
           </div>
         </div>
       )}
+      
+      {(role === "ADMIN" || role === "WRITER") && (
+        <div className="max-w-5xl mx-auto my-3 p-4 bg-slate-900 text-white rounded-2xl border border-slate-700 shadow-xl space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <div>
+              <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-black uppercase">{role} STUDIO</span>
+              <h3 className="font-black text-base text-amber-300 mt-0.5">Flip Current Affairs Generator (1-Click AI + Manual)</h3>
+            </div>
+            <span className="text-[11px] text-slate-400 font-bold">कुल लाइव कार्ड्स: {flipNewsItems.length}</span>
+          </div>
+
+          <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+            <div className="text-xs font-black text-slate-200">1-Click AI से द्विभाषी (हिन्दी + English) Flip News कार्ड बनाएं:</div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input value={aiNewsTopic} onChange={(e) => setAiNewsTopic(e.target.value)} placeholder="समाचार का विषय या शीर्षक लिखें..." className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
+              <button type="button" disabled={aiNewsLoading || !aiNewsTopic.trim()} onClick={async () => {
+                setAiNewsLoading(true);
+                try {
+                  const res = await fetch("/api/gemini", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      prompt: "Create a detailed bilingual (Hindi & English) BPSC/UPSC Current Affairs flip card JSON for topic: " + aiNewsTopic + ". Return ONLY valid JSON with keys: subject (one of: Bihar Special, Politics, Economy, Sci & Tech, Environment, Defence, International, History & Culture), title_hi, title_en, summary_hi (detailed summary), summary_en (detailed summary), tip_hi, tip_en, d1_hi, d2_hi, d3_hi, d1_en, d2_en, d3_en, tags (comma separated)."
+                    })
+                  });
+                  const data = await res.json();
+                  const raw = (data.text || data.result || "").replace(/```json|```/g, "").trim();
+                  const parsed = JSON.parse(raw);
+                  setDraftNews({ ...draftNews, ...parsed });
+                } catch {
+                  setDraftNews({
+                    ...draftNews,
+                    title_hi: aiNewsTopic + " — प्रमुख परीक्षा तथ्य",
+                    title_en: aiNewsTopic + " — Key Exam Highlights",
+                    summary_hi: aiNewsTopic + " से संबंधित हालिया सरकारी निर्णय और नीतिगत पहल परीक्षा की दृष्टि से अत्यंत महत्वपूर्ण है।",
+                    summary_en: "Recent policy developments and key facts related to " + aiNewsTopic + " are highly relevant for upcoming exams.",
+                    tip_hi: aiNewsTopic + " से जुड़े मुख्य तथ्य, तिथि और संबंधित मंत्रालय।",
+                    tip_en: "Key facts, dates, and nodal ministry related to " + aiNewsTopic + ".",
+                    d1_hi: "प्रमुख बिंदु 1: " + aiNewsTopic + " की शुरुआत और उद्देश्य।",
+                    d2_hi: "प्रमुख बिंदु 2: इससे लाभान्वित होने वाले क्षेत्र और प्रमुख प्रावधान।",
+                    d3_hi: "मुख्य तथ्य: संबंधित योजना, वर्ष और संस्थागत ढांचा।",
+                    d1_en: "Point 1: Objective and launch background of " + aiNewsTopic + ".",
+                    d2_en: "Point 2: Key provisions and target beneficiaries.",
+                    d3_en: "Key Fact: Related scheme, year, and institutional framework."
+                  });
+                }
+                setAiNewsLoading(false);
+              }} className="px-4 py-2 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 rounded-xl font-black text-xs whitespace-nowrap">
+                {aiNewsLoading ? "AI तैयार कर रहा है..." : "1-Click AI Auto-Fill"}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div>
+              <label className="text-[10px] text-slate-400 font-bold">विषय (Subject)</label>
+              <select value={draftNews.subject} onChange={(e) => setDraftNews({ ...draftNews, subject: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-bold">
+                {["Bihar Special", "Politics", "Economy", "Sci & Tech", "Environment", "Defence", "International", "History & Culture"].map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-400 font-bold">EXAM TIP चरण (वैकल्पिक)</label>
+              <select value={draftNews.examStage} onChange={(e) => setDraftNews({ ...draftNews, examStage: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-amber-300 font-bold">
+                <option value="">कुछ नहीं (केवल EXAM TIP दिखेगा)</option>
+                <option value="Prelims">Prelims</option>
+                <option value="Mains">Mains</option>
+                <option value="Prelims & Mains">Prelims & Mains</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-400 font-bold">Exam Tags (कॉमा लगाकर)</label>
+              <input value={draftNews.tags} onChange={(e) => setDraftNews({ ...draftNews, tags: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <input value={draftNews.title_hi} onChange={(e) => setDraftNews({ ...draftNews, title_hi: e.target.value })} placeholder="शीर्षक (हिन्दी में) *" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-bold" />
+            <input value={draftNews.title_en} onChange={(e) => setDraftNews({ ...draftNews, title_en: e.target.value })} placeholder="Headline (in English)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            <textarea rows={3} value={draftNews.summary_hi} onChange={(e) => setDraftNews({ ...draftNews, summary_hi: e.target.value })} placeholder="सारांश / लेख (हिन्दी में - कोई शब्द सीमा नहीं) *" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            <textarea rows={3} value={draftNews.summary_en} onChange={(e) => setDraftNews({ ...draftNews, summary_en: e.target.value })} placeholder="Summary / Article (in English - unlimited words)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            <input value={draftNews.tip_hi} onChange={(e) => setDraftNews({ ...draftNews, tip_hi: e.target.value })} placeholder="EXAM TIP (हिन्दी में)" className="p-2 rounded-lg bg-slate-950 border border-amber-500/40 text-amber-200" />
+            <input value={draftNews.tip_en} onChange={(e) => setDraftNews({ ...draftNews, tip_en: e.target.value })} placeholder="EXAM TIP (in English)" className="p-2 rounded-lg bg-slate-950 border border-amber-500/40 text-amber-200" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <input value={draftNews.d1_hi} onChange={(e) => setDraftNews({ ...draftNews, d1_hi: e.target.value })} placeholder="Flip Back Point 1 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            <input value={draftNews.d2_hi} onChange={(e) => setDraftNews({ ...draftNews, d2_hi: e.target.value })} placeholder="Flip Back Point 2 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+            <input value={draftNews.d3_hi} onChange={(e) => setDraftNews({ ...draftNews, d3_hi: e.target.value })} placeholder="Flip Back Point 3 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
+          </div>
+
+          <button type="button" onClick={() => {
+            if (!draftNews.title_hi.trim() || !draftNews.summary_hi.trim()) { alert("कृपया कम से कम हिन्दी शीर्षक और सारांश भरें!"); return; }
+            const today = new Date().toISOString().slice(0, 10);
+            const newCard = {
+              id: "fn_" + Date.now(),
+              subject: draftNews.subject || "Bihar Special",
+              examStage: draftNews.examStage || "",
+              date: today,
+              week: caWeek,
+              month: caMonth,
+              title_hi: draftNews.title_hi,
+              title_en: draftNews.title_en || draftNews.title_hi,
+              summary_hi: draftNews.summary_hi,
+              summary_en: draftNews.summary_en || draftNews.summary_hi,
+              tip_hi: draftNews.tip_hi,
+              tip_en: draftNews.tip_en || draftNews.tip_hi,
+              details_hi: [draftNews.d1_hi, draftNews.d2_hi, draftNews.d3_hi].filter(Boolean),
+              details_en: [draftNews.d1_en || draftNews.d1_hi, draftNews.d2_en || draftNews.d2_hi, draftNews.d3_en || draftNews.d3_hi].filter(Boolean),
+              tags: String(draftNews.tags || "BPSC").split(",").map((t) => t.trim()).filter(Boolean)
+            };
+            const updated = [newCard, ...flipNewsItems];
+            setFlipNewsItems(updated);
+            try { localStorage.setItem("cb_flip_news_v1", JSON.stringify(updated)); } catch {}
+            setDraftNews({ subject: "Bihar Special", examStage: "", title_hi: "", title_en: "", summary_hi: "", summary_en: "", tip_hi: "", tip_en: "", d1_hi: "", d2_hi: "", d3_hi: "", d1_en: "", d2_en: "", d3_en: "", tags: "72वीं BPSC CCE, BPSC TRE 4.0" });
+            setAiNewsTopic("");
+            alert("नई Flip News लाइव हो गई है!");          
+          
+          }} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs shadow-lg">
+            Publish Flip News Live (तुरंत प्रकाशित करें)
+          </button>
+        </div>
+      )}
+
+      
      {role === "WRITER" && (
         <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border space-y-3 text-xs"}>
           <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
