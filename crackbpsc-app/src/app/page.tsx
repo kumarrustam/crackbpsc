@@ -1768,8 +1768,7 @@ useEffect(() => {
                       <button type="button" onClick={() => setRevTab("MISTAKES")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "MISTAKES" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>❌ My Mistakes ({mistakesList.length})</button>
                       <button type="button" onClick={() => setRevTab("FLASHCARDS")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "FLASHCARDS" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🔄 Flashcards ({flashcardsList.length})</button>
                     </div>
-                  </div>
-
+                  </div>            
                   {revTab === "MISTAKES" ? (
                     <div className="space-y-2">
                       {mistakesList.length === 0 ? (
@@ -1786,8 +1785,51 @@ useEffect(() => {
                           </div>
                         ))
                       )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {flashcardsList.map((fc) => {
+                        const isOpen = flippedFlashId === fc.id;
+                        return (
+                          <div key={fc.id} className="p-3 bg-slate-950 rounded-xl border border-indigo-500/25 flex flex-col justify-between gap-2">
+                            <div onClick={() => setFlippedFlashId(isOpen ? "" : fc.id)} className="cursor-pointer space-y-1.5">
+                              <div className="flex items-center justify-between text-[10px] font-black">
+                                <span className="text-indigo-400">{fc.sub}</span>
+                                <span className="text-amber-400">{fc.due}</span>
+                              </div>
+                              <div className="text-xs font-bold text-white leading-snug">{isOpen ? fc.back : fc.front}</div>
+                              <div className="text-[10px] text-sky-400 font-bold">{isOpen ? "↩ प्रश्न देखें" : "👆 उत्तर देखने के लिए टैप करें"}</div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800 text-[10px] font-black">
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "Tomorrow" } : x))} className="py-1 bg-rose-500/15 text-rose-300 rounded hover:bg-rose-600 hover:text-white transition">Hard</button>
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 4 Days" } : x))} className="py-1 bg-amber-500/15 text-amber-300 rounded hover:bg-amber-500 hover:text-slate-950 transition">Good</button>
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 12 Days" } : x))} className="py-1 bg-emerald-500/15 text-emerald-300 rounded hover:bg-emerald-600 hover:text-white transition">Easy</button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
-                      
+                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-amber-400">📢 बिहार भर्ती व परीक्षा अलर्ट (Job & Exam Alerts)</span>
+                    <button type="button" onClick={() => openPage("CA")} className="text-[11px] font-black text-sky-400 hover:underline">सभी देखें ➔</button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {jobAlerts.map((al) => (
+                      <div key={al.id} className="px-2.5 py-1.5 bg-slate-950 rounded-xl border border-slate-800/90 flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 rounded text-[9px] font-black shrink-0">{al.tag}</span>
+                          <span className="truncate text-slate-200 font-semibold">{al.title}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 shrink-0">{al.date}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>                     
             {savedBms.length > 0 && (
         <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-3 space-y-2 text-xs text-slate-950">
           <div className="flex justify-between items-center">
