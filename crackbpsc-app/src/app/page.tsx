@@ -2088,7 +2088,7 @@ useEffect(() => {
                                     🔄 Re-Attempt
                                   </button>
                                 
-                              </div>
+      
                             
                           </div>
                       
