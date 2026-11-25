@@ -1378,7 +1378,93 @@ useEffect(() => {
       )}
       {role === "STUDENT" && (
           <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 space-y-4"}>
-                              <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow">
+                              
+            {bottomTab === "FREE" && (
+              <div className="p-4 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white rounded-2xl border border-emerald-500/40 shadow-xl space-y-3 mb-14">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 bg-emerald-400 text-slate-950 rounded-full text-xs font-black">🎁 100% FREE ZONE</span>
+                  <span className="text-[11px] text-emerald-300 font-bold">निःशुल्क अभ्यास सामग्री</span>
+                </div>
+                <div className="text-base font-black text-white">सभी छात्रों के लिए मुफ़्त Live Tests, PYQs और Daily CA क्विज़</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  <button type="button" onClick={() => { setSelSection("Practice Test"); setBottomTab("TESTS"); setDrillStep(3); }} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
+                    <div className="font-black text-emerald-300">📝 Free Mock Tests</div>
+                    <div className="text-[11px] text-slate-300">72वीं BPSC व TRE 4.0 के निःशुल्क प्रैक्टिस सेट</div>
+                  </button>
+                  <button type="button" onClick={() => { setSelSection("PYQs"); setBottomTab("TESTS"); setDrillStep(3); }} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
+                    <div className="font-black text-amber-300">📜 Free Previous Year Papers</div>
+                    <div className="text-[11px] text-slate-300">पिछले वर्षों के हल प्रश्नपत्र और व्याख्या</div>
+                  </button>
+                  <button type="button" onClick={() => setBottomTab("CA")} className="p-3 bg-white/10 hover:bg-white/15 rounded-xl text-left space-y-1 border border-white/10">
+                    <div className="font-black text-sky-300">📰 Free Daily CA Cards</div>
+                    <div className="text-[11px] text-slate-300">रोज़ाना Flip न्यूज़ कार्ड्स व डेली क्विज़</div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {bottomTab === "PASS" && (
+              <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-amber-400/40 shadow-xl space-y-3 mb-14">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 rounded-full text-xs font-black">🎫 CRACKBPSC PASS</span>
+                  <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 rounded text-[11px] font-black">✓ ACTIVE</span>
+                </div>
+                <div className="text-lg font-black text-amber-300">एक पास — भारत की सभी परीक्षाओं के अनलिमिटेड मॉक टेस्ट!</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>All-India & State Exams</b> के सभी फुल मॉक टेस्ट अनलॉक</div>
+                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>Previous Year Papers (PYQs)</b> और विस्तृत 4-विकल्प व्याख्या</div>
+                  <div className="p-2.5 bg-white/10 rounded-xl">✅ <b>Daily / Weekly / Monthly CA</b> Flip Cards व लाइव रैंक</div>
+                </div>
+                <button type="button" onClick={() => setBottomTab("TESTS")} className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-sm">📝 अभी टेस्ट शुरू करें (Start Mock Test) ➔</button>
+              </div>
+            )}
+
+            {bottomTab === "CA" && (
+              <div className="bg-slate-950 text-white rounded-2xl border border-slate-800 shadow-2xl overflow-hidden mb-16">
+                <div className="p-3 bg-slate-900 border-b border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-black">INSHORTS + TESTBOOK</span>
+                      <span className="font-black text-sm">Current Affairs</span>
+                    </div>
+                    <button type="button" onClick={() => setCaCardLang(caCardLang === "HI" ? "EN" : "HI")} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-black text-amber-300">अ/A {caCardLang === "HI" ? "हि ➔ EN" : "EN ➔ हि"}</button>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    {[{ id: "DAILY", label: "📅 Daily" }, { id: "WEEKLY", label: "🗓️ Weekly" }, { id: "MONTHLY", label: "📆 Monthly" }].map((tab) => (
+                      <button key={tab.id} type="button" onClick={() => setCaPeriod(tab.id)} className={"py-1.5 rounded-lg text-xs font-black transition " + (caPeriod === tab.id ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white")}>{tab.label}</button>
+                    ))}
+                  </div>
+
+                  {caPeriod === "DAILY" && (
+                    <div className="flex items-center justify-between bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-black">
+                      <button type="button" onClick={() => setCaDate(caDate === "2026-11-25" ? "2026-11-24" : "2026-11-20")} className="px-2 py-0.5 bg-slate-800 rounded hover:bg-slate-700">‹ पिछला दिन</button>
+                      <span className="text-amber-400">📅 {caDate}</span>
+                      <button type="button" onClick={() => setCaDate("2026-11-25")} className="px-2 py-0.5 bg-slate-800 rounded hover:bg-slate-700">आज ›</button>
+                    </div>
+                  )}
+                  {caPeriod === "WEEKLY" && (
+                    <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
+                      {["Week 4 (22–28 Nov)", "Week 3 (15–21 Nov)", "Week 2 (8–14 Nov)", "Week 1 (1–7 Nov)"].map((wk) => (
+                        <button key={wk} type="button" onClick={() => setCaWeek(wk)} className={"px-2.5 py-1 rounded-lg whitespace-nowrap border " + (caWeek === wk ? "bg-amber-400 text-slate-950 border-amber-500" : "bg-slate-900 text-slate-300 border-slate-700")}>{wk}</button>
+                      ))}
+                    </div>
+                  )}
+                  {caPeriod === "MONTHLY" && (
+                    <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-[11px] font-black">
+                      {["November 2026", "October 2026", "September 2026"].map((mo) => (
+                        <button key={mo} type="button" onClick={() => setCaMonth(mo)} className={"px-2.5 py-1 rounded-lg whitespace-nowrap border " + (caMonth === mo ? "bg-amber-400 text-slate-950 border-amber-500" : "bg-slate-900 text-slate-300 border-slate-700")}>{mo}</button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-black">
+                    {["All", "Bihar Special", "Politics", "Economy", "Sci & Tech", "Environment", "Defence", "International", "History & Culture"].map((sub) => (
+                      <button key={sub} type="button" onClick={() => setCaSubject(sub)} className={"px-2.5 py-1 rounded-full whitespace-nowrap border " + (caSubject === sub ? "bg-blue-600 text-white border-blue-400" : "bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500")}>{sub}</button>
+                    ))}
+                  </div>
+
+                  <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow">
                     <span>▶ Start {caPeriod === "DAILY" ? caDate : caPeriod === "WEEKLY" ? caWeek : caMonth} Full CA MCQ Quiz</span>
                   </button>
                 </div>
@@ -1400,9 +1486,9 @@ useEffect(() => {
                             {!isFlipped ? (
                               <div className="space-y-3">
                                 <h3 className="font-black text-base sm:text-lg text-white leading-snug">{caCardLang === "HI" ? card.title_hi : card.title_en}</h3>
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{caCardLang === "HI" ? card.summary_hi : card.summary_en}</p>
-                                <div className="p-3 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-1">
-          <div className="flex justify-between items-center">
+
+
+ <div className="flex justify-between items-center">
             
             <div className="flex items-center gap-2">
               <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
