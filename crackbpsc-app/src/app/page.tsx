@@ -1684,152 +1684,110 @@ useEffect(() => {
           )}
           
               <div className="space-y-3 my-2.5">
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-900/95 p-2 rounded-2xl border border-slate-800 shadow-sm">
-                  <div className="flex-1 flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800/90 focus-within:border-sky-500/60 transition">
+                {/* 1. Clean White Search & Streak Row */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+                  <div className="flex-1 flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/90 focus-within:border-[#0084FF] focus-within:bg-white transition">
                     <span className="text-slate-400 text-xs">🔍</span>
-                    <input value={homeSearch} onChange={(e) => setHomeSearch(e.target.value)} placeholder="72वीं BPSC, TRE 4.0, PYQ या टॉपिक खोजें..." className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none" />
-                    {homeSearch && <button type="button" onClick={() => setHomeSearch("")} className="text-slate-400 hover:text-white text-xs font-black">✕</button>}
+                    <input value={homeSearch} onChange={(e) => setHomeSearch(e.target.value)} placeholder="72वीं BPSC, TRE 4.0, PYQ या टॉपिक खोजें..." className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none" />
+                    {homeSearch && <button type="button" onClick={() => setHomeSearch("")} className="text-slate-400 hover:text-slate-700 text-xs font-black">✕</button>}
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-1.5 text-[11px] font-black">
-                    <span className="px-2.5 py-1.5 bg-amber-500/10 text-amber-300 border border-amber-400/25 rounded-xl">🔥 {streakDays} Day Streak</span>
-                    <span className="px-2.5 py-1.5 bg-emerald-500/10 text-emerald-300 border border-emerald-400/25 rounded-xl">🎯 लक्ष्य: 20 Qs</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-1.5 text-[11px] font-bold">
+                    <span className="px-2.5 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">🔥 {streakDays} Day Streak</span>
+                    <span className="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl">🎯 लक्ष्य: 20 Qs</span>
                   </div>
                 </div>
 
-                <div className="px-3.5 py-2 bg-gradient-to-r from-slate-900 via-indigo-950/90 to-slate-900 text-white rounded-2xl border border-indigo-500/30 flex items-center justify-between gap-2 shadow-sm">
+                {/* 2. Clean White Live Test Strip */}
+                <div className="px-3.5 py-2.5 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="px-2 py-0.5 bg-rose-600 text-white rounded text-[10px] font-black tracking-wide shrink-0 animate-pulse">{liveTicker.badge}</span>
+                    <span className="px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-200 rounded text-[10px] font-extrabold tracking-wide shrink-0">{liveTicker.badge}</span>
                     <div className="truncate">
-                      <span className="font-black text-xs sm:text-sm text-white">{liveTicker.title}</span>
-                      <span className="text-[11px] text-slate-400 ml-2 hidden sm:inline">({liveTicker.meta})</span>
+                      <span className="font-extrabold text-xs sm:text-sm text-slate-900">{liveTicker.title}</span>
+                      <span className="text-[11px] text-slate-500 ml-2 hidden sm:inline">({liveTicker.meta})</span>
                     </div>
                   </div>
-                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs shrink-0 transition active:scale-95">Join Free ➔</button>
+                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3 py-1.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shrink-0 transition active:scale-95">Join Free ➔</button>
                 </div>
 
+                {/* 3. Clean White Resume Test Card */}
                 {pausedTest && (
-                  <div className="p-3 bg-gradient-to-r from-amber-500/15 via-slate-900 to-slate-900 text-white rounded-2xl border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-[10px] font-black">
-                        <span className="px-2 py-0.5 bg-amber-400 text-slate-950 rounded uppercase tracking-wider">⏸ RESUME TEST</span>
-                        <span className="text-amber-300">प्रश्न {pausedTest.currentQ} / {pausedTest.totalQ} पर रुका हुआ • शेष: {pausedTest.timeLeft}</span>
+                  <div className="p-3 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-[10px] font-bold">
+                        <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded uppercase tracking-wider">⏸ RESUME TEST</span>
+                        <span className="text-slate-600">प्रश्न {pausedTest.currentQ} / {pausedTest.totalQ} पर रुका हुआ • शेष: {pausedTest.timeLeft}</span>
                       </div>
-                      <div className="font-black text-xs sm:text-sm text-white truncate">{pausedTest.title}</div>
-                      <div className="w-full max-w-xs h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                        <div style={{ width: Math.round((pausedTest.currentQ / pausedTest.totalQ) * 100) + "%" }} className="h-full bg-amber-400 rounded-full" />
+                      <div className="font-extrabold text-xs sm:text-sm text-slate-900 truncate">{pausedTest.title}</div>
+                      <div className="w-full max-w-xs h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+                        <div style={{ width: Math.round((pausedTest.currentQ / pausedTest.totalQ) * 100) + "%" }} className="h-full bg-[#0084FF] rounded-full" />
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <button type="button" onClick={() => { setSelSection(pausedTest.section || "Practice Test"); setDrillStep(3); }} className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">▶ Resume (Q.{pausedTest.currentQ})</button>
-                      <button type="button" onClick={() => setPausedTest(null)} title="हटाएं" className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-black text-xs flex items-center justify-center">✕</button>
+                      <button type="button" onClick={() => { setSelSection(pausedTest.section || "Practice Test"); setDrillStep(3); }} className="px-3.5 py-2 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs transition active:scale-95">▶ Resume (Q.{pausedTest.currentQ})</button>
+                      <button type="button" onClick={() => setPausedTest(null)} title="हटाएं" className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 font-bold text-xs flex items-center justify-center">✕</button>
                     </div>
                   </div>
                 )}
 
+                {/* 4. Clean White 6-Box Quick Action Grid */}
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
                   {[
-                    { icon: "📝", label: "Mock Tests", action: () => openPage("TESTS") },
-                    { icon: "📜", label: "PYQs", action: () => { setSelSection("PYQs"); openPage("TESTS"); } },
-                    { icon: "📰", label: "Flip CA", action: () => openPage("CA") },
-                    { icon: "🎯", label: "Custom Quiz", action: () => { setSelSection("Practice Test"); setDrillStep(3); } },
-                    { icon: "❌", label: "Mistakes (" + mistakesList.length + ")", action: () => setRevTab("MISTAKES") },
-                    { icon: "🎁", label: "Free Zone", action: () => openPage("FREE") }
+                    { icon: "📝", label: "Mock Tests", bg: "bg-sky-50 border-sky-100", action: () => openPage("TESTS") },
+                    { icon: "📜", label: "PYQs", bg: "bg-amber-50 border-amber-100", action: () => { setSelSection("PYQs"); openPage("TESTS"); } },
+                    { icon: "📰", label: "Flip CA", bg: "bg-indigo-50 border-indigo-100", action: () => openPage("CA") },
+                    { icon: "🎯", label: "Custom Quiz", bg: "bg-purple-50 border-purple-100", action: () => { setSelSection("Practice Test"); setDrillStep(3); } },
+                    { icon: "❌", label: "Mistakes (" + mistakesList.length + ")", bg: "bg-rose-50 border-rose-100", action: () => openPage("MISTAKES") },
+                    { icon: "🎁", label: "Free Zone", bg: "bg-emerald-50 border-emerald-100", action: () => openPage("FREE") }
                   ].map((item, idx) => (
-                    <button key={idx} type="button" onClick={item.action} className="p-2.5 bg-slate-900 hover:bg-slate-800/90 text-white rounded-xl border border-slate-800/90 flex flex-col items-center justify-center gap-1 transition active:scale-95">
-                      <span className="text-base leading-none">{item.icon}</span>
-                      <span className="text-[11px] font-bold tracking-tight text-slate-200">{item.label}</span>
+                    <button key={idx} type="button" onClick={item.action} className="p-2.5 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200 shadow-2xs flex flex-col items-center justify-center gap-1.5 transition active:scale-95">
+                      <span className={"w-9 h-9 rounded-full border flex items-center justify-center text-sm " + item.bg}>{item.icon}</span>
+                      <span className="text-[11px] font-bold tracking-tight text-slate-800">{item.label}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="p-3 bg-gradient-to-r from-sky-950/80 via-slate-900 to-slate-900 text-white rounded-2xl border border-sky-500/35 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-sm">
+                {/* 5. Clean White Separate Custom Quiz Strip */}
+                <div className="p-3 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2.5 py-1 bg-sky-400 text-slate-950 rounded-lg text-[10px] font-black tracking-wider uppercase shrink-0">CUSTOM QUIZ</span>
+                    <span className="px-2.5 py-1 bg-sky-50 text-[#0084FF] border border-sky-200 rounded-lg text-[10px] font-extrabold tracking-wider uppercase shrink-0">CUSTOM QUIZ</span>
                     <div>
-                      <div className="font-black text-xs sm:text-sm text-white">अपनी पसंद का मिनी टेस्ट बनाएं</div>
-                      <div className="text-[10px] text-slate-400">विषय और प्रश्नों की संख्या चुनें</div>
+                      <div className="font-extrabold text-xs sm:text-sm text-slate-900">अपनी पसंद का मिनी टेस्ट बनाएं</div>
+                      <div className="text-[10px] text-slate-500">विषय और प्रश्नों की संख्या चुनें</div>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                    <select value={customSub} onChange={(e) => setCustomSub(e.target.value)} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-xs focus:outline-none">
+                    <select value={customSub} onChange={(e) => setCustomSub(e.target.value)} className="px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs focus:outline-none focus:border-[#0084FF]">
                       {["Bihar Special", "History", "Polity", "Geography", "Economy", "General Science", "Current Affairs"].map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
-                    <select value={customCount} onChange={(e) => setCustomCount(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-amber-300 font-black text-xs focus:outline-none">
+                    <select value={customCount} onChange={(e) => setCustomCount(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs focus:outline-none focus:border-[#0084FF]">
                       {[10, 20, 30, 50].map((c) => <option key={c} value={c}>{c} Qs</option>)}
                     </select>
-                    <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-sky-400 hover:bg-sky-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">Start Quiz ➔</button>
+                    <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs transition active:scale-95">Start Quiz ➔</button>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                    <div className="font-black text-xs sm:text-sm text-amber-300">🧠 Smart Revision Hub</div>
-                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-black">
-                      <button type="button" onClick={() => setRevTab("MISTAKES")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "MISTAKES" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>❌ My Mistakes ({mistakesList.length})</button>
-                      <button type="button" onClick={() => setRevTab("FLASHCARDS")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "FLASHCARDS" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🔄 Flashcards ({flashcardsList.length})</button>
+                {/* 6. Clean White Smart Revision Hub (1 Header Strip + 4 Distinct White Boxes) */}
+                <div className="p-3.5 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                      <span className="font-extrabold text-sm text-slate-900 tracking-tight">Smart Revision Hub</span>
                     </div>
-                  </div>            
-                  {revTab === "MISTAKES" ? (
-                    <div className="space-y-2">
-                      {mistakesList.length === 0 ? (
-                        <div className="text-center py-3 text-xs text-emerald-400 font-bold">🎉 शाबाश! आपकी सभी पुरानी गलतियाँ साफ़ हो चुकी हैं।</div>
-                      ) : (
-                        mistakesList.map((m) => (
-                          <div key={m.id} className="p-2.5 bg-slate-950 rounded-xl border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                            <div className="space-y-0.5">
-                              <span className="px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded text-[10px] font-black">{m.sub}</span>
-                              <div className="font-bold text-slate-200">{m.q}</div>
-                              <div className="text-[11px] text-emerald-400 font-semibold">सही उत्तर: {m.ans}</div>
-                            </div>
-                            <button type="button" onClick={() => setMistakesList(mistakesList.filter((x) => x.id !== m.id))} className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-[10px] font-black shrink-0 transition">✓ याद हो गया (Clear)</button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {flashcardsList.map((fc) => {
-                        const isOpen = flippedFlashId === fc.id;
-                        return (
-                          <div key={fc.id} className="p-3 bg-slate-950 rounded-xl border border-indigo-500/25 flex flex-col justify-between gap-2">
-                            <div onClick={() => setFlippedFlashId(isOpen ? "" : fc.id)} className="cursor-pointer space-y-1.5">
-                              <div className="flex items-center justify-between text-[10px] font-black">
-                                <span className="text-indigo-400">{fc.sub}</span>
-                                <span className="text-amber-400">{fc.due}</span>
-                              </div>
-                              <div className="text-xs font-bold text-white leading-snug">{isOpen ? fc.back : fc.front}</div>
-                              <div className="text-[10px] text-sky-400 font-bold">{isOpen ? "↩ प्रश्न देखें" : "👆 उत्तर देखने के लिए टैप करें"}</div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800 text-[10px] font-black">
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "Tomorrow" } : x))} className="py-1 bg-rose-500/15 text-rose-300 rounded hover:bg-rose-600 hover:text-white transition">Hard</button>
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 4 Days" } : x))} className="py-1 bg-amber-500/15 text-amber-300 rounded hover:bg-amber-500 hover:text-slate-950 transition">Good</button>
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 12 Days" } : x))} className="py-1 bg-emerald-500/15 text-emerald-300 rounded hover:bg-emerald-600 hover:text-white transition">Easy</button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-black text-xs text-amber-400">📢 बिहार भर्ती व परीक्षा अलर्ट (Job & Exam Alerts)</span>
-                    <button type="button" onClick={() => openPage("CA")} className="text-[11px] font-black text-sky-400 hover:underline">सभी देखें ➔</button>
+                    <span className="text-[11px] font-semibold text-slate-400">Personal Tools</span>
                   </div>
-                  <div className="space-y-1.5">
-                    {jobAlerts.map((al) => (
-                      <div key={al.id} className="px-2.5 py-1.5 bg-slate-950 rounded-xl border border-slate-800/90 flex items-center justify-between gap-2 text-xs">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 rounded text-[9px] font-black shrink-0">{al.tag}</span>
-                          <span className="truncate text-slate-200 font-semibold">{al.title}</span>
-                        </div>
-                        <span className="text-[10px] text-slate-400 shrink-0">{al.date}</span>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <button type="button" onClick={() => openPage("MISTAKES")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200/90 hover:border-rose-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
+                      <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M15 9l-6 6M9 9l6 6" /></svg>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>                     
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">My Mistakes</div>
+                        <div className="text-[10px] font-semibold text-slate-500">{mistakesList.length} Qs सुधारें</div>
+                      </div>
+                    </button>
+
+                    
             {savedBms.length > 0 && (
         <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-3 space-y-2 text-xs text-slate-950">
           <div className="flex justify-between items-center">
