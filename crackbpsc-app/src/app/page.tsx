@@ -193,6 +193,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     {
       id: "fn1",
       subject: "Bihar Special",
+      examStage: "Prelims & Mains",
       date: "2026-11-25",
       week: "Week 4 (22–28 Nov)",
       month: "November 2026",
@@ -200,15 +201,16 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       title_en: "Bihar Cabinet Approves New Semiconductor & IT Park Policy 2026",
       summary_hi: "बिहार कैबिनेट ने राज्य को पूर्वी भारत का इलेक्ट्रॉनिक और आईटी हब बनाने के लिए नई सेमीकंडक्टर व आईटी पार्क नीति 2026 को मंजूरी दी है। यह नीति ₹5,000 करोड़ के निवेश और 50,000 नए रोजगार सृजन का लक्ष्य रखती है।",
       summary_en: "Bihar Cabinet has approved the New Semiconductor & IT Park Policy 2026 to develop the state as Eastern India's electronics hub, targeting ₹5,000 crore investment and 50,000 jobs.",
-      tip_hi: "Prelims: बिहार IT नीति 2026, सेमीकंडक्टर क्लस्टर, इलेक्ट्रॉनिक्स संवर्धन फंड; Mains: बिहार में औद्योगिक विकास व रोजगार सृजन।",
-      tip_en: "Prelims: Bihar IT Policy 2026, Semiconductor Cluster; Mains: Industrial growth & employment generation in Bihar.",
-      details_hi: ["बिहार कैबिनेट ने ₹5,000 करोड़ निवेश व 50,000 रोजगार के लिए नई नीति को मंजूरी दी।", "इसके तहत इलेक्ट्रॉनिक विनिर्माण क्लस्टर (EMC), भूमि सब्सिडी और 100% स्टाम्प ड्यूटी छूट मिलेगी।", "प्रीलिम्स तथ्य: भारत सेमीकंडक्टर मिशन (ISM) 2021 में शुरू हुआ; बिहार की पहली IT नीति 2011 में आई थी।"],
-      details_en: ["Approved with ₹5,000 Cr investment target and 50,000 new jobs.", "Provides Electronic Manufacturing Clusters (EMC), land subsidy & 100% stamp duty exemption.", "Prelims Fact: India Semiconductor Mission (ISM) launched in 2021; Bihar's first IT policy came in 2011."],
+      tip_hi: "बिहार IT नीति 2026, सेमीकंडक्टर क्लस्टर, इलेक्ट्रॉनिक्स संवर्धन फंड तथा बिहार में औद्योगिक विकास व रोजगार सृजन।",
+      tip_en: "Bihar IT Policy 2026, Semiconductor Cluster, Electronics Promotion Fund & industrial growth in Bihar.",
+      details_hi: ["बिहार कैबिनेट ने ₹5,000 करोड़ निवेश व 50,000 रोजगार के लिए नई नीति को मंजूरी दी।", "इसके तहत इलेक्ट्रॉनिक विनिर्माण क्लस्टर (EMC), भूमि सब्सिडी और 100% स्टाम्प ड्यूटी छूट मिलेगी।", "महत्वपूर्ण तथ्य: भारत सेमीकंडक्टर मिशन (ISM) 2021 में शुरू हुआ; बिहार की पहली IT नीति 2011 में आई थी।"],
+      details_en: ["Approved with ₹5,000 Cr investment target and 50,000 new jobs.", "Provides Electronic Manufacturing Clusters (EMC), land subsidy & 100% stamp duty exemption.", "Key Fact: India Semiconductor Mission (ISM) launched in 2021; Bihar's first IT policy came in 2011."],
       tags: ["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL"]
     },
     {
       id: "fn2",
       subject: "Politics",
+      examStage: "Prelims & Mains",
       date: "2026-11-25",
       week: "Week 4 (22–28 Nov)",
       month: "November 2026",
@@ -216,8 +218,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       title_en: "Winter Session of Parliament & Prorogation Process under Article 85",
       summary_hi: "राष्ट्रपति द्वारा केंद्रीय मंत्रिमंडल की सलाह पर संसद के सत्र को आहूत (Summon) और सत्रावसान (Prorogue) किया जाता है। स्थगन (Adjournment) केवल बैठक को निलंबित करता है, जबकि सत्रावसान पूरे सत्र को समाप्त करता है।",
       summary_en: "The President summons and prorogues Parliament sessions on Cabinet advice under Article 85. Adjournment suspends a sitting, whereas prorogation terminates the entire session.",
-      tip_hi: "Prelims: अनुच्छेद 85, स्थगन बनाम सत्रावसान बनाम विघटन; Mains: संसदीय कार्यप्रणाली व विधायी दक्षता।",
-      tip_en: "Prelims: Article 85, Adjournment vs Prorogation vs Dissolution; Mains: Parliamentary functioning.",
+      tip_hi: "अनुच्छेद 85, स्थगन (Adjournment) बनाम सत्रावसान (Prorogation) बनाम विघटन (Dissolution) तथा संसदीय कार्यप्रणाली।",
+      tip_en: "Article 85, Adjournment vs Prorogation vs Dissolution & Parliamentary functioning.",
       details_hi: ["अनुच्छेद 85(1): संसद के दो सत्रों के बीच 6 माह से अधिक का अंतराल नहीं हो सकता।", "स्थगन (Adjournment) पीठासीन अधिकारी (अध्यक्ष/सभापति) द्वारा किया जाता है, सत्रावसान राष्ट्रपति द्वारा।", "सत्रावसान से सदन में लंबित विधेयक (Pending Bills) समाप्त (Lapse) नहीं होते।"],
       details_en: ["Article 85(1): Maximum gap between two sessions cannot exceed 6 months.", "Adjournment is done by Presiding Officer; Prorogation is done by the President.", "Prorogation does not cause pending bills in the House to lapse."],
       tags: ["UPSC CSE", "72वीं BPSC CCE", "UPPSC"]
@@ -225,6 +227,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     {
       id: "fn3",
       subject: "Economy",
+      examStage: "Prelims",
       date: "2026-11-24",
       week: "Week 4 (22–28 Nov)",
       month: "November 2026",
@@ -232,8 +235,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       title_en: "RBI Monetary Policy Committee (MPC) & Repo Rate Impact on Inflation",
       summary_hi: "भारतीय रिजर्व बैंक की 6-सदस्यीय मौद्रिक नीति समिति (MPC) उपभोक्ता मूल्य सूचकांक (CPI) आधारित मुद्रास्फीति को 4% (±2%) के दायरे में रखने के लिए नीतिगत रेपो दर का निर्धारण करती है।",
       summary_en: "RBI's 6-member Monetary Policy Committee (MPC) sets the policy Repo Rate to keep CPI inflation within the 4% (±2%) target band.",
-      tip_hi: "Prelims: उर्जित पटेल समिति, MPC संरचना (3 RBI + 3 सरकार), CPI बनाम WPI; Mains: मौद्रिक नीति संचरण।",
-      tip_en: "Prelims: Urjit Patel Committee, MPC composition (3 RBI + 3 Govt), CPI vs WPI.",
+      tip_hi: "उर्जित पटेल समिति, MPC संरचना (3 RBI + 3 सरकार), तथा CPI बनाम WPI मुद्रास्फीति सूचकांक।",
+      tip_en: "Urjit Patel Committee, MPC composition (3 RBI + 3 Govt), and CPI vs WPI inflation indices.",
       details_hi: ["MPC का गठन RBI अधिनियम 1934 की धारा 45ZB के तहत 2016 में किया गया था।", "रेपो रेट बढ़ने से बैंकों की उधार लागत बढ़ती है और बाजार में तरलता (Liquidity) कम होती है।", "RBI गवर्नर MPC के पदेन अध्यक्ष (Ex-officio Chairperson) होते हैं और उनके पास निर्णायक मत होता है।"],
       details_en: ["MPC was constituted in 2016 under Section 45ZB of the RBI Act, 1934.", "A hike in Repo Rate increases borrowing cost and absorbs excess liquidity.", "RBI Governor is the ex-officio Chairperson of MPC with a casting vote."],
       tags: ["UPSC CSE", "BPSC", "Banking", "SSC CGL"]
@@ -241,6 +244,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     {
       id: "fn4",
       subject: "Sci & Tech",
+      examStage: "",
       date: "2026-11-20",
       week: "Week 3 (15–21 Nov)",
       month: "November 2026",
@@ -248,8 +252,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
       title_en: "ISRO Gaganyaan Mission & Crew Escape System Successful Flight Test",
       summary_hi: "भारतीय अंतरिक्ष अनुसंधान संगठन (ISRO) ने श्रीहरिकोटा से गगनयान मानव अंतरिक्ष मिशन के क्रू एस्केप सिस्टम (CES) का सफल परीक्षण किया, जो आपात स्थिति में अंतरिक्ष यात्रियों की सुरक्षित वापसी सुनिश्चित करता है।",
       summary_en: "ISRO successfully tested the Crew Escape System (CES) for the Gaganyaan human spaceflight mission from Sriharikota to ensure astronaut safety during emergencies.",
-      tip_hi: "Prelims: LVM3 रॉकेट, व्योममित्र रोबोट, निम्न पृथ्वी कक्षा (LEO 400 km); Mains: भारत की अंतरिक्ष अर्थव्यवस्था।",
-      tip_en: "Prelims: LVM3 rocket, Vyommitra robot, Low Earth Orbit (400 km); Mains: India's Space Economy.",
+      tip_hi: "LVM3 रॉकेट, व्योममित्र रोबोट, निम्न पृथ्वी कक्षा (LEO 400 km) और भारत की अंतरिक्ष अर्थव्यवस्था।",
+      tip_en: "LVM3 rocket, Vyommitra robot, Low Earth Orbit (400 km) and India's Space Economy.",
       details_hi: ["गगनयान भारत का पहला स्वदेशी मानव अंतरिक्ष उड़ान कार्यक्रम है (3 सदस्य, 3 दिन, 400 किमी LEO कक्षा)।", "इस मिशन में मानव-रेटेड LVM3 (HLVM3) प्रक्षेपण यान का उपयोग किया जा रहा है।", "सफलता के बाद भारत अमेरिका, रूस और चीन के बाद चौथा देश बन जाएगा।"],
       details_en: ["Gaganyaan is India's first indigenous human spaceflight (3 crew, 3 days, 400 km LEO).", "Uses Human-Rated LVM3 (HLVM3) launch vehicle.", "India will become the 4th nation after US, Russia, and China to send humans to space."],
       tags: ["UPSC CSE", "BPSC", "SSC", "Railway"]
@@ -1483,9 +1487,44 @@ useEffect(() => {
                               <span className="text-slate-400">📅 {card.date} • 🔄 Tap to Flip</span>
                             </div>
 
+                            
                             {!isFlipped ? (
                               <div className="space-y-3">
                                 <h3 className="font-black text-base sm:text-lg text-white leading-snug">{caCardLang === "HI" ? card.title_hi : card.title_en}</h3>
+                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{caCardLang === "HI" ? card.summary_hi : card.summary_en}</p>
+                                <div className="p-3 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-1">
+                                  <div className="text-[11px] font-black text-amber-400">EXAM TIP{card.examStage ? " (" + card.examStage + ")" : ""}</div>
+                                  <div className="text-xs text-amber-100 leading-relaxed">{caCardLang === "HI" ? card.tip_hi : card.tip_en}</div>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                  {card.tags.map((tg, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px] font-bold">{tg}</span>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3 py-2">
+                                <div className="text-center font-black text-sm text-amber-400 tracking-wide">KEY DETAILS (मुख्य परीक्षा बिंदु)</div>
+                                <ul className="space-y-2 text-xs sm:text-sm text-slate-200 list-disc pl-5">
+                                  {(caCardLang === "HI" ? card.details_hi : card.details_en).map((pt, i) => (
+                                    <li key={i} className="leading-relaxed">{pt}</li>
+                                  ))}
+                                </ul>
+                                <div className="text-center pt-2 text-[11px] font-black text-blue-400">TAP TO FLIP BACK (वापस पलटें)</div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="px-4 py-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2">
+                            <button type="button" onClick={() => { setSelSection("Current Affairs"); setBottomTab("TESTS"); setDrillStep(3); }} className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xs text-center">इस खबर पर आधारित MCQs हल करें (Start Quiz)</button>
+                            <a href={"https://wa.me" + shareText} target="_blank" rel="noreferrer" className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs">Share</a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
 
 
  <div className="flex justify-between items-center">
