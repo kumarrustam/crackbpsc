@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
