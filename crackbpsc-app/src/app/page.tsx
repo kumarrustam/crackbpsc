@@ -1665,7 +1665,7 @@ useEffect(() => {
             )}
 
             {bottomTab === "HOME" && (<div> 
-<div>
+
    <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
