@@ -205,6 +205,35 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [aiNewsTopic, setAiNewsTopic] = useState<string>("");
   const [aiNewsLoading, setAiNewsLoading] = useState<boolean>(false);
   const [draftNews, setDraftNews] = useState<any>({ subject: "Bihar Special", examStage: "", title_hi: "", title_en: "", summary_hi: "", summary_en: "", tip_hi: "", tip_en: "", d1_hi: "", d2_hi: "", d3_hi: "", d1_en: "", d2_en: "", d3_en: "", tags: "72वीं BPSC CCE, BPSC TRE 4.0" });
+  
+  const [homeSearch, setHomeSearch] = useState<string>("");
+  const [streakDays, setStreakDays] = useState<number>(5);
+  const [customSub, setCustomSub] = useState<string>("Bihar Special");
+  const [customCount, setCustomCount] = useState<number>(10);
+  const [revTab, setRevTab] = useState<string>("MISTAKES");
+  const [pausedTest, setPausedTest] = useState<any>({ title: "72वीं BPSC CCE — Full Length Mock #1", section: "Practice Test", currentQ: 42, totalQ: 150, timeLeft: "84 Min" });
+  const [liveTicker, setLiveTicker] = useState<any>({ badge: "LIVE NOW", title: "72वीं BPSC All-India Maha-Mock #1", meta: "150 Qs • 120 Min" });
+  const [jobAlerts, setJobAlerts] = useState<any[]>([
+    { id: "ja1", tag: "NEW", title: "72वीं BPSC CCE प्रारंभिक परीक्षा कैलेंडर व संभावित रिक्तियां जारी", date: "आज" },
+    { id: "ja2", tag: "TRE 4.0", title: "BPSC TRE 4.0 शिक्षक भर्ती — विषय-वार पाठ्यक्रम और मॉडल सेट उपलब्ध", date: "कल" },
+    { id: "ja3", tag: "BSSC", title: "BSSC CGL-4 व इंटर स्तरीय मुख्य परीक्षा अभ्यास टेस्ट सीरीज़ लाइव", date: "2 दिन पहले" }
+  ]);
+  const [newAlertTitle, setNewAlertTitle] = useState<string>("");
+  const [newAlertTag, setNewAlertTag] = useState<string>("NEW");
+  const [mistakesList, setMistakesList] = useState<any[]>([
+    { id: "m1", sub: "Bihar Special", q: "बिहार में प्रथम बौद्ध संगीति का आयोजन किस शासक के काल में हुआ था?", ans: "अजातशत्रु (राजगृह, 483 ई.पू.)" },
+    { id: "m2", sub: "Polity", q: "भारतीय संविधान के किस अनुच्छेद के तहत राष्ट्रपति संसद का सत्रावसान करते हैं?", ans: "अनुच्छेद 85(2)(a)" },
+    { id: "m3", sub: "Science", q: "मनुष्य के शरीर में रक्त का थक्का जमने में कौन-सा विटामिन सहायक होता है?", ans: "विटामिन K (फिलोक्विनोन)" }
+  ]);
+  const [flashcardsList, setFlashcardsList] = useState<any[]>([
+    { id: "fc1", sub: "Bihar Special", front: "बिहार की पहली IT नीति किस वर्ष लागू की गई थी?", back: "वर्ष 2011 में (नई सेमीकंडक्टर व IT नीति 2026 में मंजूर)", due: "Due Today" },
+    { id: "fc2", sub: "Economy", front: "RBI की मौद्रिक नीति समिति (MPC) में कुल कितने सदस्य होते हैं?", back: "6 सदस्य (3 RBI से और 3 भारत सरकार द्वारा नामित)", due: "Due Today" },
+    { id: "fc3", sub: "History", front: "1917 के चंपारण सत्याग्रह में गांधीजी को आमंत्रित किसने किया था?", back: "पंडित राजकुमार शुक्ल ने (लखनऊ अधिवेशन 1916 में)", due: "Due Today" }
+  ]);
+  const [flippedFlashId, setFlippedFlashId] = useState<string>("");
+  const [newFcFront, setNewFcFront] = useState<string>("");
+  const [newFcBack, setNewFcBack] = useState<string>("");
+  const [adminStudioTab, setAdminStudioTab] = useState<string>("NEWS");
   const [flipNewsItems, setFlipNewsItems] = useState<any[]>([ 
     {
       id: "fn1",
@@ -1653,41 +1682,112 @@ useEffect(() => {
               <button onClick={() => setAdHideToday(true)} className="underline">Don&apos;t show today</button>
             </div>
           )}
-          {showLive && (
-         <div className="p-4 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 text-white rounded-xl border-2 border-rose-500 shadow space-y-2.5">
-            <div className="flex flex-wrap justify-between items-center gap-2 border-b border-white/15 pb-1.5">
-              <span className="font-extrabold text-sm text-amber-300">🔴 All-India Live & Upcoming Tests (Pre-Registration)</span>
-              <span className="text-[10px] bg-rose-600 px-2 py-0.5 rounded-full font-bold">सीट पक्की करें</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-              {liveTests.map((lt: any) => {
-                const isReg = regLiveIds.includes(lt.id);
-                return (
-                  <div key={lt.id} className="p-3 bg-white/10 border border-white/20 rounded-lg space-y-1.5">
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="font-extrabold text-xs text-white">{lt.title}</span>
-                      <span className={"px-2 py-0.5 rounded text-[10px] font-black shrink-0 " + (lt.isLive ? "bg-rose-600 text-white animate-pulse" : "bg-amber-400 text-slate-950")}>
-                        {lt.isLive ? "🔴 LIVE NOW" : "⏳ UPCOMING"}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-indigo-200">🏛️ {lt.cat} › {lt.subEx} | ⏱️ {lt.duration} मिनट</div>
-                    <div className="text-[11px] font-bold text-amber-300">📅 {lt.startsIn}</div>
-                    {lt.isLive ? (
-                      <button onClick={() => { const ltQs = questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(lt.id) : false)); if (ltQs.length === 0) { alert("⚠️ इस Live Test में अभी प्रश्न नहीं जोड़े गए हैं!"); return; } setExamQs(ltQs); setGoal(lt.title); setQIdx(0); setAns({}); setSubmitted(false); setInExam(true); }} className="w-full py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded text-xs">▶️ अभी Live Test शुरू करें ({questions.filter((q: any) => (q.liveIds ? q.liveIds.includes(lt.id) : false)).length} Qs)</button>
-                    ) : (
-                      <button onClick={() => {
-                        if (isReg) { setRegLiveIds(regLiveIds.filter((id) => id !== lt.id)); }
-                        else { setRegLiveIds([...regLiveIds, lt.id]); alert("✅ " + lt.title + " के लिए आपका रजिस्ट्रेशन पक्का हो गया है!"); }
-                      }} className={"w-full py-1.5 font-black rounded text-xs " + (isReg ? "bg-emerald-600 text-white" : "bg-amber-400 text-slate-950")}>
-                        {isReg ? "✅ Registered (सीट पक्की — रद्द करने के लिए दबाएं)" : "🎟️ निःशुल्क Register करें (Remind Me)"}
-                      </button>
-                    )}
+          
+              <div className="space-y-3 my-2.5">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-900/95 p-2 rounded-2xl border border-slate-800 shadow-sm">
+                  <div className="flex-1 flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800/90 focus-within:border-sky-500/60 transition">
+                    <span className="text-slate-400 text-xs">🔍</span>
+                    <input value={homeSearch} onChange={(e) => setHomeSearch(e.target.value)} placeholder="72वीं BPSC, TRE 4.0, PYQ या टॉपिक खोजें..." className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none" />
+                    {homeSearch && <button type="button" onClick={() => setHomeSearch("")} className="text-slate-400 hover:text-white text-xs font-black">✕</button>}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-          )}
+                  <div className="flex items-center justify-between sm:justify-end gap-1.5 text-[11px] font-black">
+                    <span className="px-2.5 py-1.5 bg-amber-500/10 text-amber-300 border border-amber-400/25 rounded-xl">🔥 {streakDays} Day Streak</span>
+                    <span className="px-2.5 py-1.5 bg-emerald-500/10 text-emerald-300 border border-emerald-400/25 rounded-xl">🎯 लक्ष्य: 20 Qs</span>
+                  </div>
+                </div>
+
+                <div className="px-3.5 py-2 bg-gradient-to-r from-slate-900 via-indigo-950/90 to-slate-900 text-white rounded-2xl border border-indigo-500/30 flex items-center justify-between gap-2 shadow-sm">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="px-2 py-0.5 bg-rose-600 text-white rounded text-[10px] font-black tracking-wide shrink-0 animate-pulse">{liveTicker.badge}</span>
+                    <div className="truncate">
+                      <span className="font-black text-xs sm:text-sm text-white">{liveTicker.title}</span>
+                      <span className="text-[11px] text-slate-400 ml-2 hidden sm:inline">({liveTicker.meta})</span>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs shrink-0 transition active:scale-95">Join Free ➔</button>
+                </div>
+
+                {pausedTest && (
+                  <div className="p-3 bg-gradient-to-r from-amber-500/15 via-slate-900 to-slate-900 text-white rounded-2xl border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-[10px] font-black">
+                        <span className="px-2 py-0.5 bg-amber-400 text-slate-950 rounded uppercase tracking-wider">⏸ RESUME TEST</span>
+                        <span className="text-amber-300">प्रश्न {pausedTest.currentQ} / {pausedTest.totalQ} पर रुका हुआ • शेष: {pausedTest.timeLeft}</span>
+                      </div>
+                      <div className="font-black text-xs sm:text-sm text-white truncate">{pausedTest.title}</div>
+                      <div className="w-full max-w-xs h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div style={{ width: Math.round((pausedTest.currentQ / pausedTest.totalQ) * 100) + "%" }} className="h-full bg-amber-400 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button type="button" onClick={() => { setSelSection(pausedTest.section || "Practice Test"); setDrillStep(3); }} className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">▶ Resume (Q.{pausedTest.currentQ})</button>
+                      <button type="button" onClick={() => setPausedTest(null)} title="हटाएं" className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-black text-xs flex items-center justify-center">✕</button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
+                  {[
+                    { icon: "📝", label: "Mock Tests", action: () => openPage("TESTS") },
+                    { icon: "📜", label: "PYQs", action: () => { setSelSection("PYQs"); openPage("TESTS"); } },
+                    { icon: "📰", label: "Flip CA", action: () => openPage("CA") },
+                    { icon: "🎯", label: "Custom Quiz", action: () => { setSelSection("Practice Test"); setDrillStep(3); } },
+                    { icon: "❌", label: "Mistakes (" + mistakesList.length + ")", action: () => setRevTab("MISTAKES") },
+                    { icon: "🎁", label: "Free Zone", action: () => openPage("FREE") }
+                  ].map((item, idx) => (
+                    <button key={idx} type="button" onClick={item.action} className="p-2.5 bg-slate-900 hover:bg-slate-800/90 text-white rounded-xl border border-slate-800/90 flex flex-col items-center justify-center gap-1 transition active:scale-95">
+                      <span className="text-base leading-none">{item.icon}</span>
+                      <span className="text-[11px] font-bold tracking-tight text-slate-200">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="p-3 bg-gradient-to-r from-sky-950/80 via-slate-900 to-slate-900 text-white rounded-2xl border border-sky-500/35 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-2.5 py-1 bg-sky-400 text-slate-950 rounded-lg text-[10px] font-black tracking-wider uppercase shrink-0">CUSTOM QUIZ</span>
+                    <div>
+                      <div className="font-black text-xs sm:text-sm text-white">अपनी पसंद का मिनी टेस्ट बनाएं</div>
+                      <div className="text-[10px] text-slate-400">विषय और प्रश्नों की संख्या चुनें</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <select value={customSub} onChange={(e) => setCustomSub(e.target.value)} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-xs focus:outline-none">
+                      {["Bihar Special", "History", "Polity", "Geography", "Economy", "General Science", "Current Affairs"].map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <select value={customCount} onChange={(e) => setCustomCount(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-amber-300 font-black text-xs focus:outline-none">
+                      {[10, 20, 30, 50].map((c) => <option key={c} value={c}>{c} Qs</option>)}
+                    </select>
+                    <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-sky-400 hover:bg-sky-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">Start Quiz ➔</button>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                    <div className="font-black text-xs sm:text-sm text-amber-300">🧠 Smart Revision Hub</div>
+                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-black">
+                      <button type="button" onClick={() => setRevTab("MISTAKES")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "MISTAKES" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>❌ My Mistakes ({mistakesList.length})</button>
+                      <button type="button" onClick={() => setRevTab("FLASHCARDS")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "FLASHCARDS" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🔄 Flashcards ({flashcardsList.length})</button>
+                    </div>
+                  </div>
+
+                  {revTab === "MISTAKES" ? (
+                    <div className="space-y-2">
+                      {mistakesList.length === 0 ? (
+                        <div className="text-center py-3 text-xs text-emerald-400 font-bold">🎉 शाबाश! आपकी सभी पुरानी गलतियाँ साफ़ हो चुकी हैं।</div>
+                      ) : (
+                        mistakesList.map((m) => (
+                          <div key={m.id} className="p-2.5 bg-slate-950 rounded-xl border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            <div className="space-y-0.5">
+                              <span className="px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded text-[10px] font-black">{m.sub}</span>
+                              <div className="font-bold text-slate-200">{m.q}</div>
+                              <div className="text-[11px] text-emerald-400 font-semibold">सही उत्तर: {m.ans}</div>
+                            </div>
+                            <button type="button" onClick={() => setMistakesList(mistakesList.filter((x) => x.id !== m.id))} className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-[10px] font-black shrink-0 transition">✓ याद हो गया (Clear)</button>
+                          </div>
+                        ))
+                      )}
+
+                      
             {savedBms.length > 0 && (
         <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-3 space-y-2 text-xs text-slate-950">
           <div className="flex justify-between items-center">
@@ -2182,8 +2282,71 @@ useEffect(() => {
           </button>
         </div>
       )}
-
       
+      {role === "ADMIN" && (
+        <div className="max-w-5xl mx-auto my-3 p-4 bg-slate-900 text-white rounded-2xl border border-amber-500/40 shadow-xl space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+            <div>
+              <span className="px-2 py-0.5 bg-amber-400 text-slate-950 rounded text-[10px] font-black uppercase">ADMIN CONTROL</span>
+              <h3 className="font-black text-base text-white mt-0.5">Home Dashboard & Revision Studio</h3>
+            </div>
+            <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-black">
+              <button type="button" onClick={() => setAdminStudioTab("LIVE")} className={"px-3 py-1.5 rounded-lg transition " + (adminStudioTab === "LIVE" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>🔴 Live Test</button>
+              <button type="button" onClick={() => setAdminStudioTab("ALERTS")} className={"px-3 py-1.5 rounded-lg transition " + (adminStudioTab === "ALERTS" ? "bg-amber-400 text-slate-950" : "text-slate-400 hover:text-white")}>📢 Job Alerts ({jobAlerts.length})</button>
+              <button type="button" onClick={() => setAdminStudioTab("FLASH")} className={"px-3 py-1.5 rounded-lg transition " + (adminStudioTab === "FLASH" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🧠 Flashcards ({flashcardsList.length})</button>
+            </div>
+          </div>
+
+          {adminStudioTab === "LIVE" && (
+            <div className="space-y-2.5 text-xs">
+              <div className="text-slate-400 font-bold">होम पेज की ऊपरी LIVE पट्टी को यहाँ से तुरंत अपडेट करें:</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input value={liveTicker.badge} onChange={(e) => setLiveTicker({ ...liveTicker, badge: e.target.value })} placeholder="Badge (LIVE NOW)" className="p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-rose-400 font-black" />
+                <input value={liveTicker.title} onChange={(e) => setLiveTicker({ ...liveTicker, title: e.target.value })} placeholder="Live Test Title" className="p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold" />
+                <input value={liveTicker.meta} onChange={(e) => setLiveTicker({ ...liveTicker, meta: e.target.value })} placeholder="150 Qs • 120 Min" className="p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-300" />
+              </div>
+            </div>
+          )}
+
+          {adminStudioTab === "ALERTS" && (
+            <div className="space-y-2.5 text-xs">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input value={newAlertTag} onChange={(e) => setNewAlertTag(e.target.value)} placeholder="Tag (NEW / ADMIT)" className="sm:w-32 p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-amber-300 font-black" />
+                <input value={newAlertTitle} onChange={(e) => setNewAlertTitle(e.target.value)} placeholder="नया बिहार भर्ती या परीक्षा अलर्ट लिखें..." className="flex-1 p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white" />
+                <button type="button" onClick={() => { if (!newAlertTitle.trim()) return; setJobAlerts([{ id: "ja_" + Date.now(), tag: newAlertTag || "NEW", title: newAlertTitle, date: "अभी" }, ...jobAlerts]); setNewAlertTitle(""); alert("नया अलर्ट होम पेज पर लाइव हो गया!"); }} className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black">Alert जोड़ें</button>
+              </div>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                {jobAlerts.map((al) => (
+                  <div key={al.id} className="p-2 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                    <span className="truncate"><b className="text-amber-400">[{al.tag}]</b> {al.title}</span>
+                    <button type="button" onClick={() => setJobAlerts(jobAlerts.filter((x) => x.id !== al.id))} className="px-2 py-1 bg-rose-500/20 text-rose-300 rounded font-black text-[10px]">हटाएं</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {adminStudioTab === "FLASH" && (
+            <div className="space-y-2.5 text-xs">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input value={newFcFront} onChange={(e) => setNewFcFront(e.target.value)} placeholder="नया Flashcard प्रश्न (Front)..." className="flex-1 p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white" />
+                <input value={newFcBack} onChange={(e) => setNewFcBack(e.target.value)} placeholder="सही उत्तर (Back)..." className="flex-1 p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-emerald-300" />
+                <button type="button" onClick={() => { if (!newFcFront.trim() || !newFcBack.trim()) return; setFlashcardsList([{ id: "fc_" + Date.now(), sub: "Bihar Special", front: newFcFront, back: newFcBack, due: "Due Today" }, ...flashcardsList]); setNewFcFront(""); setNewFcBack(""); alert("नया Flashcard जुड़ गया!"); }} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black">Flashcard जोड़ें</button>
+              </div>
+              <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                {flashcardsList.map((fc) => (
+                  <div key={fc.id} className="p-2 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                    <span className="truncate"><b>Q:</b> {fc.front} — <span className="text-emerald-400">{fc.back}</span></span>
+                    <button type="button" onClick={() => setFlashcardsList(flashcardsList.filter((x) => x.id !== fc.id))} className="px-2 py-1 bg-rose-500/20 text-rose-300 rounded font-black text-[10px]">हटाएं</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+                
      {role === "WRITER" && (
         <div className={(enableDesktopView ? (enableMobileView ? "max-w-md md:max-w-7xl " : "max-w-7xl ") : "max-w-md ") + "mx-auto p-3 sm:p-5 bg-white mt-3 rounded-xl border space-y-3 text-xs"}>
           <div className="flex flex-wrap justify-between items-center gap-2 border-b pb-2">
