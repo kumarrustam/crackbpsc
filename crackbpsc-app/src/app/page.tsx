@@ -177,6 +177,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [showGoalPicker, setShowGoalPicker] = useState<boolean>(false);
   const [goalRegion, setGoalRegion] = useState<string>("STATE");
   const [selectedState, setSelectedState] = useState<string>("Bihar");
+  const [myExamsOpen, setMyExamsOpen] = useState<boolean>(false);
+  const [addMoreExamsMode, setAddMoreExamsMode] = useState<boolean>(false);
+  const [enrolledExams, setEnrolledExams] = useState<Array<{ cat: string; ex: string }>>([{ cat: "BPSC", ex: "72वीं BPSC CCE" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 6–8)" }, { cat: "Bihar Teaching", ex: "Bihar STET (Paper 1 & 2)" }, { cat: "Bihar Police", ex: "Bihar Police SI (दरोगा)" }]);
+  const [checkedExams, setCheckedExams] = useState<string[]>([]);
   useEffect(() => {
     try {
       const navRaw = localStorage.getItem("cb_nav_lock");
@@ -1010,13 +1014,102 @@ useEffect(() => {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="bg-slate-900 text-white p-2.5 flex flex-wrap justify-between items-center text-xs gap-1">
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menu" className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600/80 rounded-lg text-white flex items-center justify-center"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg></button>
-            
-            <span className="font-black tracking-wide text-amber-400">CrackBPSC</span>          
-            <button type="button" onClick={() => { setShowGoalPicker(true); setMenuOpen(true); }} className="px-2.5 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black border border-indigo-400 flex items-center gap-1">
-              <span>📍 {goalRegion === "CENTRAL" ? "All-India" : selectedState} • {selSubExam}</span>
-              <span>▾</span>
+            <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menu" className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600/80 rounded-lg text-white flex items-center justify-center"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg></button>                  
+            <button type="button" onClick={() => { setMyExamsOpen(!myExamsOpen); setAddMoreExamsMode(false); }} className="px-2.5 py-1 hover:bg-slate-800 rounded-lg text-white flex items-center gap-1.5 text-sm font-bold">
+              <span>My Exams</span>
+              <span className="px-1.5 py-0.5 bg-slate-700 text-slate-200 rounded-full text-xs font-black">{checkedExams.length}</span>
+              <span className="text-xs text-slate-300">{myExamsOpen ? "▲" : "∨"}</span>
             </button>
+          </div>
+          {myExamsOpen && (
+            <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-start sm:pt-12 sm:pl-3" onClick={() => setMyExamsOpen(false)}>
+              <div className="w-full sm:w-96 bg-white text-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mt-2 sm:hidden" />
+                {!addMoreExamsMode ? (
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between border-b pb-2.5">
+                      <span className="font-black text-sm text-slate-900">आपकी नामांकित परीक्षाएं</span>
+                      <button type="button" onClick={() => { setAddMoreExamsMode(true); setGoalRegion(""); setSelectedState(""); }} className="text-xs font-black text-blue-600 hover:underline">+ अधिक परीक्षा का चयन करें</button>
+                    </div>
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                      {enrolledExams.map((item, idx) => {
+                        const isChecked = checkedExams.includes(item.ex);
+                        return (
+                          <div key={idx} className="py-2.5 flex items-center justify-between gap-2">
+                            <button type="button" onClick={() => {
+                              setCheckedExams(isChecked ? checkedExams.filter((x) => x !== item.ex) : [...checkedExams, item.ex]);
+                            }} className="flex items-center gap-3 text-left flex-1 min-w-0">
+                              <span className={"w-5 h-5 rounded flex items-center justify-center border-2 text-xs font-black shrink-0 " + (isChecked ? "bg-blue-600 border-blue-600 text-white" : "border-slate-400 bg-white")}>{isChecked ? "✓" : ""}</span>
+                              <span className="font-semibold text-sm text-slate-800 truncate">{item.ex}</span>
+                            </button>
+                            <button type="button" onClick={() => {
+                              setEnrolledExams(enrolledExams.filter((x) => x.ex !== item.ex));
+                              setCheckedExams(checkedExams.filter((x) => x !== item.ex));
+                            }} title="हटाएं" className="px-2 py-1 text-slate-400 hover:text-rose-600 font-black text-xs">⋮</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button type="button" disabled={checkedExams.length === 0} onClick={() => {
+                      const lastEx = checkedExams[checkedExams.length - 1];
+                      const found = enrolledExams.find((x) => x.ex === lastEx);
+                      if (found) {
+                        if (examTree[found.cat]) setSelCat(found.cat);
+                        setSelSubExam(found.ex);
+                        setDrillStep(3);
+                      }
+                      setMyExamsOpen(false);
+                    }} className={"w-full py-2.5 rounded-xl font-black text-sm transition " + (checkedExams.length > 0 ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md" : "bg-slate-200 text-slate-400 cursor-not-allowed")}>फ़िल्टर लागू करें</button>
+                  </div>
+                ) : (
+                  <div className="p-4 space-y-2.5">
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-black text-sm text-slate-900">🎯 परीक्षा जोड़ें (Select Exam)</span>
+                      <button type="button" onClick={() => { if (selectedState) { setSelectedState(""); } else if (goalRegion) { setGoalRegion(""); } else { setAddMoreExamsMode(false); } }} className="px-2 py-0.5 bg-slate-100 rounded text-xs font-black text-slate-700">← वापस</button>
+                    </div>
+                    {goalRegion === "" && (
+                      <div className="space-y-2">
+                        <button type="button" onClick={() => { setGoalRegion("CENTRAL"); setSelectedState(""); }} className="w-full p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 flex items-center justify-between font-black text-xs"><span>1. 🇮🇳 Central / India Exams</span><span>➔</span></button>
+                        <button type="button" onClick={() => { setGoalRegion("STATE"); setSelectedState(""); }} className="w-full p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 flex items-center justify-between font-black text-xs"><span>2. 📍 State-Wise Exams</span><span>➔</span></button>
+                      </div>
+                    )}
+                    {goalRegion === "STATE" && selectedState === "" && (
+                      <div className="max-h-64 overflow-y-auto space-y-1">
+                        {["Bihar", "Uttar Pradesh", "Jharkhand", "Madhya Pradesh", "Rajasthan", "Delhi"].map((st) => (
+                          <button key={st} type="button" onClick={() => setSelectedState(st)} className="w-full p-2 rounded-lg bg-slate-50 hover:bg-amber-50 border border-slate-200 flex items-center justify-between font-black text-xs"><span>📍 {st}</span><span>➔</span></button>
+                        ))}
+                      </div>
+                    )}
+                    {(goalRegion === "CENTRAL" || (goalRegion === "STATE" && selectedState !== "")) && (
+                      <div className="max-h-64 overflow-y-auto space-y-1">
+                        {(goalRegion === "CENTRAL"
+                          ? [...Object.entries(examTree).filter(([c]) => !/bpsc|tre|bihar|bssc/i.test(c)).flatMap(([c, list]: any) => list.map((ex: string) => ({ cat: c, ex }))), { cat: "UPSC", ex: "UPSC CSE (IAS/IPS)" }, { cat: "Central Teaching", ex: "CTET (Paper 1 & 2)" }, { cat: "Central Teaching", ex: "UGC NET / JRF" }, { cat: "Central Teaching", ex: "EMRS PGT / TGT" }, { cat: "Central Teaching", ex: "DSSSB PGT / TGT" }]
+                          : selectedState === "Bihar"
+                          ? [{ cat: "BPSC", ex: "72वीं BPSC CCE" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 1–5 PRT)" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 6–8)" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 9–10 TGT)" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 11–12 PGT)" }, { cat: "BPSC", ex: "BPSC Head Teacher (प्रधान शिक्षक)" }, { cat: "BPSC", ex: "BPSC AEDO" }, { cat: "BSSC", ex: "BSSC CGL-4" }, { cat: "BSSC", ex: "BSSC Inter Level" }, { cat: "Bihar Police", ex: "Bihar Police SI (दरोगा)" }, { cat: "Bihar Police", ex: "Bihar Police Prohibition Sub Inspector" }, { cat: "Bihar Teaching", ex: "Bihar STET (Paper 1 & 2)" }]
+                          : [{ cat: selectedState + " PSC", ex: selectedState + " State PSC" }, { cat: selectedState + " Police", ex: selectedState + " Police & SI" }, { cat: selectedState + " TET", ex: selectedState + " TET / Teacher" }]
+                        ).map((item: any, idx: number) => {
+                          const alreadyAdded = enrolledExams.some((x) => x.ex === item.ex);
+                          return (
+                            <button key={idx} type="button" onClick={() => {
+                              if (!alreadyAdded) setEnrolledExams([...enrolledExams, item]);
+                              setAddMoreExamsMode(false);
+                            }} className="w-full p-2 rounded-lg border border-slate-200 hover:bg-blue-50 flex items-center justify-between text-left text-xs">
+                              <div>
+                                <div className="font-black text-slate-900">{item.ex}</div>
+                                <div className="text-[10px] text-slate-400">{item.cat}</div>
+                              </div>
+                              <span className="font-black text-blue-600">{alreadyAdded ? "✓ जोड़ा गया" : "+ जोड़ें"}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="hidden">
           </div>
           {menuOpen && (
             <div className="fixed inset-0 z-50 bg-black/50 flex" onClick={() => setMenuOpen(false)}>
