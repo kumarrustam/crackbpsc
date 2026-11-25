@@ -1011,7 +1011,7 @@ useEffect(() => {
       <div className="bg-slate-900 text-white p-2.5 flex flex-wrap justify-between items-center text-xs gap-1">
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menu" className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600/80 rounded-lg text-white flex items-center justify-center"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg></button>
-            <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menu" className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600/80 rounded-lg text-white flex items-center justify-center"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg></button>
+            
             <span className="font-black tracking-wide text-amber-400">CrackBPSC</span>          
             <button type="button" onClick={() => { setShowGoalPicker(true); setMenuOpen(true); }} className="px-2.5 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black border border-indigo-400 flex items-center gap-1">
               <span>📍 {goalRegion === "CENTRAL" ? "All-India" : selectedState} • {selSubExam}</span>
