@@ -2087,14 +2087,9 @@ useEffect(() => {
                                   >
                                     🔄 Re-Attempt
                                   </button>
-                                
-      
+                                  ))
+                                </div>                  
                             
-                          </div>
-                      
-                      
-                    </div>
-                  </div>
                 )}
               </div>
             );
