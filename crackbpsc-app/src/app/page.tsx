@@ -1664,7 +1664,7 @@ useEffect(() => {
               </div>
             )}
 
-            {bottomTab === "HOME" && (<>
+            {bottomTab === "HOME" && (<> 
 
    <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
