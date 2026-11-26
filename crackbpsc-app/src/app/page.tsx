@@ -1815,12 +1815,45 @@ useEffect(() => {
                   </div>
                   
                   {(() => {
+                  
+                    
                     const examSubsMap: Record<string, string[]> = {
                       "72वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History", "Polity", "Economy", "Geography", "General Science", "Quantitative Aptitude"],
+                      "71वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History", "Polity", "Economy", "Geography", "General Science", "Quantitative Aptitude"],
+                      "BPSC Assistant": ["General Studies", "Bihar Special", "General Science", "Mathematics", "Mental Ability & Reasoning"],
+                      "BPSC CDPO": ["History & National Movement", "Current Affairs", "Polity", "Economy & Geography", "Bihar Special", "General Mental Ability"],
                       "BPSC TRE 4.0": ["Current Affairs", "Bihar Special", "General Studies", "Hindi / Language", "Logical Reasoning", "General Science"],
+                      "Bihar STET": ["Art of Teaching (शिक्षण कला)", "General Knowledge", "Environmental Science", "Logical Reasoning", "Concerned Subject"],
+                      "CTET": ["Child Development & Pedagogy", "Language I (हिन्दी)", "Language II (English)", "Mathematics", "Environmental / Social Studies"],
+                      "Bihar Police SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity", "History & Geography"],
+                      "Bihar Police Constable": ["हिन्दी", "English", "Mathematics", "Social Science", "General Science", "General Knowledge"],
+                      "Bihar Prohibition SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity"],
                       "BSSC CGL-4": ["General Knowledge", "General Science", "Quantitative Aptitude", "Logical Reasoning", "Bihar Special"],
-                      "Bihar Police SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity"]
+                      "BSSC Inter Level": ["General Studies", "General Science", "Mathematics", "Mental Ability & Reasoning", "Bihar Special"],
+                      "Bihar Civil Court": ["English Language", "हिन्दी व्याकरण", "General Knowledge", "Mathematics", "Reasoning", "Computer Science"],
+                      "UPSC Civil Services": ["Current Affairs", "History & Culture", "Polity & Governance", "Economy", "Geography & Environment", "Science & Tech", "CSAT"],
+                      "UPSC EPFO": ["General English", "Freedom Struggle", "Polity & Economy", "Accounting Principles", "Labour Laws", "General Science & Computer"],
+                      "SSC CGL": ["Reasoning", "General Awareness", "Quantitative Aptitude", "English Comprehension", "Computer"],
+                      "SSC CHSL": ["English Language", "General Intelligence", "Quantitative Aptitude", "General Awareness"],
+                      "SSC MTS": ["Numerical Ability", "Reasoning Ability", "General Awareness", "English Language"],
+                      "SSC GD Constable": ["Reasoning", "General Knowledge", "Elementary Mathematics", "English / हिन्दी"],
+                      "SSC JE": ["General Intelligence & Reasoning", "General Awareness", "General Engineering (CE/EE/ME)"],
+                      "RRB NTPC": ["General Awareness", "Mathematics", "Reasoning", "Psycho Test Battery"],
+                      "RRB ALP": ["Mathematics", "Reasoning", "General Science", "General Awareness", "Trade Paper"],
+                      "RRC Group D": ["General Science", "Mathematics", "Reasoning", "General Awareness"],
+                      "RRB JE": ["Mathematics", "Reasoning", "General Awareness", "General Science", "Technical Abilities"],
+                      "IBPS PO": ["English Language", "Quantitative Aptitude", "Reasoning Ability", "Banking Awareness"],
+                      "IBPS Clerk": ["English Language", "Numerical Ability", "Reasoning Ability", "Financial Awareness"],
+                      "SBI PO": ["English Language", "Quantitative Aptitude", "Reasoning & Computer", "Banking Awareness"],
+                      "SBI Clerk": ["General English", "Quantitative Aptitude", "Reasoning & Computer", "Financial Awareness"],
+                      "NDA": ["Mathematics", "English", "General Knowledge & Science"],
+                      "CDS": ["English", "General Knowledge", "Elementary Mathematics"],
+                      "AFCAT": ["General Awareness", "English", "Numerical Ability", "Reasoning & Military Aptitude"],
+                      "Airforce Group X & Y": ["Physics", "Mathematics", "English", "Reasoning & General Awareness (RAGA)"]
                     };
+
+
+                  
                     const activeSubs = examSubsMap[currentExam] || ["Bihar Special", "Current Affairs", "General Knowledge", "General Science", "Logical Reasoning", "Quantitative Aptitude"];
                     return (
                       <div className="px-3.5 pt-4 pb-6 space-y-4">
