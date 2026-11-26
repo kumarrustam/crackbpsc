@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
+import { playPresetSound } from "./CelebrationAudio";
 export interface WeakQuestion {
   id: number;
   pyp: string;
@@ -15,7 +15,6 @@ export interface WeakQuestion {
   kp_hi: string;
   kp_en: string;
 }
-
 export interface WeakChapterModule {
   id: string;
   exam: string;
@@ -27,7 +26,6 @@ export interface WeakChapterModule {
   completedText: string;
   questions: WeakQuestion[];
 }
-
 export const DEFAULT_5_QS: WeakQuestion[] = [
   { id: 1, pyp: "PYP", year: "2021", examTags: "BPSC, JPSC, UPSC", gotRightPct: 24, q_hi: "शैव संतों के लेखन के संग्रह को पाँचवाँ वेद भी समझा जाता है। उपरोक्त संग्रह का क्या नाम है?", q_en: "The collection of writings of Shaiva saints is also considered as the Fifth Veda. What is the name of the above collection?", opts_hi: ["सिल्पद्दीकरन", "मणीमेखलय", "तिरुमुरई", "तोल्कापियम"], opts_en: ["Silappadikaram", "Manimekalai", "Tirumurai", "Tolkappiyam"], ans: 2, kp_hi: "तिरुमुरई (Tirumurai) बारह खंडों में संकलित तमिल शैव भजनों का संग्रह है, जिसे नांबियांदर नांबी ने संकलित किया। इसे 'पाँचवाँ वेद' कहा जाता है।", kp_en: "Tirumurai is a twelve-volume compendium of Tamil Shaiva hymns compiled by Nambiyandar Nambi. It is revered as the 'Fifth Veda'." },
   { id: 2, pyp: "PYP", year: "2024", examTags: "69वीं BPSC, UPPSC", gotRightPct: 48, q_hi: "संगम साहित्य में 'तोलकाप्पियम' किस विषय से संबंधित सबसे प्राचीन उपलब्ध ग्रंथ है?", q_en: "In Sangam literature, 'Tolkappiyam' is the earliest extant work related to which subject?", opts_hi: ["तमिल व्याकरण और काव्यशास्त्र", "खगोल विज्ञान", "आयुर्वेद चिकित्सा", "सैन्य प्रशासन"], opts_en: ["Tamil Grammar and Poetics", "Astronomy", "Ayurvedic Medicine", "Military Administration"], ans: 0, kp_hi: "तोलकाप्पियम की रचना तोलकाप्पियार ने की थी। यह द्वितीय संगम का एकमात्र शेष ग्रंथ है जो तमिल व्याकरण और सामाजिक जीवन का वर्णन करता है।", kp_en: "Tolkappiyar authored Tolkappiyam, the sole surviving work of the Second Sangam dealing with Tamil grammar and poetics." },
@@ -35,7 +33,6 @@ export const DEFAULT_5_QS: WeakQuestion[] = [
   { id: 4, pyp: "PYP", year: "2022", examTags: "67वीं BPSC, Bihar Daroga", gotRightPct: 61, q_hi: "मौर्य साम्राज्य की राजधानी पाटलिपुत्र के नगर प्रशासन का वर्णन किस विदेशी यात्री ने छह समितियों के रूप में किया है?", q_en: "Which foreign traveler described the municipal administration of Pataliputra in the form of six committees?", opts_hi: ["मेगस्थनीज", "फाह्यान", "ह्वेनसांग", "अल-बरूनी"], opts_en: ["Megasthenes", "Faxian", "Xuanzang", "Al-Biruni"], ans: 0, kp_hi: "मेगस्थनीज ने अपनी पुस्तक 'इंडिका' में पाटलिपुत्र के प्रशासन हेतु 5-5 सदस्यों की 6 समितियों (कुल 30 सदस्य) का उल्लेख किया है।", kp_en: "Megasthenes described in 'Indica' that Pataliputra was administered by 6 committees of 5 members each (30 members total)." },
   { id: 5, pyp: "PYP", year: "2025", examTags: "BPSC, UPSC, JPSC", gotRightPct: 21, q_hi: "'अमैचर' शब्द का वर्णन संगम काल के दौरान निम्नलिखित में से किसके रूप में किया गया है?", q_en: "The term 'Amaichchar' during the Sangam period has been described as which of the following?", opts_hi: ["मंत्री", "सेनापति", "गुप्तचर", "राजपुरोहित"], opts_en: ["Minister", "Army Commander", "Spy", "Royal Priest"], ans: 0, kp_hi: "संगम काल के दौरान राजा को सलाह देने वाले मंत्रियों को 'अमैचर' (Amaichchar) और गुप्तचरों को 'ओर्रार' कहा जाता था।", kp_en: "During the Sangam age, the king was assisted by a council of ministers known as 'Amaichchar', while spies were called 'Orrar'." }
 ];
-
 
 export const INITIAL_MODULES: WeakChapterModule[] = [
   { id: "mod_sangam", exam: "72वीं BPSC CCE", subject: "History", title: "Sangam Period & Ancient History", tier: "FREE", targetAcc: 72.71, targetSpeed: 23, completedText: "1.2k+ Completed this", questions: DEFAULT_5_QS },
@@ -87,7 +84,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
     if (answers[qIdx] !== undefined) return;
     const nextAns = { ...answers, [qIdx]: oIdx };
     setAnswers(nextAns); setQTimes({ ...qTimes, [qIdx]: liveSec });
-    if (Object.keys(nextAns).length >= totalQs) setShowCompletePopup(true);
+    if (Object.keys(nextAns).length >= totalQs) { setShowCompletePopup(true); playPresetSound(); }
   };
 
   const completeAndSaveAttempt = () => {
@@ -95,7 +92,6 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
     setCompletedList([rec, ...completedList.filter((item) => item.modId !== rec.modId)]);
     setShowCompletePopup(false); setFilterMode("ALL"); setStep("SUMMARY");
   };
-
 
   if (step === "PLAYER") {
     const picked = answers[qIdx];
@@ -174,7 +170,6 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
             })}
           </div>
 
-      
           {answered && (
             <div className="pt-3 border-t border-slate-200 space-y-2.5">
               <div className="flex items-center justify-between text-xs font-extrabold"><span className="text-slate-900">Solution: {curQ.ans + 1}</span><span className="text-slate-500">{curQ.gotRightPct}% got it right</span></div>
@@ -238,7 +233,6 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
     );
   }
 
-  
   
   if (step === "SUMMARY") {
     const wrongCount = totalQs - correctCount;
