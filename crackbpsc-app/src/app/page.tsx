@@ -1996,7 +1996,20 @@ useEffect(() => {
                                 <span className="text-slate-500 inline-flex items-center gap-1.5">
                                   <span>✎</span>
 
-                                  
+                              <span>Attempt more Qs to generate analysis</span>
+                                </span>
+                                <button type="button" onClick={() => { setWeakChapterId(chItem.id); setWeakQIdx(0); setWeakAnswers({}); setWeakTimes({}); setWeakShowCompleteModal(false); setWeakQStartTime(Date.now()); setWeakView("PLAYER"); }} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
+                                  Start →
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }    
             
               return (
                 <div className="pb-28 bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
