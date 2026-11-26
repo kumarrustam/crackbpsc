@@ -1664,7 +1664,7 @@ useEffect(() => {
               </div>
             )}
 
-            {bottomTab === "HOME" && (<div> 
+            {bottomTab === "HOME" && (<>
 
    <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
@@ -1684,110 +1684,152 @@ useEffect(() => {
           )}
           
               <div className="space-y-3 my-2.5">
-                {/* 1. Clean White Search & Streak Row */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-                  <div className="flex-1 flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/90 focus-within:border-[#0084FF] focus-within:bg-white transition">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-900/95 p-2 rounded-2xl border border-slate-800 shadow-sm">
+                  <div className="flex-1 flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800/90 focus-within:border-sky-500/60 transition">
                     <span className="text-slate-400 text-xs">🔍</span>
-                    <input value={homeSearch} onChange={(e) => setHomeSearch(e.target.value)} placeholder="72वीं BPSC, TRE 4.0, PYQ या टॉपिक खोजें..." className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none" />
-                    {homeSearch && <button type="button" onClick={() => setHomeSearch("")} className="text-slate-400 hover:text-slate-700 text-xs font-black">✕</button>}
+                    <input value={homeSearch} onChange={(e) => setHomeSearch(e.target.value)} placeholder="72वीं BPSC, TRE 4.0, PYQ या टॉपिक खोजें..." className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none" />
+                    {homeSearch && <button type="button" onClick={() => setHomeSearch("")} className="text-slate-400 hover:text-white text-xs font-black">✕</button>}
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-1.5 text-[11px] font-bold">
-                    <span className="px-2.5 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">🔥 {streakDays} Day Streak</span>
-                    <span className="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl">🎯 लक्ष्य: 20 Qs</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-1.5 text-[11px] font-black">
+                    <span className="px-2.5 py-1.5 bg-amber-500/10 text-amber-300 border border-amber-400/25 rounded-xl">🔥 {streakDays} Day Streak</span>
+                    <span className="px-2.5 py-1.5 bg-emerald-500/10 text-emerald-300 border border-emerald-400/25 rounded-xl">🎯 लक्ष्य: 20 Qs</span>
                   </div>
                 </div>
 
-                {/* 2. Clean White Live Test Strip */}
-                <div className="px-3.5 py-2.5 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
+                <div className="px-3.5 py-2 bg-gradient-to-r from-slate-900 via-indigo-950/90 to-slate-900 text-white rounded-2xl border border-indigo-500/30 flex items-center justify-between gap-2 shadow-sm">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-200 rounded text-[10px] font-extrabold tracking-wide shrink-0">{liveTicker.badge}</span>
+                    <span className="px-2 py-0.5 bg-rose-600 text-white rounded text-[10px] font-black tracking-wide shrink-0 animate-pulse">{liveTicker.badge}</span>
                     <div className="truncate">
-                      <span className="font-extrabold text-xs sm:text-sm text-slate-900">{liveTicker.title}</span>
-                      <span className="text-[11px] text-slate-500 ml-2 hidden sm:inline">({liveTicker.meta})</span>
+                      <span className="font-black text-xs sm:text-sm text-white">{liveTicker.title}</span>
+                      <span className="text-[11px] text-slate-400 ml-2 hidden sm:inline">({liveTicker.meta})</span>
                     </div>
                   </div>
-                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3 py-1.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shrink-0 transition active:scale-95">Join Free ➔</button>
+                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs shrink-0 transition active:scale-95">Join Free ➔</button>
                 </div>
 
-                {/* 3. Clean White Resume Test Card */}
                 {pausedTest && (
-                  <div className="p-3 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-[10px] font-bold">
-                        <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded uppercase tracking-wider">⏸ RESUME TEST</span>
-                        <span className="text-slate-600">प्रश्न {pausedTest.currentQ} / {pausedTest.totalQ} पर रुका हुआ • शेष: {pausedTest.timeLeft}</span>
+                  <div className="p-3 bg-gradient-to-r from-amber-500/15 via-slate-900 to-slate-900 text-white rounded-2xl border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-[10px] font-black">
+                        <span className="px-2 py-0.5 bg-amber-400 text-slate-950 rounded uppercase tracking-wider">⏸ RESUME TEST</span>
+                        <span className="text-amber-300">प्रश्न {pausedTest.currentQ} / {pausedTest.totalQ} पर रुका हुआ • शेष: {pausedTest.timeLeft}</span>
                       </div>
-                      <div className="font-extrabold text-xs sm:text-sm text-slate-900 truncate">{pausedTest.title}</div>
-                      <div className="w-full max-w-xs h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
-                        <div style={{ width: Math.round((pausedTest.currentQ / pausedTest.totalQ) * 100) + "%" }} className="h-full bg-[#0084FF] rounded-full" />
+                      <div className="font-black text-xs sm:text-sm text-white truncate">{pausedTest.title}</div>
+                      <div className="w-full max-w-xs h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div style={{ width: Math.round((pausedTest.currentQ / pausedTest.totalQ) * 100) + "%" }} className="h-full bg-amber-400 rounded-full" />
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <button type="button" onClick={() => { setSelSection(pausedTest.section || "Practice Test"); setDrillStep(3); }} className="px-3.5 py-2 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs transition active:scale-95">▶ Resume (Q.{pausedTest.currentQ})</button>
-                      <button type="button" onClick={() => setPausedTest(null)} title="हटाएं" className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 font-bold text-xs flex items-center justify-center">✕</button>
+                      <button type="button" onClick={() => { setSelSection(pausedTest.section || "Practice Test"); setDrillStep(3); }} className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">▶ Resume (Q.{pausedTest.currentQ})</button>
+                      <button type="button" onClick={() => setPausedTest(null)} title="हटाएं" className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-black text-xs flex items-center justify-center">✕</button>
                     </div>
                   </div>
                 )}
 
-                {/* 4. Clean White 6-Box Quick Action Grid */}
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
                   {[
-                    { icon: "📝", label: "Mock Tests", bg: "bg-sky-50 border-sky-100", action: () => openPage("TESTS") },
-                    { icon: "📜", label: "PYQs", bg: "bg-amber-50 border-amber-100", action: () => { setSelSection("PYQs"); openPage("TESTS"); } },
-                    { icon: "📰", label: "Flip CA", bg: "bg-indigo-50 border-indigo-100", action: () => openPage("CA") },
-                    { icon: "🎯", label: "Custom Quiz", bg: "bg-purple-50 border-purple-100", action: () => { setSelSection("Practice Test"); setDrillStep(3); } },
-                    { icon: "❌", label: "Mistakes (" + mistakesList.length + ")", bg: "bg-rose-50 border-rose-100", action: () => openPage("MISTAKES") },
-                    { icon: "🎁", label: "Free Zone", bg: "bg-emerald-50 border-emerald-100", action: () => openPage("FREE") }
+                    { icon: "📝", label: "Mock Tests", action: () => openPage("TESTS") },
+                    { icon: "📜", label: "PYQs", action: () => { setSelSection("PYQs"); openPage("TESTS"); } },
+                    { icon: "📰", label: "Flip CA", action: () => openPage("CA") },
+                    { icon: "🎯", label: "Custom Quiz", action: () => { setSelSection("Practice Test"); setDrillStep(3); } },
+                    { icon: "❌", label: "Mistakes (" + mistakesList.length + ")", action: () => setRevTab("MISTAKES") },
+                    { icon: "🎁", label: "Free Zone", action: () => openPage("FREE") }
                   ].map((item, idx) => (
-                    <button key={idx} type="button" onClick={item.action} className="p-2.5 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200 shadow-2xs flex flex-col items-center justify-center gap-1.5 transition active:scale-95">
-                      <span className={"w-9 h-9 rounded-full border flex items-center justify-center text-sm " + item.bg}>{item.icon}</span>
-                      <span className="text-[11px] font-bold tracking-tight text-slate-800">{item.label}</span>
+                    <button key={idx} type="button" onClick={item.action} className="p-2.5 bg-slate-900 hover:bg-slate-800/90 text-white rounded-xl border border-slate-800/90 flex flex-col items-center justify-center gap-1 transition active:scale-95">
+                      <span className="text-base leading-none">{item.icon}</span>
+                      <span className="text-[11px] font-bold tracking-tight text-slate-200">{item.label}</span>
                     </button>
                   ))}
                 </div>
 
-                {/* 5. Clean White Separate Custom Quiz Strip */}
-                <div className="p-3 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                <div className="p-3 bg-gradient-to-r from-sky-950/80 via-slate-900 to-slate-900 text-white rounded-2xl border border-sky-500/35 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-sm">
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2.5 py-1 bg-sky-50 text-[#0084FF] border border-sky-200 rounded-lg text-[10px] font-extrabold tracking-wider uppercase shrink-0">CUSTOM QUIZ</span>
+                    <span className="px-2.5 py-1 bg-sky-400 text-slate-950 rounded-lg text-[10px] font-black tracking-wider uppercase shrink-0">CUSTOM QUIZ</span>
                     <div>
-                      <div className="font-extrabold text-xs sm:text-sm text-slate-900">अपनी पसंद का मिनी टेस्ट बनाएं</div>
-                      <div className="text-[10px] text-slate-500">विषय और प्रश्नों की संख्या चुनें</div>
+                      <div className="font-black text-xs sm:text-sm text-white">अपनी पसंद का मिनी टेस्ट बनाएं</div>
+                      <div className="text-[10px] text-slate-400">विषय और प्रश्नों की संख्या चुनें</div>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                    <select value={customSub} onChange={(e) => setCustomSub(e.target.value)} className="px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs focus:outline-none focus:border-[#0084FF]">
+                    <select value={customSub} onChange={(e) => setCustomSub(e.target.value)} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-xs focus:outline-none">
                       {["Bihar Special", "History", "Polity", "Geography", "Economy", "General Science", "Current Affairs"].map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
-                    <select value={customCount} onChange={(e) => setCustomCount(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs focus:outline-none focus:border-[#0084FF]">
+                    <select value={customCount} onChange={(e) => setCustomCount(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-amber-300 font-black text-xs focus:outline-none">
                       {[10, 20, 30, 50].map((c) => <option key={c} value={c}>{c} Qs</option>)}
                     </select>
-                    <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs transition active:scale-95">Start Quiz ➔</button>
+                    <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-sky-400 hover:bg-sky-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">Start Quiz ➔</button>
                   </div>
                 </div>
 
-                {/* 6. Clean White Smart Revision Hub (1 Header Strip + 4 Distinct White Boxes) */}
-                <div className="p-3.5 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
-                      <span className="font-extrabold text-sm text-slate-900 tracking-tight">Smart Revision Hub</span>
+                <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                    <div className="font-black text-xs sm:text-sm text-amber-300">🧠 Smart Revision Hub</div>
+                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-black">
+                      <button type="button" onClick={() => setRevTab("MISTAKES")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "MISTAKES" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>❌ My Mistakes ({mistakesList.length})</button>
+                      <button type="button" onClick={() => setRevTab("FLASHCARDS")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "FLASHCARDS" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🔄 Flashcards ({flashcardsList.length})</button>
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-400">Personal Tools</span>
+                  </div>            
+                  {revTab === "MISTAKES" ? (
+                    <div className="space-y-2">
+                      {mistakesList.length === 0 ? (
+                        <div className="text-center py-3 text-xs text-emerald-400 font-bold">🎉 शाबाश! आपकी सभी पुरानी गलतियाँ साफ़ हो चुकी हैं।</div>
+                      ) : (
+                        mistakesList.map((m) => (
+                          <div key={m.id} className="p-2.5 bg-slate-950 rounded-xl border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            <div className="space-y-0.5">
+                              <span className="px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded text-[10px] font-black">{m.sub}</span>
+                              <div className="font-bold text-slate-200">{m.q}</div>
+                              <div className="text-[11px] text-emerald-400 font-semibold">सही उत्तर: {m.ans}</div>
+                            </div>
+                            <button type="button" onClick={() => setMistakesList(mistakesList.filter((x) => x.id !== m.id))} className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-[10px] font-black shrink-0 transition">✓ याद हो गया (Clear)</button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {flashcardsList.map((fc) => {
+                        const isOpen = flippedFlashId === fc.id;
+                        return (
+                          <div key={fc.id} className="p-3 bg-slate-950 rounded-xl border border-indigo-500/25 flex flex-col justify-between gap-2">
+                            <div onClick={() => setFlippedFlashId(isOpen ? "" : fc.id)} className="cursor-pointer space-y-1.5">
+                              <div className="flex items-center justify-between text-[10px] font-black">
+                                <span className="text-indigo-400">{fc.sub}</span>
+                                <span className="text-amber-400">{fc.due}</span>
+                              </div>
+                              <div className="text-xs font-bold text-white leading-snug">{isOpen ? fc.back : fc.front}</div>
+                              <div className="text-[10px] text-sky-400 font-bold">{isOpen ? "↩ प्रश्न देखें" : "👆 उत्तर देखने के लिए टैप करें"}</div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800 text-[10px] font-black">
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "Tomorrow" } : x))} className="py-1 bg-rose-500/15 text-rose-300 rounded hover:bg-rose-600 hover:text-white transition">Hard</button>
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 4 Days" } : x))} className="py-1 bg-amber-500/15 text-amber-300 rounded hover:bg-amber-500 hover:text-slate-950 transition">Good</button>
+                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 12 Days" } : x))} className="py-1 bg-emerald-500/15 text-emerald-300 rounded hover:bg-emerald-600 hover:text-white transition">Easy</button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-amber-400">📢 बिहार भर्ती व परीक्षा अलर्ट (Job & Exam Alerts)</span>
+                    <button type="button" onClick={() => openPage("CA")} className="text-[11px] font-black text-sky-400 hover:underline">सभी देखें ➔</button>
                   </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <button type="button" onClick={() => openPage("MISTAKES")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200/90 hover:border-rose-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
-                      <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500">
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M15 9l-6 6M9 9l6 6" /></svg>
+                  <div className="space-y-1.5">
+                    {jobAlerts.map((al) => (
+                      <div key={al.id} className="px-2.5 py-1.5 bg-slate-950 rounded-xl border border-slate-800/90 flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 rounded text-[9px] font-black shrink-0">{al.tag}</span>
+                          <span className="truncate text-slate-200 font-semibold">{al.title}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 shrink-0">{al.date}</span>
                       </div>
-                      <div>
-                        <div className="font-extrabold text-xs text-slate-900">My Mistakes</div>
-                        <div className="text-[10px] font-semibold text-slate-500">{mistakesList.length} Qs सुधारें</div>
-                      </div>
-                    </button>
-
-                    
+                    ))}
+                  </div>
+                </div>
+              </div>                     
             {savedBms.length > 0 && (
         <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-3 space-y-2 text-xs text-slate-950">
           <div className="flex justify-between items-center">
@@ -1855,121 +1897,256 @@ useEffect(() => {
             </div>
           )}
          
-                {(() => {
-                  const tierList = ["Class 1 to 5 (PRT)", "Class 6 to 8 (Middle)", "Class 9th & 10th (TGT)", "Class 11th & 12th (PGT)"];
-                  const defaultTierSubs: Record<string, string[]> = {
-                    "Class 1 to 5 (PRT)": ["General (सामान्य)", "Urdu (उर्दू)", "Bangla (बंगला)"],
-                    "Class 6 to 8 (Middle)": ["Social Science (SST)", "Science & Math", "Hindi", "English", "Sanskrit", "Urdu"],
-                    "Class 9th & 10th (TGT)": ["Social Science (SST)", "Science", "Mathematics", "Hindi", "English", "Sanskrit", "Urdu", "Arabic", "Persian", "Bangla", "Maithili", "Music", "Fine Arts", "Dance", "Physical Education"],
-                    "Class 11th & 12th (PGT)": ["History", "Political Science", "Geography", "Economics", "Sociology", "Psychology", "Philosophy", "Home Science", "Physics", "Chemistry", "Botany", "Zoology", "Mathematics", "Computer Science", "Accountancy", "Business Studies", "Entrepreneurship", "Hindi", "English", "Urdu", "Sanskrit", "Maithili", "Bangla", "Music"]
-                  };
-                  const isMultiTier = selSubExam.toLowerCase().includes("tre") || selSubExam.toLowerCase().includes("stet");
-                  const activeSubs = [...(defaultTierSubs[selTier] || ["General"]), ...(customTierSubs[selTier] || [])];
-                  const allSevenSecs = Array.from(new Set([...examSections, "Chapter-Wise Test"]));
-                  const baseKey = isMultiTier ? `${selSubExam}_${selTier}_${selTierSub}_${selSection}` : `${selSubExam}_${selSection}`;
-                  const totalSeries = Math.max(1, seriesCounts[baseKey] || seriesCounts[`${selSubExam}_${selSection}`] || 1);
-                  return (
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 text-xs font-extrabold">
-                        <div className="flex flex-wrap items-center gap-1 text-slate-700">
-                          <button onClick={() => setDrillStep(1)} className="text-[#0084FF] hover:underline">All Exams</button>
-                          {drillStep >= 2 && <><span>›</span><button onClick={() => setDrillStep(2)} className="text-[#0084FF] hover:underline">{selCat}</button></>}
-                          {drillStep >= 3 && <><span>›</span><button onClick={() => setDrillStep(3)} className="text-[#0084FF] hover:underline">{selSubExam}</button></>}
-                          {drillStep >= 4 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(4)} className="text-purple-600 hover:underline">{selTier}</button></>}
-                          {drillStep >= 5 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(5)} className="text-purple-600 hover:underline">{selTierSub}</button></>}
-                          {drillStep >= 6 && <><span>›</span><span className="text-amber-700 font-black">{selSection}</span></>}
-                        </div>
-                        {drillStep > 1 && (
-                          <button onClick={() => setDrillStep(drillStep === 5 && !isMultiTier ? 2 : drillStep - 1)} className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-[11px] font-black text-slate-700">← Back</button>
-                        )}
-                      </div>
+          {(() => {
+            const tierList = ["Class 1 to 5 (PRT)", "Class 6 to 8 (Middle)", "Class 9th & 10th (TGT)", "Class 11th & 12th (PGT)"];
+            const defaultTierSubs: Record<string, string[]> = {
+              "Class 1 to 5 (PRT)": ["General (सामान्य)", "Urdu (उर्दू)", "Bangla (बंगला)"],
+              "Class 6 to 8 (Middle)": ["Social Science (SST)", "Science & Math", "Hindi", "English", "Urdu", "Sanskrit"],
+              "Class 9th & 10th (TGT)": ["Social Science (SST)", "Science", "Mathematics", "Hindi", "English", "Urdu", "Sanskrit", "Computer", "Music", "Fine Arts"],
+              "Class 11th & 12th (PGT)": ["History", "Political Science", "Geography", "Economics", "Sociology", "Psychology", "Philosophy", "Home Science", "Physics", "Chemistry", "Biology", "Mathematics", "Computer Science", "Accountancy", "Business Studies", "Hindi", "English", "Urdu", "Sanskrit"]
+            };
+            const isMultiTier = selSubExam.toLowerCase().includes("tre") || selSubExam.toLowerCase().includes("teacher") || (customTierSubs[selSubExam] && customTierSubs[selSubExam].length > 0);
+            const activeSubs = [...(defaultTierSubs[selTier] || ["General"]), ...(customTierSubs[selSubExam + "_" + selTier] || [])];
+            const allSevenSecs = Array.from(new Set([...examSections, "Chapter-Wise Test"]));
+            const baseKey = isMultiTier ? `${selSubExam}_${selTier}_${selTierSub}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""}` : `${selSubExam}_${selSection}${selSection === "Current Affairs" ? "_" + selCaMode : ""}`;
+            const totalSeries = Math.max(1, seriesCounts[baseKey] || seriesCounts[`${selSubExam}_${selSection}`] || 5);
+            return (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border shadow-sm text-xs font-bold">
+                  <div className="flex flex-wrap items-center gap-1 text-slate-700">
+                    <button onClick={() => setDrillStep(1)} className="text-indigo-700 hover:underline">🏠 All Exams</button>
+                    {drillStep >= 2 && <><span>›</span><button onClick={() => setDrillStep(2)} className="text-indigo-700 hover:underline">{selCat}</button></>}
+                    {drillStep >= 3 && <><span>›</span><button onClick={() => setDrillStep(3)} className="text-indigo-700 hover:underline">{selSubExam}</button></>}
+                    {drillStep >= 4 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(4)} className="text-indigo-700 hover:underline">{selTier}</button></>}
+                    {drillStep >= 5 && isMultiTier && <><span>›</span><button onClick={() => setDrillStep(5)} className="text-indigo-700 hover:underline">{selTierSub}</button></>}
+                    {drillStep >= 6 && <><span>›</span><span className="text-amber-700 font-black">{selSection}{selSection === "Current Affairs" ? ` (${selCaMode})` : ""}</span></>}
+                  </div>
+                  {drillStep > 1 && (
+                    <button onClick={() => setDrillStep(drillStep === 5 && !isMultiTier ? 2 : drillStep - 1)} className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-[11px] font-black">⬅ पीछे</button>
+                  )}
+                </div>
 
-                      {drillStep === 1 && (
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                          <div className="font-extrabold text-sm text-slate-900">1. Select Exam Category (परीक्षा श्रेणी चुनें)</div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                            {Object.keys(examTree)
-                              .filter((c) => !hiddenCats.includes(c))
-                              .sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))
-                              .map((cat) => (
-                                <button key={cat} onClick={() => { setSelCat(cat); const first = examTree[cat]?.[0] || ""; setSelSubExam(first); setDrillStep(2); }} className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-[#0084FF] text-left flex items-center justify-between shadow-2xs transition">
-                                  <div>
-                                    <div className="font-black text-xs sm:text-sm text-slate-900">{cat}</div>
-                                    <div className="text-[10px] font-bold text-slate-500">{(examTree[cat] || []).length} Exams</div>
-                                  </div>
-                                  <span className="text-slate-400 font-black">›</span>
+                {drillStep === 1 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">1. Select Exam Category (परीक्षा बोर्ड चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {Object.keys(examTree)
+                        .filter((c) => !hiddenCats.includes(c))
+                        .sort((a, b) => (catOrder.indexOf(a) === -1 ? 999 : catOrder.indexOf(a)) - (catOrder.indexOf(b) === -1 ? 999 : catOrder.indexOf(b)))
+                        .map((cat) => (
+                          <button key={cat} onClick={() => { setSelCat(cat); const first = examTree[cat] ? examTree[cat][0] : ""; if (first) { setSelSubExam(first); setGoal(first); } setDrillStep(2); }} className="p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50/70 hover:bg-indigo-50 flex items-center justify-between text-left transition shadow-xs">
+                            <div>
+                              <div className="font-black text-xs sm:text-sm text-slate-900">🏛️ {cat}</div>
+                              <div className="text-[10px] font-bold text-slate-500">{(examTree[cat] || []).length} Exams</div>
+                            </div>
+                            <span className="text-slate-400 font-black">›</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {drillStep === 2 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">2. Select {selCat} Exam (उप-परीक्षा चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {(examTree[selCat] || []).map((subEx: string) => (
+                        <button key={subEx} onClick={() => { setSelSubExam(subEx); setGoal(subEx); const multi = subEx.toLowerCase().includes("tre") || subEx.toLowerCase().includes("teacher") || (customTierSubs[subEx] && customTierSubs[subEx].length > 0); setDrillStep(multi ? 3 : 5); }} className="p-3 rounded-xl border border-slate-200 hover:border-purple-500 bg-slate-50/70 hover:bg-purple-50 flex items-center justify-between text-left transition shadow-xs">
+                          <div>
+                            <div className="font-black text-xs sm:text-sm text-slate-900">🎯 {subEx}</div>
+                            <div className="text-[10px] font-bold text-purple-600">7 Test Sections ›</div>
+                          </div>
+                          <span className="text-slate-400 font-black">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drillStep === 3 && isMultiTier && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">3. Select Class / Level ({selSubExam} वर्ग चुनें)</div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {tierList.map((tr) => (
+                        <button key={tr} onClick={() => { setSelTier(tr); setDrillStep(4); }} className="p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-100/70 flex items-center justify-between text-left">
+                          <div>
+                            <div className="font-black text-xs sm:text-sm text-indigo-950">🎓 {tr}</div>
+                            <div className="text-[10px] font-bold text-slate-500">सभी विषय उपलब्ध</div>
+                          </div>
+                          <span className="text-indigo-500 font-black">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drillStep === 4 && isMultiTier && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">4. Select Subject ({selTier} विषय चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto pr-1">
+                      {activeSubs.map((sb) => (
+                        <button key={sb} onClick={() => { setSelTierSub(sb); setDrillStep(5); }} className="p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50 flex items-center justify-between text-left text-xs font-extrabold text-slate-800">
+                          <span>📘 {sb}</span>
+                          <span className="text-slate-400">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drillStep === 5 && (
+                  <div className="p-4 bg-white rounded-2xl border shadow-sm space-y-2.5">
+                    <div className="font-extrabold text-sm text-slate-900">5. Select Test Section (टेस्ट प्रकार चुनें)</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {allSevenSecs.map((sec) => (
+                        <button key={sec} onClick={() => { setSelSection(sec); setDrillStep(6); }} className="p-3 rounded-xl border border-slate-200 hover:border-amber-500 bg-amber-50/40 hover:bg-amber-100/60 flex items-center justify-between text-left text-xs font-black text-slate-900">
+                          <span>📂 {sec}</span>
+                          <span className="text-amber-600">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drillStep === 6 && (
+                  <div className="p-3.5 bg-slate-900 rounded-2xl border border-slate-700 shadow-lg space-y-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="text-xs sm:text-sm font-black text-white">🔥 {selSubExam}{isMultiTier ? ` • ${selTierSub}` : ""} — {selSection} <span className="text-amber-300 text-[11px]">(बाएँ ⇄ दाएँ स्वाइप करें)</span></div>
+                      
+                      {selSection === "Current Affairs" && (
+                        <div className="flex gap-1">
+                          {["Daily", "Weekly", "Monthly"].map((cm) => (
+                            <button key={cm} onClick={() => setSelCaMode(cm)} className={"px-2.5 py-1 rounded-lg text-[11px] font-black " + (selCaMode === cm ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300")}>{cm}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2">
+                      {Array.from({ length: totalSeries }, (_, i) => i + 1).map((sNum) => {
+                    const secSimpleKey = selSubExam + "_" + selSection;
+                        const sKey = baseKey + "_S" + sNum;
+                        const hist = attemptHistory[sKey] ? attemptHistory[sKey] : [];
+                        const maxLim = examAttempts[baseKey] ? examAttempts[baseKey] : (examAttempts[secSimpleKey] ? examAttempts[secSimpleKey] : 0);
+                        const used = hist.length;
+                        const last = used > 0 ? hist.at(-1) : null;
+                        const isOver = maxLim > 0 && used >= maxLim;
+                        const matched = questions.filter((q: any) => {
+                          if (q.sec !== selSection) return false;
+                          if (selSection === "Current Affairs" && q.caMode && q.caMode !== selCaMode) return false;
+                          if ((q.seriesNum ? q.seriesNum : 1) !== sNum) return false;
+                          if (q.shareScope === "GLOBAL") return true;
+                          if (q.shareScope === "CAT" && q.cat === selCat) return true;
+                          if (q.shareScope === "MULTI" && Array.isArray(q.targetExams) && q.targetExams.includes(selSubExam)) return true;
+                          if (q.cat !== selCat || q.subEx !== selSubExam) return false;
+                          if (isMultiTier && q.tier && q.tier !== selTier) return false;
+                          if (isMultiTier && q.tierSub && q.tierSub !== selTierSub) return false;
+                          return true;
+                        });
+                        const limVal = examQLimits[sKey] ? examQLimits[sKey] : examQLimits[secSimpleKey];
+                        const qCount = limVal ? Math.min(limVal, matched.length ? matched.length : limVal) : (matched.length ? matched.length : 150);
+                        const cardPosMark = seriesMarks[sKey] ? seriesMarks[sKey] : posMark;
+                        const tMins = examTimers[sKey] ? examTimers[sKey] : (examTimers[secSimpleKey] ? examTimers[secSimpleKey] : Math.max(10, Math.round(qCount * 0.8)));
+                      
+                        const cardTitle = selSection === "PYQs" ? "PYQ Paper #" + sNum : (selSection === "Current Affairs" ? selCaMode + " CA Set #" + sNum : "Test #" + sNum);  
+                        return (
+                          <div key={sNum} className="min-w-[85%] sm:min-w-[46%] snap-center bg-white rounded-2xl p-3.5 border border-slate-200 shadow-md flex flex-col justify-between space-y-2.5">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black">{selCat} • {selSection} #{sNum}</span>                               
+                                {used > 0 && (() => {
+                                  const rawIdx = pillIdxMap[sKey];
+                                  const curIdx = typeof rawIdx === "number" && rawIdx >= 0 && rawIdx < used ? rawIdx : used - 1;
+                                  const curItem = hist[curIdx] ? hist[curIdx] : last;
+                                  return (
+                                    <span className="inline-flex items-center gap-1 p-[1.5px] rounded-full bg-gradient-to-r from-indigo-500 via-teal-400 to-amber-400 shrink-0 shadow-xs">
+                                      <span className="inline-flex items-center gap-1 bg-slate-900/95 text-white px-1.5 py-0.5 rounded-full text-[10px] font-black">
+                                        <button
+                                          type="button"
+                                          onClick={(e) => { e.stopPropagation(); setPillIdxMap({ ...pillIdxMap, [sKey]: curIdx > 0 ? curIdx - 1 : used - 1 }); }}
+                                          className="px-0.5 text-cyan-300 hover:text-amber-300 leading-none"
+                                        >
+                                          ◀
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                            setActiveList(finalQs); setAns(curItem.ans ? curItem.ans : {}); setSubmitted(true); setSolMode(false); setInExam(true);
+                                          }}
+                                          className="hover:underline leading-none tracking-tight"
+                                        >
+                                          #{curIdx + 1}: <span className="text-amber-300">{curItem.score}</span> • {used}/{maxLim > 0 ? maxLim : "∞"}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => { e.stopPropagation(); setPillIdxMap({ ...pillIdxMap, [sKey]: curIdx < used - 1 ? curIdx + 1 : 0 }); }}
+                                          className="px-0.5 text-cyan-300 hover:text-amber-300 leading-none"
+                                        >
+                                          ▶
+                                        </button>
+                                      </span>
+                                    </span>
+                                  );
+                                })()}
+                              </div>
+                              <div className="font-black text-sm text-slate-900 leading-snug">{selSubExam}{isMultiTier ? " (" + selTierSub + ")" : ""} — {cardTitle}</div>
+                              <div className="text-[11px] font-bold text-slate-500">📝 {qCount} Qs • 🏆 {(qCount * cardPosMark).toFixed(0)} Marks • ⏱️ {tMins} Min</div>
+                            </div>
+                            {used === 0 ? (
+                              <button
+                                onClick={() => {
+                                  if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                  setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                  setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                  setActivePosMark(cardPosMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                }}
+                                className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs shadow-sm"
+                              >
+                                ▶ Attempt
+                              </button>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2">
+                                <button
+                                  onClick={() => {
+                                    const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                    setActiveList(finalQs); setAns(last.ans ? last.ans : {}); setSubmitted(true); setSolMode(false); setInExam(true);
+                                  }}
+                                  className="py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 rounded-xl font-black text-xs"
+                                >
+                                  📊 Analysis
                                 </button>
-                              ))}
+                                {isOver ? (
+                                  <button disabled className="py-2 bg-slate-200 text-slate-500 rounded-xl font-black text-xs cursor-not-allowed">🔒 Limit Over ({used}/{maxLim})</button>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      if (matched.length === 0) { alert("⚠️ इस सेक्शन में अभी कोई प्रश्न नहीं है।"); return; }
+                                      setActiveSeriesKey(sKey); const finalQs = limVal ? matched.slice(0, limVal) : matched;
+                                      setActiveList(finalQs); setQIdx(0); setQSec(0); setTotalSec(tMins * 60); setAns({}); setMarkedQs([]); setSubmitted(false);
+                                      setActivePosMark(cardPosMark); setActiveNegEnabled(negEnabled); setActiveNegVal(negVal); setActiveNegLabel(negLabel); setInExam(true);
+                                    }}
+                                    className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs"
+                                  >
+                                    🔄 Re-Attempt
+                                  </button>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      )}
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
-                      {drillStep === 2 && (
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                          <div className="font-extrabold text-sm text-slate-900">2. Select {selCat} Exam</div>
-                          <div className="grid grid-cols-2 gap-2.5">
-                            {(examTree[selCat] || []).map((subEx: string) => (
-                              <button key={subEx} onClick={() => { setSelSubExam(subEx); setGoal(subEx); const multi = subEx.toLowerCase().includes("tre") || subEx.toLowerCase().includes("stet"); setDrillStep(multi ? 3 : 5); }} className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-[#0084FF] text-left flex items-center justify-between shadow-2xs transition">
-                                <div>
-                                  <div className="font-black text-xs sm:text-sm text-slate-900">{subEx}</div>
-                                  <div className="text-[10px] font-bold text-purple-600">7 Test Sections</div>
-                                </div>
-                                <span className="text-slate-400 font-black">›</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+              </>)}
+            </div>                      
+      )}
 
-                      {drillStep === 3 && isMultiTier && (
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                          <div className="font-extrabold text-sm text-slate-900">3. Select Class / Level</div>
-                          <div className="grid grid-cols-2 gap-2.5">
-                            {tierList.map((tr) => (
-                              <button key={tr} onClick={() => { setSelTier(tr); setDrillStep(4); }} className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-indigo-400 text-left flex items-center justify-between shadow-2xs transition">
-                                <div>
-                                  <div className="font-black text-xs sm:text-sm text-indigo-950">{tr}</div>
-                                  <div className="text-[10px] font-bold text-slate-500">सभी विषय उपलब्ध</div>
-                                </div>
-                                <span className="text-indigo-500 font-black">›</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
-                      {drillStep === 4 && isMultiTier && (
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                          <div className="font-extrabold text-sm text-slate-900">4. Select Subject ({selTier})</div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                            {activeSubs.map((sb) => (
-                              <button key={sb} onClick={() => { setSelTierSub(sb); setDrillStep(5); }} className="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-[#0084FF] text-left font-black text-xs text-slate-800 flex items-center justify-between">
-                                <span>{sb}</span>
-                                <span className="text-slate-400">›</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {drillStep === 5 && (
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                          <div className="font-extrabold text-sm text-slate-900">5. Select Test Section</div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {allSevenSecs.map((sec) => (
-                              <button key={sec} onClick={() => { setSelSection(sec); setDrillStep(6); }} className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-amber-400 text-left font-black text-xs text-slate-800 flex items-center justify-between">
-                                <span>{sec}</span>
-                                <span className="text-amber-500">›</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {drillStep === 6 && (
-                        <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-xs sm:text-sm font-black text-slate-900">🔥 {selSubExam} {isMultiTier ? `(${selTier} - ${selTierSub})` : ""} • {selSection}</div>                                      
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
         if (typeof window === "undefined") return false;
         const d = new window.Date();
@@ -3394,8 +3571,5 @@ useEffect(() => {
         </div>
       )}
     </div>
-    </div>   
-    </div>                  
   );
-  }
-                          
+}
