@@ -1822,9 +1822,23 @@ useEffect(() => {
                       "71वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History", "Polity", "Economy", "Geography", "General Science", "Quantitative Aptitude"],
                       "BPSC Assistant": ["General Studies", "Bihar Special", "General Science", "Mathematics", "Mental Ability & Reasoning"],
                       "BPSC CDPO": ["History & National Movement", "Current Affairs", "Polity", "Economy & Geography", "Bihar Special", "General Mental Ability"],
-                      "BPSC TRE 4.0": ["Current Affairs", "Bihar Special", "General Studies", "Hindi / Language", "Logical Reasoning", "General Science"],
-                      "Bihar STET": ["Art of Teaching (शिक्षण कला)", "General Knowledge", "Environmental Science", "Logical Reasoning", "Concerned Subject"],
-                      "CTET": ["Child Development & Pedagogy", "Language I (हिन्दी)", "Language II (English)", "Mathematics", "Environmental / Social Studies"],
+                      
+                      "BPSC TRE 4.0 (PRT 1-5)": ["Language Qualifying (English & हिन्दी/Urdu/Bangla - 30 Marks)", "Elementary Mathematics (प्राथमिक गणित)", "Mental Ability & Reasoning", "General Awareness & Current Affairs", "General Science", "Social Science & Indian National Movement", "Geography & Environmental Studies (EVS)", "Bihar Special"],
+                      "BPSC TRE 4.0 (Middle 6-8)": ["Language Qualifying (30 Marks)", "General Studies (Math, Reasoning, GK, Science, National Movement, Geography)", "Option A: Mathematics & Science", "Option B: Social Science (History, Geo, Polity, Eco)", "Option C: Language Subject (हिन्दी / English / Sanskrit / Urdu)"],
+                      "BPSC TRE 4.0 (TGT 9-10)": ["Language Qualifying (30 Marks)", "General Studies (40 Marks)", "Social Science (History, Geo, Eco, Polity)", "Science (Physics, Chemistry, Biology)", "Mathematics", "Languages (हिन्दी / English / Sanskrit / Urdu / Maithili)"],
+                      "BPSC TRE 4.0 (PGT 11-12)": ["Language Qualifying (30 Marks)", "General Studies (40 Marks)", "Humanities (History, Pol Sci, Geo, Eco, Sociology, Psychology)", "Science & Math (Physics, Chem, Botany, Zoology, Math, CS)", "Commerce & Languages (Accountancy, Business Studies, हिन्दी, English, Urdu)"],
+                      "BPSC TRE 4.0": ["Language Qualifying (हिन्दी & English)", "General Studies & Bihar Special", "Current Affairs & National Movement", "Mathematics & Mental Ability", "General Science & Social Science", "Concerned Subject Paper"],
+                      "CTET Paper 1 (Class 1-5)": ["Child Development & Pedagogy (बाल विकास एवं शिक्षाशास्त्र - 30 Marks)", "Language-I (हिन्दी भाषा एवं शिक्षणशास्त्र - 30 Marks)", "Language-II (English / Sanskrit भाषा एवं शिक्षणशास्त्र - 30 Marks)", "Mathematics (प्राथमिक गणित - 30 Marks)", "Environmental Studies (पर्यावरण अध्ययन / EVS - 30 Marks)"],
+                      "CTET Paper 2 (Class 6-8)": ["Child Development & Pedagogy (बाल विकास एवं शिक्षाशास्त्र - 30 Marks)", "Language-I (हिन्दी भाषा एवं शिक्षणशास्त्र - 30 Marks)", "Language-II (English / Sanskrit भाषा एवं शिक्षणशास्त्र - 30 Marks)", "Mathematics & Science (गणित एवं विज्ञान - 60 Marks)", "Social Studies / Social Science (सामाजिक अध्ययन - 60 Marks)"],
+                      "Bihar STET Paper 1 & 2": ["Unit-I: Concerned Subject Paper (100 Marks - Paper 1 TGT / Paper 2 PGT)", "Unit-II (A): Art of Teaching (शिक्षण कला - 30 Marks)", "Unit-II (B): General Knowledge & Current Affairs (5 Marks)", "Unit-II (C): Environmental Science (5 Marks)", "Unit-II (D): Mathematical Aptitude (5 Marks)", "Unit-II (E): Logical Reasoning (5 Marks)"],
+                      "BTET (Bihar TET)": ["Child Development & Pedagogy (30 Marks)", "Language-I: हिन्दी / उर्दू / बंगला (30 Marks)", "Language-II: English / Sanskrit (30 Marks)", "Mathematics & Environmental Studies (Paper 1 - 60 Marks)", "Math-Science / Social Studies (Paper 2 - 60 Marks)"],
+                      "UPTET Paper 1 & 2": ["Child Development & Pedagogy (30 Marks)", "Language-I: हिन्दी (30 Marks)", "Language-II: English / Urdu / Sanskrit (30 Marks)", "Paper-1: Mathematics & EVS (60 Marks)", "Paper-2: Math-Science OR Social Studies (60 Marks)"],
+                      "JTET (Jharkhand TET)": ["Child Development & Pedagogy", "Language-I: हिन्दी / English", "Language-II: Regional / Tribal Language (खोरठा, नागपुरी, संथाली, मैथिली, भोजपुरी)", "Mathematics & EVS (Paper 1)", "Math-Science / Social Science (Paper 2)"],
+                      "REET (Rajasthan)": ["Child Development & Teaching Methods (30 Marks)", "Language-I: हिन्दी / English / Sanskrit (30 Marks)", "Language-II: English / Sanskrit / हिन्दी (30 Marks)", "Level-1: Math & EVS (60 Marks)", "Level-2: Math-Science OR Social Studies & Rajasthan GK (60 Marks)"],
+                      "HTET (Haryana)": ["Child Development & Pedagogy (30 Marks)", "Languages: हिन्दी & English (30 Marks)", "General Studies: Quant, Reasoning & Haryana GK (30 Marks)", "PRT: Math & EVS (60 Marks) | TGT/PGT: Concerned Subject (60 Marks)"],
+                      "Super TET (Assistant Teacher)": ["Language: हिन्दी, English & Sanskrit (40 Marks)", "Science & Mathematics (30 Marks)", "Environment & Social Study (10 Marks)", "Teaching Methodology & Child Psychology (20 Marks)", "General Knowledge & Current Affairs (30 Marks)", "Logical Knowledge, IT/Computer & Life Skill (20 Marks)"],
+
+                      
                       "Bihar Police SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity", "History & Geography"],
                       "Bihar Police Constable": ["हिन्दी", "English", "Mathematics", "Social Science", "General Science", "General Knowledge"],
                       "Bihar Prohibition SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity"],
@@ -1916,7 +1930,11 @@ useEffect(() => {
                           <div className="space-y-3">
                             {Object.entries({
                               "BPSC": ["72वीं BPSC CCE", "71वीं BPSC CCE", "BPSC Assistant", "BPSC CDPO", "BPSC Auditor", "BPSC Judicial"],
-                              "Bihar Teacher": ["BPSC TRE 4.0 (PRT 1-5)", "BPSC TRE 4.0 (Middle 6-8)", "BPSC TRE 4.0 (TGT 9-10)", "BPSC TRE 4.0 (PGT 11-12)", "Bihar STET Paper 1 & 2", "CTET Paper 1 & 2"],
+                              
+                              "Bihar Teacher": ["BPSC TRE 4.0 (PRT 1-5)", "BPSC TRE 4.0 (Middle 6-8)", "BPSC TRE 4.0 (TGT 9-10)", "BPSC TRE 4.0 (PGT 11-12)"],
+                              "Teaching Eligibility Test (TET)": ["CTET Paper 1 (Class 1-5)", "CTET Paper 2 (Class 6-8)", "Bihar STET Paper 1 & 2", "BTET (Bihar TET)", "UPTET Paper 1 & 2", "JTET (Jharkhand TET)", "REET (Rajasthan)", "HTET (Haryana)", "Super TET (Assistant Teacher)"],
+
+
                               "Bihar Police": ["Bihar Police SI (Daroga)", "Bihar Police Constable", "Bihar Prohibition SI", "Bihar Fireman"],
                               "BSSC & State": ["BSSC CGL-4", "BSSC Inter Level", "Bihar Civil Court Clerk/Peon", "Bihar Vidhan Sabha"],
                               "UPSC": ["UPSC Civil Services (IAS/IPS)", "UPSC EPFO", "UPSC CAPF AC"],
