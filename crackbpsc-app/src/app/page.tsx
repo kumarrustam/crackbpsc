@@ -1860,6 +1860,69 @@ useEffect(() => {
                             Share Your Feedback
                           </button>
                         </div>
+                        
+                        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="w-1 h-4 bg-emerald-500 rounded-full" />
+                              <h4 className="font-extrabold text-sm text-[#111827]">Browse All Categories & Exams</h4>
+                            </div>
+                            <span className="text-[11px] font-semibold text-slate-400">Tap any exam to analyze</span>
+                          </div>
+                          <div className="space-y-3">
+                            {Object.entries({
+                              "BPSC": ["72वीं BPSC CCE", "71वीं BPSC CCE", "BPSC Assistant", "BPSC CDPO", "BPSC Auditor", "BPSC Judicial"],
+                              "Bihar Teacher": ["BPSC TRE 4.0 (PRT 1-5)", "BPSC TRE 4.0 (Middle 6-8)", "BPSC TRE 4.0 (TGT 9-10)", "BPSC TRE 4.0 (PGT 11-12)", "Bihar STET Paper 1 & 2", "CTET Paper 1 & 2"],
+                              "Bihar Police": ["Bihar Police SI (Daroga)", "Bihar Police Constable", "Bihar Prohibition SI", "Bihar Fireman"],
+                              "BSSC & State": ["BSSC CGL-4", "BSSC Inter Level", "Bihar Civil Court Clerk/Peon", "Bihar Vidhan Sabha"],
+                              "UPSC": ["UPSC Civil Services (IAS/IPS)", "UPSC EPFO", "UPSC CAPF AC"],
+                              "SSC": ["SSC CGL", "SSC CHSL", "SSC MTS", "SSC GD Constable", "SSC CPO", "SSC JE (CE/EE/ME)"],
+                              "Railway": ["RRB NTPC", "RRB ALP", "RRB Technician", "RRC Group D", "RRB JE", "RPF SI & Constable"],
+                              "Banking": ["IBPS PO", "IBPS Clerk", "SBI PO", "SBI Clerk", "RBI Assistant"],
+                              "Defence": ["NDA", "CDS", "AFCAT", "Airforce Group X & Y", "Agniveer Army"]
+                            }).map(([catTitle, examsInCat]) => (
+                              <div key={catTitle} className="space-y-1.5">
+                                <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">{catTitle}</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {examsInCat.map((exItem) => (
+                                    <button key={exItem} type="button" onClick={() => { if (!myExams.includes(exItem)) { setMyExams([...myExams, exItem]); } setWeakExam(exItem); }} className={"px-3 py-1.5 rounded-lg text-xs font-bold border transition " + (currentExam === exItem ? "bg-[#0084FF] text-white border-[#0084FF]" : "bg-slate-50 hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300")}>
+                                      {exItem}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {showMyExamsModal && (
+                          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+                            <div className="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden">
+                              <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                                <div className="font-extrabold text-sm text-slate-900">Manage My Exams ({myExams.length})</div>
+                                <button type="button" onClick={() => setShowMyExamsModal(false)} className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">✕</button>
+                              </div>
+                              <div className="p-4 overflow-y-auto space-y-2">
+                                {["72वीं BPSC CCE", "71वीं BPSC CCE", "BPSC TRE 4.0", "Bihar STET Paper 1 & 2", "BSSC CGL-4", "BSSC Inter Level", "Bihar Police SI", "Bihar Police Constable", "UPSC Civil Services (IAS/IPS)", "SSC CGL", "SSC CHSL", "SSC GD Constable", "RRB NTPC", "RRB ALP", "RRC Group D", "IBPS PO", "SBI PO", "NDA", "CDS", "AFCAT"].map((exOpt) => {
+                                  const isAdded = myExams.includes(exOpt);
+                                  return (
+                                    <div key={exOpt} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                                      <span className="font-bold text-xs text-slate-800">{exOpt}</span>
+                                      <button type="button" onClick={() => { if (isAdded && myExams.length > 1) { setMyExams(myExams.filter((x) => x !== exOpt)); } else if (!isAdded) { setMyExams([...myExams, exOpt]); setWeakExam(exOpt); } }} className={"px-3 py-1 rounded-lg text-xs font-bold transition " + (isAdded ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-[#0084FF] text-white")}>
+                                        {isAdded ? "✓ Added" : "+ Add"}
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
+                                <button type="button" onClick={() => setShowMyExamsModal(false)} className="w-full py-2 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs">Done</button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        
                       </div>
                     );
                   })()}
@@ -1876,16 +1939,14 @@ useEffect(() => {
               {showLive && <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded-full">🟢 {liveCount}</span>}
               {user ? <button onClick={() => setUser("")} className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-lg">👤 {user}</button> : <button onClick={() => setLoginOpen(true)} className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg">Login</button>}
             </div>
-          </div>
-
+          </div>            
           {!adHideToday && adType === "BANNER" && (
             <div className={"bg-blue-800 text-white rounded-xl flex justify-between items-center transition-all " + (adSize === "SMALL" ? "p-2 text-[11px]" : adSize === "LARGE" ? "p-7 text-base" : adSize === "FULL" ? "p-12 text-lg min-h-[260px]" : "p-3.5 text-xs")}>
               <div><span className="bg-amber-400 text-black font-bold px-2 py-0.5 rounded">BANNER • {activeDaysText}</span><div className="font-bold text-sm mt-1">{adTitle}</div><div>{adDesc}</div></div>
               <button onClick={() => setAdHideToday(true)} className="underline">Don&apos;t show today</button>
             </div>
           )}
-          
-              <div className="space-y-3 my-2.5">
+               <div className="space-y-3 my-2.5">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-900/95 p-2 rounded-2xl border border-slate-800 shadow-sm">
                   <div className="flex-1 flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800/90 focus-within:border-sky-500/60 transition">
                     <span className="text-slate-400 text-xs">🔍</span>
