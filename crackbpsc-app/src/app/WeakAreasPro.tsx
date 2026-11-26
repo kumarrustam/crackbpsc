@@ -52,7 +52,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
   const [completedList, setCompletedList] = useState<any[]>([]);
 
   const subjectModules = INITIAL_MODULES.filter((m) => m.exam === examName && m.subject === subjectName);
-  const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules || INITIAL_MODULES;
+  const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules[0] || INITIAL_MODULES[0];
   const questions = activeMod.questions;
   const totalQs = questions.length;
   const attemptedCount = Object.keys(answers).length;
@@ -160,7 +160,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
   }
   if (step === "SUMMARY") {
     const wrongCount = totalQs - correctCount;
-    const nextMod = subjectModules.find((m) => m.id !== activeMod.id) || INITIAL_MODULES;
+    const nextMod = subjectModules.find((m) => m.id !== activeMod.id) || INITIAL_MODULES[0];
     const filtered = questions.map((q, idx) => ({ ...q, idx, pick: answers[idx], sec: qTimes[idx] || 1 })).filter((item) => {
       if (filterMode === "CORRECT") return item.pick === item.ans;
       if (filterMode === "INCORRECT") return item.pick !== item.ans;
