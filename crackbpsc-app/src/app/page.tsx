@@ -1771,11 +1771,22 @@ useEffect(() => {
             )}
              
             {bottomTab === "WEAK" && (() => {
-              const examPills = Array.isArray(myExams) && myExams.length > 0 ? myExams : ["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"];
-              const currentExam = examPills.includes(weakExam) ? weakExam : examPills[0];
+              const allSwipeExams = Array.from(new Set([
+                ...myExams,
+                "72वीं BPSC CCE", "71वीं BPSC CCE", "BPSC Assistant", "BPSC CDPO",
+                "BPSC TRE 4.0", "Bihar STET", "CTET",
+                "Bihar Police SI", "Bihar Police Constable", "Bihar Prohibition SI",
+                "BSSC CGL-4", "BSSC Inter Level", "Bihar Civil Court",
+                "UPSC Civil Services", "UPSC EPFO",
+                "SSC CGL", "SSC CHSL", "SSC MTS", "SSC GD Constable", "SSC JE",
+                "RRB NTPC", "RRB ALP", "RRC Group D", "RRB JE",
+                "IBPS PO", "IBPS Clerk", "SBI PO", "SBI Clerk",
+                "NDA", "CDS", "AFCAT", "Airforce Group X & Y"
+              ]));
+              const currentExam = allSwipeExams.includes(weakExam) ? weakExam : allSwipeExams[0];
+              const examPills = allSwipeExams;
               return (
-                <div className="min-h-[86vh] pb-24 overscroll-contain bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl overflow-hidden shadow-md border border-slate-200">
-                  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
+                <div className="pb-28 bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
                     <div className="flex items-center justify-between">
                       <button type="button" onClick={goBackPage} className="inline-flex items-center gap-1.5 text-[#38BDF8] hover:text-sky-300 font-bold text-sm">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
