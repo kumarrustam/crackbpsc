@@ -252,9 +252,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [activeWeakModalSub, setActiveWeakModalSub] = useState<string | null>(() =>
     typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakModalSub") || null) : null
   );
-  const [weakView, setWeakView] = useState<"SUBJECTS" | "CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED">(() =>
-    typeof window !== "undefined" ? ((sessionStorage.getItem("cb_weakView") as any) || "SUBJECTS") : "SUBJECTS"
-  );
+  
+const [weakView, setWeakView] = useState<string>(() =>
+  typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakView") || "SUBJECTS") : "SUBJECTS"
+);
+
+
   const [weakSubject, setWeakSubject] = useState<string>(() =>
     typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakSubject") || "History") : "History"
   );
