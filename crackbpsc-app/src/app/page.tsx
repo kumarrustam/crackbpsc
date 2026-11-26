@@ -1932,59 +1932,40 @@ useEffect(() => {
                     </div>
 
                     <div className="px-3.5 pt-4 pb-6 space-y-4">
-                      
-                      {(() => {
-                        const hasOngoing = attemptedQsCount > 0 && !isAllAttempted;
-                        let ongoingRight = 0;
-                        Object.entries(weakAnswers).forEach(([qIdxStr, picked]) => {
-                          const qObj = currentModule.questions[Number(qIdxStr)];
-                          if (qObj && qObj.ans === picked) ongoingRight += 1;
-                        });
-                        const ongoingAcc = attemptedQsCount > 0 ? Math.round((ongoingRight / attemptedQsCount) * 100) : 0;
-
-                        return (
-                          <div className="space-y-2.5">
-                            <div className="flex items-center gap-2">
-                              <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
-                              <h3 className="font-extrabold text-[15px] text-[#111827]">Ongoing Test ({hasOngoing ? 1 : 0})</h3>
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                          <h3 className="font-extrabold text-[15px] text-[#111827]">Ongoing Revision ({attemptedQsCount > 0 && !isAllAttempted ? 1 : 0})</h3>
+                        </div>
+                        <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="font-extrabold text-[15px] text-[#111827]">{currentModule.title}</div>
+                            <div className="text-right">
+                              <div className="text-[11px] font-bold text-slate-400">▃▅▇</div>
+                              <div className="text-[10px] text-slate-400">{attemptedQsCount > 0 ? `${attemptedQsCount}/${totalQsCount} Qs` : "No Data"}</div>
                             </div>
-                            {hasOngoing ? (
-                              <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <div className="font-extrabold text-[15px] text-[#111827]">{currentModule.title}</div>
-                                  <div className="text-right">
-                                    <div className="text-[11px] font-bold text-[#0084FF]">▃▅▇</div>
-                                    <div className="text-[10px] font-bold text-slate-500">{attemptedQsCount}/{totalQsCount} Qs</div>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100 text-xs">
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold">◎</span>
-                                    <div>
-                                      <div className="text-[11px] text-slate-500">Accuracy</div>
-                                      <div className="font-extrabold text-slate-900">{ongoingAcc}%</div>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-7 h-7 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold">📄</span>
-                                    <div>
-                                      <div className="text-[11px] text-slate-500">Attempts</div>
-                                      <div className="font-extrabold text-slate-900">{attemptedQsCount}Q</div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <button type="button" onClick={() => { setWeakChapterId(currentModule.id); setWeakQIdx(Math.min(totalQsCount - 1, attemptedQsCount)); setWeakShowCompleteModal(false); setWeakQStartTime(Date.now()); setWeakView("PLAYER"); }} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
-                                  Continue Practice
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="p-3 bg-white/80 rounded-xl border border-dashed border-slate-200 text-xs text-slate-500 font-medium">
-                                कोई अधूरा टेस्ट नहीं है। किसी भी चैप्टर को बीच में छोड़ने पर वह यहाँ दिखेगा।
-                              </div>
-                            )}
                           </div>
-                        );
-                      })()}                   
+                          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100 text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold">◎</span>
+                              <div>
+                                <div className="text-[11px] text-slate-500">Accuracy</div>
+                                <div className="font-extrabold text-slate-900">0%</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="w-7 h-7 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold">📄</span>
+                              <div>
+                                <div className="text-[11px] text-slate-500">Attempts</div>
+                                <div className="font-extrabold text-slate-900">{attemptedQsCount}Q</div>
+                              </div>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => { setWeakChapterId(currentModule.id); setWeakQIdx(0); setWeakShowCompleteModal(false); setWeakQStartTime(Date.now()); setWeakView("PLAYER"); }} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
+                            Continue Practice
+                          </button>
+                        </div>
+                      </div>
 
                       <button type="button" onClick={() => setWeakView("ATTEMPTED_LIST")} className="w-full p-3.5 bg-white hover:bg-sky-50/50 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between text-left transition">
                         <span className="font-extrabold text-sm text-[#111827] inline-flex items-center gap-1.5">
@@ -2034,139 +2015,6 @@ useEffect(() => {
                 );
               }    
             
-              if (weakView === "PLAYER") {
-                const chosenOpt = weakAnswers[weakQIdx];
-                const isAnswered = chosenOpt !== undefined;
-                const optsList = weakLang === "HI" ? currentQ.opts_hi : currentQ.opts_en;
-                const qText = weakLang === "HI" ? currentQ.q_hi : currentQ.q_en;
-                const kpText = weakLang === "HI" ? currentQ.kp_hi : currentQ.kp_en;
-
-                return (
-                  <div className="pb-28 bg-white text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">
-                    <div className="sticky top-0 z-20 px-3.5 py-3 bg-white border-b border-slate-200 flex items-center justify-between gap-2">
-                      <button type="button" onClick={() => setWeakView("CHAPTERS")} className="inline-flex items-center gap-1.5 text-slate-800 font-extrabold text-sm">
-                        <span>←</span>
-                        <span className="truncate max-w-[170px] sm:max-w-xs">{currentModule.title}</span>
-                      </button>
-                      <div className="flex items-center gap-2">
-                        {weakStudioConfig.enableLangToggle && (
-                          <button type="button" onClick={() => setWeakLang(weakLang === "HI" ? "EN" : "HI")} className="px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-50 text-xs font-black text-slate-800">
-                            {weakLang === "HI" ? "अ | E" : "E | अ"}
-                          </button>
-                        )}
-                        <span className="px-2 py-1 rounded-lg bg-sky-50 text-[#0084FF] font-extrabold text-xs">
-                          {attemptedQsCount}/{totalQsCount}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200/80 space-y-2">
-                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#0084FF] transition-all" style={{ width: `${Math.round((attemptedQsCount / totalQsCount) * 100)}%` }} />
-                      </div>
-                      <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
-                        {currentModule.questions.map((_: any, i: number) => {
-                          const uAns = weakAnswers[i];
-                          const isDone = uAns !== undefined;
-                          const isOk = isDone && uAns === currentModule.questions[i].ans;
-                          return (
-                            <button key={i} type="button" onClick={() => { setWeakQIdx(i); setWeakQStartTime(Date.now()); }} className={"w-7 h-7 rounded-full text-xs font-extrabold shrink-0 border transition " + (weakQIdx === i ? "ring-2 ring-[#0084FF] " : "") + (!isDone ? "bg-white text-slate-700 border-slate-300" : isOk ? "bg-emerald-500 text-white border-emerald-500" : "bg-rose-500 text-white border-rose-500")}>
-                              {i + 1}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="p-4 space-y-4">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-extrabold text-slate-500">Q. {weakQIdx + 1} of {totalQsCount}</span>
-                        <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-bold text-[11px]">{currentQ.pyp}</span>
-                      </div>
-
-                      <div className="font-extrabold text-[15px] sm:text-base text-slate-900 leading-relaxed">{qText}</div>
-
-                      <div className="space-y-2.5">
-                        {optsList.map((optStr: string, oIdx: number) => {
-                          const isRight = oIdx === currentQ.ans;
-                          const isPicked = chosenOpt === oIdx;
-                          let cardCls = "bg-white border-slate-200 hover:border-sky-300 text-slate-800";
-                          if (isAnswered) {
-                            if (isRight) cardCls = "bg-emerald-50 border-emerald-500 text-emerald-900";
-                            else if (isPicked) cardCls = "bg-rose-50 border-rose-500 text-rose-900";
-                            else cardCls = "bg-slate-50/60 border-slate-200 text-slate-500";
-                          }
-                          return (
-                            <button key={oIdx} type="button" onClick={() => handlePickOption(oIdx)} className={"w-full p-3.5 rounded-xl border-2 text-left flex items-center justify-between gap-3 transition " + cardCls}>
-                              <div className="flex items-center gap-3">
-                                <span className={"w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 border " + (isAnswered && isRight ? "bg-emerald-500 text-white border-emerald-500" : isAnswered && isPicked ? "bg-rose-500 text-white border-rose-500" : "bg-slate-100 text-slate-700 border-slate-300")}>
-                                  {oIdx + 1}
-                                </span>
-                                <span className="font-bold text-sm">{optStr}</span>
-                              </div>
-                              {isAnswered && isRight && <span className="text-emerald-600 font-black text-base">✓</span>}
-                              {isAnswered && isPicked && !isRight && <span className="text-rose-600 font-black text-base">✕</span>}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {isAnswered && (
-                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-                          <div className="flex items-center justify-between text-xs font-extrabold">
-                            <span className="text-emerald-700">Solution: Option {currentQ.ans + 1}</span>
-                            <span className="text-slate-500">{currentQ.gotRightPct}% got it right</span>
-                          </div>
-                          {weakStudioConfig.enableKeyPoints && (
-                            <div className="pt-2 border-t border-slate-200/80 space-y-1">
-                              <div className="text-xs font-black text-[#0084FF]">🔑 Key Points</div>
-                              <p className="text-xs text-slate-700 leading-relaxed font-medium">{kpText}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-2 max-w-4xl mx-auto">
-                      <button type="button" disabled={weakQIdx === 0} onClick={() => { setWeakQIdx(Math.max(0, weakQIdx - 1)); setWeakQStartTime(Date.now()); }} className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-extrabold text-slate-700 disabled:opacity-40">
-                        ← Previous
-                      </button>
-                      {isAllAttempted ? (
-                        <button type="button" onClick={handleFinishAndShowSummary} className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm">
-                          Summary →
-                        </button>
-                      ) : (
-                        <span className="text-[11px] font-bold text-slate-400">सभी {totalQsCount} हल करें</span>
-                      )}
-                      <button type="button" disabled={weakQIdx >= totalQsCount - 1} onClick={() => { setWeakQIdx(Math.min(totalQsCount - 1, weakQIdx + 1)); setWeakQStartTime(Date.now()); }} className="px-4 py-2 rounded-xl bg-[#0084FF] text-white text-xs font-extrabold disabled:opacity-40">
-                        Next →
-                      </button>
-                    </div>
-
-                    {weakShowCompleteModal && isAllAttempted && (
-                      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-sm p-5 text-center space-y-4">
-                          <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black">✓</div>
-                          <div className="space-y-1">
-                            <h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3>
-                            <p className="text-xs text-slate-500">सभी {totalQsCount} प्रश्न सफलतापूर्वक हल हो गए हैं।</p>
-                          </div>
-                          <button type="button" onClick={handleFinishAndShowSummary} className="w-full py-3 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-extrabold text-xs shadow-sm">
-                            Generate Practice Summary
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-
-              if (weakView === "SUMMARY" || weakView === "QS_REVIEW") {
-                const latestRec = weakAttemptHistory[0] || { totalQs: totalQsCount, correct: 0, accuracy: 0, speed: 2, answers: weakAnswers };
-                const wrongCount = latestRec.totalQs - latestRec.correct;
-                const filteredQs = currentModule.questions.map((qItem: any, idx: number) => ({ ...qItem, idx, userPick: latestRec.answers[idx] })).filter((item: any) => {
-                  if (weakFilter === "CORRECT") return item.userPick === item.ans;
-                  if (weakFilter === "INCORRECT") return item.userPick !== item.ans;                  
               return (
                 <div className="pb-28 bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
                     <div className="flex items-center justify-between">
@@ -2991,10 +2839,10 @@ useEffect(() => {
               </div>
             );
           })()})
-              
-            
-          
-        
+              </>
+            )}
+          </div>
+        )}
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
         if (typeof window === "undefined") return false;
         const d = new window.Date();
@@ -4418,7 +4266,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-       </div>  
     </div>
   );
 }
