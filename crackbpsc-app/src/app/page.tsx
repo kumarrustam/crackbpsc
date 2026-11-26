@@ -1760,58 +1760,60 @@ useEffect(() => {
                     <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); }} className="px-3.5 py-1.5 bg-sky-400 hover:bg-sky-300 text-slate-950 rounded-xl font-black text-xs transition active:scale-95">Start Quiz ➔</button>
                   </div>
                 </div>
+ 
+                <div className="p-3.5 bg-white text-[#111827] rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                      <span className="font-extrabold text-sm text-[#111827] tracking-tight">Smart Revision Hub</span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-400">Personal Tools</span>
+                  </div>
 
-                <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                    <div className="font-black text-xs sm:text-sm text-amber-300">🧠 Smart Revision Hub</div>
-                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-black">
-                      <button type="button" onClick={() => setRevTab("MISTAKES")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "MISTAKES" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white")}>❌ My Mistakes ({mistakesList.length})</button>
-                      <button type="button" onClick={() => setRevTab("FLASHCARDS")} className={"px-2.5 py-1 rounded-lg transition " + (revTab === "FLASHCARDS" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white")}>🔄 Flashcards ({flashcardsList.length})</button>
-                    </div>
-                  </div>            
-                  {revTab === "MISTAKES" ? (
-                    <div className="space-y-2">
-                      {mistakesList.length === 0 ? (
-                        <div className="text-center py-3 text-xs text-emerald-400 font-bold">🎉 शाबाश! आपकी सभी पुरानी गलतियाँ साफ़ हो चुकी हैं।</div>
-                      ) : (
-                        mistakesList.map((m) => (
-                          <div key={m.id} className="p-2.5 bg-slate-950 rounded-xl border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                            <div className="space-y-0.5">
-                              <span className="px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded text-[10px] font-black">{m.sub}</span>
-                              <div className="font-bold text-slate-200">{m.q}</div>
-                              <div className="text-[11px] text-emerald-400 font-semibold">सही उत्तर: {m.ans}</div>
-                            </div>
-                            <button type="button" onClick={() => setMistakesList(mistakesList.filter((x) => x.id !== m.id))} className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-[10px] font-black shrink-0 transition">✓ याद हो गया (Clear)</button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {flashcardsList.map((fc) => {
-                        const isOpen = flippedFlashId === fc.id;
-                        return (
-                          <div key={fc.id} className="p-3 bg-slate-950 rounded-xl border border-indigo-500/25 flex flex-col justify-between gap-2">
-                            <div onClick={() => setFlippedFlashId(isOpen ? "" : fc.id)} className="cursor-pointer space-y-1.5">
-                              <div className="flex items-center justify-between text-[10px] font-black">
-                                <span className="text-indigo-400">{fc.sub}</span>
-                                <span className="text-amber-400">{fc.due}</span>
-                              </div>
-                              <div className="text-xs font-bold text-white leading-snug">{isOpen ? fc.back : fc.front}</div>
-                              <div className="text-[10px] text-sky-400 font-bold">{isOpen ? "↩ प्रश्न देखें" : "👆 उत्तर देखने के लिए टैप करें"}</div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800 text-[10px] font-black">
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "Tomorrow" } : x))} className="py-1 bg-rose-500/15 text-rose-300 rounded hover:bg-rose-600 hover:text-white transition">Hard</button>
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 4 Days" } : x))} className="py-1 bg-amber-500/15 text-amber-300 rounded hover:bg-amber-500 hover:text-slate-950 transition">Good</button>
-                              <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 12 Days" } : x))} className="py-1 bg-emerald-500/15 text-emerald-300 rounded hover:bg-emerald-600 hover:text-white transition">Easy</button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <button type="button" onClick={() => openPage("MISTAKES")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200 hover:border-rose-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
+                      <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M15 9l-6 6M9 9l6 6" /></svg>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">My Mistakes</div>
+                        <div className="text-[10px] font-semibold text-slate-500">{mistakesList.length} Qs सुधारें</div>
+                      </div>
+                    </button>
+
+                    <button type="button" onClick={() => openPage("FLASHCARDS")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200 hover:border-sky-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
+                      <div className="w-10 h-10 rounded-full bg-sky-50 border border-sky-200/70 flex items-center justify-center text-[#0084FF]">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="14" height="14" rx="2" /><path d="M7 3h12a2 2 0 0 1 2 2v12" /></svg>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">Flashcards</div>
+                        <div className="text-[10px] font-semibold text-slate-500">{flashcardsList.length} Due Cards</div>
+                      </div>
+                    </button>
+
+                    <button type="button" onClick={() => openPage("ATTEMPTED")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200 hover:border-emerald-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
+                      <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200/70 flex items-center justify-center text-emerald-600">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 14l2 2 4-4" /></svg>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">Attempted</div>
+                        <div className="text-[10px] font-semibold text-slate-500">हल किए गए टेस्ट</div>
+                      </div>
+                    </button>
+
+                    <button type="button" onClick={() => openPage("WEAK")} className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-200 hover:border-purple-300 text-center transition active:scale-95 flex flex-col items-center gap-1.5 shadow-2xs">
+                      <div className="w-10 h-10 rounded-full bg-purple-50 border border-purple-200/70 flex items-center justify-center text-purple-600">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18" /><path d="M6 16v-4M10 16V9M14 16v-6M18 16V6" /><path d="M5 10l5-4 4 2 5-5" /></svg>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">Weak Areas</div>
+                        <div className="text-[10px] font-semibold text-slate-500">AI विश्लेषण</div>
+                      </div>
+                    </button>
+                  </div>
                 </div>
 
+                
                 <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-xs text-amber-400">📢 बिहार भर्ती व परीक्षा अलर्ट (Job & Exam Alerts)</span>
