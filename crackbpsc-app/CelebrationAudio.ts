@@ -24,7 +24,9 @@ export const CELEBRATION_SOUNDS: SoundPreset[] = [
 export function playPresetSound(presetId?: string, forcePreview?: boolean) {
   try {
     if (!forcePreview && typeof window !== "undefined" && localStorage.getItem("cb_sound_enabled") === "false") return;
-    const chosenId = presetId  (typeof window !== "undefined" ? localStorage.getItem("cb_active_sound") : null)  "snd_10";
+    
+    const saved = typeof window !== "undefined" ? localStorage.getItem("cb_active_sound") : null;
+    const chosenId = presetId || saved || "snd_10";
     const preset = CELEBRATION_SOUNDS.find((s) => s.id === chosenId) || CELEBRATION_SOUNDS;
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
