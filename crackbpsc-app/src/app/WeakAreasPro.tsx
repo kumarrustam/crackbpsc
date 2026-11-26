@@ -247,51 +247,55 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
         )}
 
         
+        
         {showCompletePopup && isAllDone && (
-          <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-hidden">
+          <div className="fixed inset-0 z-50 bg-black/55 flex items-center justify-center p-4 overflow-hidden">
             <style>{`
-              @keyframes burstOut {
-                0% { transform: translate(0, 0) scale(0.2) rotate(0deg); opacity: 1; }
-                75% { opacity: 1; }
-                100% { transform: translate(var(--tx), var(--ty)) scale(1.9) rotate(540deg); opacity: 0; }
+              @keyframes tgConfetti {
+                0% { transform: translate(0, 0) rotate(0deg) scale(0.3); opacity: 1; }
+                30% { transform: translate(var(--peak-x), var(--peak-y)) rotate(280deg) scale(1.05); opacity: 1; }
+                100% { transform: translate(var(--end-x), 62vh) rotate(840deg) scale(0.85); opacity: 0; }
               }
             `}</style>
-            <div className="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-              {Array.from({ length: 48 }).map((_, idx) => {
-                const angle = (idx / 48) * Math.PI * 2;
-                const dist = 260 + (idx % 4) * 140;
-                const tx = `${Math.round(Math.cos(angle) * dist)}px`;
-                const ty = `${Math.round(Math.sin(angle) * dist)}px`;
-                const items = ["🎆", "🌸", "✨", "🎉", "⭐", "🎊", "🌼", "💥", "🌟", "🌺", "🎇", "💫"];
-                return (
-                  <span
-                    key={idx}
-                    className="absolute text-2xl sm:text-4xl select-none"
-                    style={{
-                      ["--tx" as any]: tx,
-                      ["--ty" as any]: ty,
-                      animation: `burstOut ${1.1 + (idx % 5) * 0.22}s cubic-bezier(0.12, 0.85, 0.25, 1) infinite`,
-                      animationDelay: `${(idx % 6) * 0.14}s`
-                    }}
-                  >
-                    {items[idx % items.length]}
-                  </span>
-                );
-              })}
-            </div>
-            <div className="relative z-10 bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-2 border-amber-400">
-              <div className="text-3xl animate-bounce">🎆🌸✨🎉</div>
-              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black shadow-inner">✓</div>
-              <div className="space-y-1">
-                <h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3>
-                <p className="text-xs font-bold text-emerald-600">शाबाश! आपने सभी {totalQs} प्रश्न सफलतापूर्वक हल कर लिए हैं!</p>
-              </div>
-              <button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-extrabold text-xs shadow-md">
+            <div className="relative z-10 bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black">✓</div>
+              <h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3>
+              <button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] text-white rounded-xl font-extrabold text-xs">
                 Generate Practice Summary
               </button>
             </div>
+            <div className="fixed inset-0 z-30 pointer-events-none overflow-hidden">
+              {Array.from({ length: 80 }).map((_, i) => {
+                const dir = i % 2 === 0 ? 1 : -1;
+                const spreadX = dir * (15 + ((i * 41) % 210));
+                const peakY = -(110 + ((i * 47) % 170));
+                const endX = spreadX + dir * 45;
+                const colors = ["#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#00C7BE", "#007AFF", "#5856D6", "#AF52DE", "#FF2D55"];
+                return (
+                  <span
+                    key={i}
+                    style={{
+                      position: "fixed",
+                      left: "50%",
+                      top: "42%",
+                      width: i % 3 === 0 ? "9px" : "6px",
+                      height: i % 2 === 0 ? "14px" : "8px",
+                      borderRadius: i % 4 === 0 ? "50%" : "2px",
+                      backgroundColor: colors[i % colors.length],
+                      ["--peak-x" as any]: `${spreadX}px`,
+                      ["--peak-y" as any]: `${peakY}px`,
+                      ["--end-x" as any]: `${endX}px`,
+                      animation: `tgConfetti ${1.7 + (i % 6) * 0.18}s cubic-bezier(0.22, 0.9, 0.36, 1) forwards`,
+                      animationDelay: `${(i % 8) * 0.025}s`
+                    }}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
+
+        
 
 
       </div>
