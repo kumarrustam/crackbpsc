@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react"; 
+import WeakAreasPlayerModal from "../components/WeakAreasPro";
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
@@ -241,7 +242,7 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [weakExam, setWeakExam] = useState<string>("72वीं BPSC CCE");
   const [myExams, setMyExams] = useState<string[]>(["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"]);
   const [showMyExamsModal, setShowMyExamsModal] = useState<boolean>(false);
-  
+  const [activeWeakModalSub, setActiveWeakModalSub] = useState<string | null>(null);
   const [weakView, setWeakView] = useState<"SUBJECTS" | "CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED_LIST" | "QS_REVIEW">("SUBJECTS");
   const [weakSubject, setWeakSubject] = useState<string>("History");
   const [weakChapterId, setWeakChapterId] = useState<string>("ch_sangam");
@@ -2198,7 +2199,7 @@ useEffect(() => {
                                   <span>✎</span>
                                   <span>Attempt more Qs to generate analysis</span>
                                 </span>
-                                <button type="button" onClick={() => { setWeakSubject(subName); setWeakView("CHAPTERS"); }} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
+                                <button type="button" onClick={() => setActiveWeakModalSub(subName)} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
                                   Start →
                                 </button>
                               </div>
@@ -2285,7 +2286,9 @@ useEffect(() => {
                           </div>
                         )}
 
-                        
+                {activeWeakModalSub && (
+                    <WeakAreasPlayerModal examName={currentExam} subjectName={activeWeakModalSub} onClose={() => setActiveWeakModalSub(null)} />
+                  )}        
                   {showWeakFeedbackModal && (
                     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center">
                       <div className="bg-white rounded-t-3xl sm:rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md max-h-[88vh] flex flex-col overflow-hidden text-slate-900">
