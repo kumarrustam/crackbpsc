@@ -1,6 +1,28 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { playPresetSound } from "./CelebrationAudio";
+
+const playPresetSound = () => {
+  try {
+    if (typeof window !== "undefined" && localStorage.getItem("cb_sound_enabled") === "false") return;
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
+      gain.gain.setValueAtTime(0.11, ctx.currentTime + idx * 0.07);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.42);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + idx * 0.07);
+      osc.stop(ctx.currentTime + idx * 0.07 + 0.44);
+    });
+  } catch {}
+};
+
+
 export interface WeakQuestion {
   id: number;
   pyp: string;
