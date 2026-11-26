@@ -26,7 +26,10 @@ export function playPresetSound(presetId?: string, forcePreview?: boolean) {
     if (!forcePreview && isOff) return;
     const saved = typeof window !== "undefined" ? localStorage.getItem("cb_active_sound") : null;
     const chosenId = presetId || saved || "snd_10";
-    const preset = CELEBRATION_SOUNDS.find((s) => s.id === chosenId) || CELEBRATION_SOUNDS;
+    
+    const preset = CELEBRATION_SOUNDS.find((s) => s.id === chosenId) || CELEBRATION_SOUNDS[0];
+
+
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
