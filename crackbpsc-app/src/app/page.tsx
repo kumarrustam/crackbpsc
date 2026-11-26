@@ -241,6 +241,69 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [weakExam, setWeakExam] = useState<string>("72वीं BPSC CCE");
   const [myExams, setMyExams] = useState<string[]>(["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"]);
   const [showMyExamsModal, setShowMyExamsModal] = useState<boolean>(false);
+  
+  const [weakView, setWeakView] = useState<"SUBJECTS" | "CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED_LIST" | "QS_REVIEW">("SUBJECTS");
+  const [weakSubject, setWeakSubject] = useState<string>("History");
+  const [weakChapterId, setWeakChapterId] = useState<string>("ch_sangam");
+  const [weakLang, setWeakLang] = useState<"HI" | "EN">("HI");
+  const [weakQIdx, setWeakQIdx] = useState<number>(0);
+  const [weakAnswers, setWeakAnswers] = useState<Record<number, number>>({});
+  const [weakTimes, setWeakTimes] = useState<Record<number, number>>({});
+  const [weakQStartTime, setWeakQStartTime] = useState<number>(Date.now());
+  const [weakShowCompleteModal, setWeakShowCompleteModal] = useState<boolean>(false);
+  const [weakFilter, setWeakFilter] = useState<"ALL" | "INCORRECT" | "CORRECT">("ALL");
+  const [weakBookmarked, setWeakBookmarked] = useState<Record<number, boolean>>({});
+  const [weakAttemptHistory, setWeakAttemptHistory] = useState<any[]>([
+    { id: "att_demo_1", exam: "72वीं BPSC CCE", subject: "History", chapterId: "ch_art", chapterTitle: "Art and Culture", tier: "PRO", totalQs: 5, correct: 2, accuracy: 40, speed: 3, date: "26 Nov 2026", answers: { 0: 1, 1: 0, 2: 2, 3: 0, 4: 1 } }
+  ]);
+  const [weakStudioConfig, setWeakStudioConfig] = useState({
+    enableKeyPoints: true,
+    enableSummary: true,
+    enableChallenge: true,
+    enable100Gate: true,
+    enableLangToggle: true,
+    scopeMode: "ALL" as "ALL" | "SELECTED" | "CUSTOM",
+    selectedExams: ["72वीं BPSC CCE", "BPSC TRE 4.0 (PRT 1-5)", "Bihar Police SI (Daroga)"],
+    customExamName: "",
+    syncMainBank: false,
+    allowContentWriter: true,
+    customSummaryNote: "आपकी तैयारी सही दिशा में है। गलत हुए प्रश्नों के Key Points दोबारा पढ़ें और अगला मॉड्यूल हल करें।"
+  });
+  const [weakModulesBank, setWeakModulesBank] = useState<any[]>([
+    {
+      id: "ch_sangam",
+      exam: "72वीं BPSC CCE",
+      subject: "History",
+      title: "Sangam Period & Ancient History",
+      tier: "FREE",
+      targetAcc: 72.71,
+      targetSpeed: 23,
+      completedCount: "1.2k+",
+      questions: [
+        { id: 1, pyp: "JPSC Civil Services : 2021", gotRightPct: 24, q_hi: "शैव संतों के लेखन के संग्रह को पाँचवाँ वेद भी समझा जाता है। उपरोक्त संग्रह का क्या नाम है?", q_en: "The collection of writings of Shaiva saints is also considered as the Fifth Veda. What is the name of the above collection?", opts_hi: ["सिल्पद्दीकरन", "मणीमेखलय", "तिरुमुरई", "तोल्कापियम"], opts_en: ["Silappadikaram", "Manimekalai", "Tirumurai", "Tolkappiyam"], ans: 2, kp_hi: "तिरुमुरई (Tirumurai) बारह खंडों में संकलित तमिल शैव भजनों का संग्रह है, जिसे नांबियांदर नांबी ने संकलित किया। इसे 'पाँचवाँ वेद' कहा जाता है।", kp_en: "Tirumurai is a twelve-volume compendium of Tamil Shaiva hymns compiled by Nambiyandar Nambi. It is revered as the 'Fifth Veda'." },
+        { id: 2, pyp: "69वीं BPSC Prelims", gotRightPct: 48, q_hi: "संगम साहित्य में 'तोलकाप्पियम' किस विषय से संबंधित सबसे प्राचीन उपलब्ध ग्रंथ है?", q_en: "In Sangam literature, 'Tolkappiyam' is the earliest extant work related to which subject?", opts_hi: ["तमिल व्याकरण और काव्यशास्त्र", "खगोल विज्ञान", "आयुर्वेद चिकित्सा", "सैन्य प्रशासन"], opts_en: ["Tamil Grammar and Poetics", "Astronomy", "Ayurvedic Medicine", "Military Administration"], ans: 0, kp_hi: "तोलकाप्पियम की रचना तोलकाप्पियार ने की थी। यह द्वितीय संगम का एकमात्र शेष ग्रंथ है जो तमिल व्याकरण और सामाजिक जीवन का वर्णन करता है।", kp_en: "Tolkappiyar authored Tolkappiyam, the sole surviving work of the Second Sangam dealing with Tamil grammar and poetics." },
+        { id: 3, pyp: "UPSC CSE : 2020", gotRightPct: 29, q_hi: "प्राचीन भारत के संदर्भ में, 'मसत्तुवन' और 'सत्थवाह' शब्द किससे संबंधित हैं?", q_en: "With reference to ancient India, the terms 'Masattuvan' and 'Satthavaha' refer to:", opts_hi: ["सफल व्यापारी", "राजा के लिए कुलीन", "दक्षिण भारत के साम्राज्य", "शिल्प उत्पादकों के संगठन"], opts_en: ["Successful merchants", "Nobles to the king", "Kingdoms of South India", "Guilds of craft producers"], ans: 0, kp_hi: "प्राचीन भारत में अत्यंत धनी और सफल व्यापारियों को तमिल में 'मसत्तुवन' तथा प्राकृत/संस्कृत ग्रंथों में 'सत्थवाह' या 'श्रेष्ठी' कहा जाता था।", kp_en: "In ancient India, wealthy and successful merchants were designated as 'Masattuvan' in Tamil and 'Satthavaha' or 'Setthi' in Prakrit." },
+        { id: 4, pyp: "67वीं BPSC Prelims", gotRightPct: 61, q_hi: "मौर्य साम्राज्य की राजधानी पाटलिपुत्र के नगर प्रशासन का वर्णन किस विदेशी यात्री ने छह समितियों के रूप में किया है?", q_en: "Which foreign traveler described the municipal administration of Pataliputra in the form of six committees?", opts_hi: ["मेगस्थनीज", "फाह्यान", "ह्वेनसांग", "अल-बरूनी"], opts_en: ["Megasthenes", "Faxian", "Xuanzang", "Al-Biruni"], ans: 0, kp_hi: "मेगस्थनीज ने अपनी पुस्तक 'इंडिका' में पाटलिपुत्र के प्रशासन हेतु 5-5 सदस्यों की 6 समितियों (कुल 30 सदस्य) का उल्लेख किया है।", kp_en: "Megasthenes described in 'Indica' that Pataliputra was administered by 6 committees of 5 members each (30 members total)." },
+        { id: 5, pyp: "69वीं BPSC Prelims", gotRightPct: 21, q_hi: "'अमैचर' शब्द का वर्णन संगम काल के दौरान निम्नलिखित में से किसके रूप में किया गया है?", q_en: "The term 'Amaichchar' during the Sangam period has been described as which of the following?", opts_hi: ["मंत्री", "सेनापति", "गुप्तचर", "राजपुरोहित"], opts_en: ["Minister", "Army Commander", "Spy", "Royal Priest"], ans: 0, kp_hi: "संगम काल के दौरान राजा को सलाह देने वाले मंत्रियों को 'अमैचर' (Amaichchar) और गुप्तचरों को 'ओर्रार' कहा जाता था।", kp_en: "During the Sangam age, the king was assisted by a council of ministers known as 'Amaichchar', while spies were called 'Orrar'." }
+      ]
+    },
+    {
+      id: "ch_art",
+      exam: "72वीं BPSC CCE",
+      subject: "History",
+      title: "Buddhism, Jainism & Art Culture",
+      tier: "FREE",
+      targetAcc: 75.0,
+      targetSpeed: 20,
+      completedCount: "840+",
+      questions: [
+        { id: 1, pyp: "69वीं BPSC Prelims", gotRightPct: 64, q_hi: "गौतम बुद्ध को ज्ञान की प्राप्ति किस नदी के तट पर हुई थी?", q_en: "On the bank of which river did Gautama Buddha attain enlightenment?", opts_hi: ["निरंजना (फल्गु)", "ऋजुपालिका", "गंगा", "सोन"], opts_en: ["Niranjana (Phalgu)", "Rijupalika", "Ganga", "Son"], ans: 0, kp_hi: "बोधगया में निरंजना नदी (आधुनिक फल्गु) के तट पर पीपल वृक्ष के नीचे 35 वर्ष की आयु में सिद्धार्थ को ज्ञान (संबोधि) प्राप्त हुआ।", kp_en: "Siddhartha attained enlightenment at age 35 under a Bodhi tree on the bank of river Niranjana (modern Phalgu) at Bodh Gaya." },
+        { id: 2, pyp: "68वीं BPSC Prelims", gotRightPct: 58, q_hi: "प्रथम बौद्ध संगीति का आयोजन किस शासक के शासनकाल में राजगृह की सप्तपर्णी गुफा में हुआ था?", q_en: "The First Buddhist Council was held at Saptaparni Cave in Rajagriha during the reign of which ruler?", opts_hi: ["अजातशत्रु", "कालाशोक", "अशोक", "कनिष्क"], opts_en: ["Ajatashatru", "Kalashoka", "Ashoka", "Kanishka"], ans: 0, kp_hi: "483 ईसा पूर्व में हर्यक वंश के शासक अजातशत्रु के संरक्षण और महाकश्यप की अध्यक्षता में प्रथम बौद्ध संगीति राजगृह में हुई थी।", kp_en: "The First Buddhist Council took place in 483 BCE at Rajagriha under the patronage of King Ajatashatru and presided over by Mahakassapa." }
+      ]
+    }
+  ]);
+
+  
   const [adminStudioTab, setAdminStudioTab] = useState<string>("NEWS");
   const [flipNewsItems, setFlipNewsItems] = useState<any[]>([ 
     {
