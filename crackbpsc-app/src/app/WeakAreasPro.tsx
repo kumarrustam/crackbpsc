@@ -246,11 +246,54 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
           </div>
         )}
 
+        
         {showCompletePopup && isAllDone && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-center space-y-4 shadow-2xl"><div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black">✓</div><h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3><button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] text-white rounded-xl font-extrabold text-xs">Generate Practice Summary</button></div>
+          <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-hidden">
+            <style>{`
+              @keyframes burstOut {
+                0% { transform: translate(0, 0) scale(0.2) rotate(0deg); opacity: 1; }
+                75% { opacity: 1; }
+                100% { transform: translate(var(--tx), var(--ty)) scale(1.9) rotate(540deg); opacity: 0; }
+              }
+            `}</style>
+            <div className="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+              {Array.from({ length: 48 }).map((_, idx) => {
+                const angle = (idx / 48) * Math.PI * 2;
+                const dist = 260 + (idx % 4) * 140;
+                const tx = `${Math.round(Math.cos(angle) * dist)}px`;
+                const ty = `${Math.round(Math.sin(angle) * dist)}px`;
+                const items = ["🎆", "🌸", "✨", "🎉", "⭐", "🎊", "🌼", "💥", "🌟", "🌺", "🎇", "💫"];
+                return (
+                  <span
+                    key={idx}
+                    className="absolute text-2xl sm:text-4xl select-none"
+                    style={{
+                      ["--tx" as any]: tx,
+                      ["--ty" as any]: ty,
+                      animation: `burstOut ${1.1 + (idx % 5) * 0.22}s cubic-bezier(0.12, 0.85, 0.25, 1) infinite`,
+                      animationDelay: `${(idx % 6) * 0.14}s`
+                    }}
+                  >
+                    {items[idx % items.length]}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="relative z-10 bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-2 border-amber-400">
+              <div className="text-3xl animate-bounce">🎆🌸✨🎉</div>
+              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black shadow-inner">✓</div>
+              <div className="space-y-1">
+                <h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3>
+                <p className="text-xs font-bold text-emerald-600">शाबाश! आपने सभी {totalQs} प्रश्न सफलतापूर्वक हल कर लिए हैं!</p>
+              </div>
+              <button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-extrabold text-xs shadow-md">
+                Generate Practice Summary
+              </button>
+            </div>
           </div>
         )}
+
+
       </div>
     );
   }
