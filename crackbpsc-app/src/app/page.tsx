@@ -233,6 +233,12 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [flippedFlashId, setFlippedFlashId] = useState<string>("");
   const [newFcFront, setNewFcFront] = useState<string>("");
   const [newFcBack, setNewFcBack] = useState<string>("");
+  const [attemptedList] = useState<any[]>([
+    { id: "at1", sub: "Bihar Special", title: "72वीं BPSC CCE — Full Length Mock #1", score: "98.5 / 150", accuracy: "74%", date: "25 Nov" },
+    { id: "at2", sub: "PYQs", title: "70वीं BPSC Prelims Official Paper (2024)", score: "106 / 150", accuracy: "79%", date: "23 Nov" },
+    { id: "at3", sub: "History", title: "आधुनिक भारत और बिहार किसान आंदोलन Quiz", score: "16 / 20", accuracy: "80%", date: "21 Nov" }
+  ]);
+  const [weakExam, setWeakExam] = useState<string>("72वीं BPSC CCE");
   const [adminStudioTab, setAdminStudioTab] = useState<string>("NEWS");
   const [flipNewsItems, setFlipNewsItems] = useState<any[]>([ 
     {
@@ -1664,6 +1670,180 @@ useEffect(() => {
               </div>
             )}
 
+            {bottomTab === "MISTAKES" && (
+              <div className="min-h-[85vh] pb-24 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-3 bg-white/95 backdrop-blur border border-slate-200 rounded-2xl text-slate-900 flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-800 shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="font-extrabold text-sm text-slate-900">❌ My Mistakes ({mistakesList.length})</span>
+                  </div>
+                  <button type="button" onClick={() => { setSelSection("Practice Test"); setDrillStep(3); openPage("HOME"); }} className="px-3 py-1.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl text-xs font-bold">▶ Practice All</button>
+                </div>
+
+                <div className="p-3.5 bg-white text-slate-900 rounded-2xl border border-slate-200 space-y-2.5 shadow-xs">
+                  {mistakesList.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-emerald-600 font-extrabold">🎉 शाबाश! आपकी सभी पुरानी गलतियाँ साफ़ हो चुकी हैं।</div>
+                  ) : (
+                    mistakesList.map((m) => (
+                      <div key={m.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                        <div className="space-y-1">
+                          <span className="px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-200 rounded text-[10px] font-extrabold">{m.sub}</span>
+                          <div className="font-bold text-sm text-slate-900 leading-snug">{m.q}</div>
+                          <div className="text-xs text-emerald-700 font-bold">सही उत्तर: {m.ans}</div>
+                        </div>
+                        <button type="button" onClick={() => setMistakesList(mistakesList.filter((x) => x.id !== m.id))} className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 rounded-xl text-xs font-bold shrink-0 transition">✓ याद हो गया (Clear)</button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {bottomTab === "FLASHCARDS" && (
+              <div className="min-h-[85vh] pb-24 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-3 bg-white/95 backdrop-blur border border-slate-200 rounded-2xl text-slate-900 flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-800 shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="font-extrabold text-sm text-slate-900">🔄 Smart Flashcards</span>
+                  </div>
+                  <span className="text-xs text-[#0084FF] font-extrabold">{flashcardsList.length} Cards</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {flashcardsList.map((fc) => {
+                    const isOpen = flippedFlashId === fc.id;
+                    return (
+                      <div key={fc.id} className="p-4 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between gap-3">
+                        <div onClick={() => setFlippedFlashId(isOpen ? "" : fc.id)} className="cursor-pointer space-y-2 min-h-[110px] flex flex-col justify-between">
+                          <div className="flex items-center justify-between text-[11px] font-bold">
+                            <span className="px-2 py-0.5 bg-sky-50 text-[#0084FF] border border-sky-200 rounded">{fc.sub}</span>
+                            <span className="text-amber-600">{fc.due}</span>
+                          </div>
+                          <div className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">{isOpen ? fc.back : fc.front}</div>
+                          <div className="text-[11px] text-[#0084FF] font-bold">{isOpen ? "↩ प्रश्न देखने के लिए टैप करें" : "👆 सही उत्तर देखने के लिए कार्ड पर टैप करें"}</div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100 text-xs font-bold">
+                          <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "Tomorrow" } : x))} className="py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl hover:bg-rose-600 hover:text-white transition">Hard (कल)</button>
+                          <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 4 Days" } : x))} className="py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl hover:bg-amber-500 hover:text-white transition">Good (4 दिन)</button>
+                          <button type="button" onClick={() => setFlashcardsList(flashcardsList.map((x) => x.id === fc.id ? { ...x, due: "In 12 Days" } : x))} className="py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl hover:bg-emerald-600 hover:text-white transition">Easy (12 दिन)</button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {bottomTab === "ATTEMPTED" && (
+              <div className="min-h-[85vh] pb-24 overscroll-contain space-y-3">
+                <div className="sticky top-0 z-20 p-3 bg-white/95 backdrop-blur border border-slate-200 rounded-2xl text-slate-900 flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <button type="button" onClick={goBackPage} aria-label="Back" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-800 shrink-0 transition active:scale-95">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <span className="font-extrabold text-sm text-slate-900">✅ Attempted Tests & Quizzes</span>
+                  </div>
+                  <span className="text-xs text-slate-500 font-bold">कुल: {attemptedList.length}</span>
+                </div>
+
+                <div className="p-3.5 bg-white text-slate-900 rounded-2xl border border-slate-200 space-y-2.5 shadow-xs">
+                  {attemptedList.map((at) => (
+                    <div key={at.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2 text-[10px] font-bold">
+                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">{at.sub}</span>
+                          <span className="text-slate-500">📅 {at.date}</span>
+                        </div>
+                        <div className="font-extrabold text-sm text-slate-900 truncate">{at.title}</div>
+                        <div className="text-xs text-amber-700 font-bold">स्कोर: {at.score} • एक्यूरेसी: {at.accuracy}</div>
+                      </div>
+                      <button type="button" onClick={() => { setSelSection(at.sub === "PYQs" ? "PYQs" : "Practice Test"); setDrillStep(3); openPage("HOME"); }} className="px-3.5 py-2 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shrink-0 transition active:scale-95">Re-Attempt ➔</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            
+            {bottomTab === "WEAK" && (() => {
+              const categoryCatalog: Record<string, string[]> = {
+                "BPSC": ["72वीं BPSC CCE", "71वीं BPSC CCE", "BPSC Assistant", "BPSC CDPO", "BPSC Auditor", "BPSC Judicial"],
+                "Bihar Teacher": ["BPSC TRE 4.0 (PRT 1-5)", "BPSC TRE 4.0 (Middle 6-8)", "BPSC TRE 4.0 (TGT 9-10)", "BPSC TRE 4.0 (PGT 11-12)", "Bihar STET Paper 1 & 2", "CTET Paper 1 & 2"],
+                "Bihar Police": ["Bihar Police SI (Daroga)", "Bihar Police Constable", "Bihar Prohibition SI", "Bihar Fireman"],
+                "BSSC & State": ["BSSC CGL-4", "BSSC Inter Level", "Bihar Civil Court Clerk/Peon", "Bihar Vidhan Sabha"],
+                "UPSC": ["UPSC Civil Services (IAS/IPS)", "UPSC EPFO", "UPSC CAPF AC"],
+                "SSC": ["SSC CGL", "SSC CHSL", "SSC MTS", "SSC GD Constable", "SSC CPO", "SSC JE (CE/EE/ME)"],
+                "Railway": ["RRB NTPC", "RRB ALP", "RRB Technician", "RRC Group D", "RRB JE", "RPF SI & Constable"],
+                "Banking": ["IBPS PO", "IBPS Clerk", "SBI PO", "SBI Clerk", "RBI Assistant"],
+                "Defence": ["NDA", "CDS", "AFCAT", "Airforce Group X & Y", "Agniveer Army"]
+              };
+
+              const allWeakExamsMap: Record<string, string[]> = {
+                "72वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History (Ancient, Medieval, Modern)", "Polity & Constitution", "Indian & Bihar Economy", "Geography (India & Bihar)", "General Science (Physics, Chem, Bio)", "Quantitative Aptitude & Mental Ability", "Essay & Mains GS"],
+                "71वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History", "Polity", "Economy", "Geography", "General Science", "Quantitative Aptitude"],
+                "BPSC Assistant": ["General Studies", "Bihar Special", "General Science", "Mathematics", "Mental Ability & Reasoning"],
+                "BPSC CDPO": ["History & National Movement", "Current Affairs", "Polity", "Economy & Geography", "Bihar Special", "General Mental Ability"],
+                "BPSC Auditor": ["General Studies", "Bihar Special", "Commerce & Economics", "Mathematics & Statistics", "Current Affairs"],
+                "BPSC Judicial": ["Constitutional & Administrative Law", "Procedural Law (CPC, CrPC, Evidence)", "Hindu & Muslim Law", "Transfer of Property & Contract", "General Knowledge & Science"],
+                "BPSC TRE 4.0 (PRT 1-5)": ["Language (हिन्दी & English)", "General Studies", "Bihar Special", "Current Affairs", "Primary Mathematics", "Environmental Studies (EVS)", "Logical Reasoning", "General Science"],
+                "BPSC TRE 4.0 (Middle 6-8)": ["Language (हिन्दी & English)", "General Studies & Bihar Special", "Social Science (History, Geo, Polity, Eco)", "Mathematics & Science", "Hindi / English / Sanskrit / Urdu"],
+                "BPSC TRE 4.0 (TGT 9-10)": ["Language Qualifying", "General Studies & Current Affairs", "Subject Paper (SST / Science / Math / Languages)", "Bihar Special"],
+                "BPSC TRE 4.0 (PGT 11-12)": ["Language Qualifying", "General Studies & Bihar Special", "Post-Graduate Subject Paper", "Current Affairs"],
+                "Bihar STET Paper 1 & 2": ["Art of Teaching (शिक्षण कला)", "Other Skills (GK, EVS, Math, Reasoning)", "Concerned Subject Paper"],
+                "CTET Paper 1 & 2": ["Child Development & Pedagogy (CDP)", "Language I (हिन्दी)", "Language II (English / Sanskrit)", "Mathematics", "Environmental Studies / Social Studies"],
+                "Bihar Police SI (Daroga)": ["Current Affairs", "General Knowledge", "हिन्दी (सामान्य हिन्दी)", "General Science", "Indian Polity", "History & Geography", "Bihar Special"],
+                "Bihar Police Constable": ["हिन्दी", "English", "Mathematics", "Social Science (History, Geo, Polity, Eco)", "General Science (Physics, Chem, Bio)", "General Knowledge & Current Affairs"],
+                "Bihar Prohibition SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity & Constitution"],
+                "Bihar Fireman": ["हिन्दी", "English", "Mathematics", "General Science", "General Knowledge"],
+                "BSSC CGL-4": ["General Studies", "Bihar Special", "General Science", "Quantitative Aptitude (Mathematics)", "Logical Reasoning & Mental Ability", "Current Affairs"],
+                "BSSC Inter Level": ["General Studies", "General Science", "Mathematics", "Mental Ability & Logical Reasoning", "Bihar Special"],
+                "Bihar Civil Court Clerk/Peon": ["English Language & Grammar", "हिन्दी भाषा एवं व्याकरण", "General Knowledge & Current Affairs", "Mathematics", "Reasoning", "Basic Computer Science"],
+                "Bihar Vidhan Sabha": ["General Studies", "Bihar Special", "General Science", "Mathematics & Reasoning", "हिन्दी / English"],
+                "UPSC Civil Services (IAS/IPS)": ["Current Affairs", "History & Art Culture", "Indian Polity & Governance", "Economy & Social Development", "Geography & Environment", "Science & Technology", "Disaster Management", "CSAT (Comprehension, Reasoning, Quant)", "Ethics (GS-4)"],
+                "UPSC EPFO": ["General English", "Indian Freedom Struggle", "Current Events & Developmental Issues", "Indian Polity & Economy", "General Accounting Principles", "Industrial Relations & Labour Laws", "General Science & Computer", "Quantitative Aptitude & Reasoning", "Social Security in India"],
+                "UPSC CAPF AC": ["General Mental Ability", "General Science", "Current Events", "Indian Polity & Economy", "History of India", "Indian & World Geography"],
+                "SSC CGL": ["General Intelligence & Reasoning", "General Awareness & Current Affairs", "Quantitative Aptitude", "English Comprehension", "Computer Knowledge"],
+                "SSC CHSL": ["English Language", "General Intelligence", "Quantitative Aptitude", "General Awareness"],
+                "SSC MTS": ["Numerical & Mathematical Ability", "Reasoning Ability & Problem Solving", "General Awareness", "English Language & Comprehension"],
+                "SSC GD Constable": ["General Intelligence & Reasoning", "General Knowledge & General Awareness", "Elementary Mathematics", "English / हिन्दी"],
+                "SSC CPO": ["General Intelligence & Reasoning", "General Knowledge & General Awareness", "Quantitative Aptitude", "English Comprehension"],
+                "SSC JE (CE/EE/ME)": ["General Intelligence & Reasoning", "General Awareness", "General Engineering (Civil / Electrical / Mechanical)"],
+                "RRB NTPC": ["General Awareness & Current Affairs", "Mathematics (Quantitative Aptitude)", "General Intelligence & Reasoning", "Psycho Test Battery (CBAT)"],
+                "RRB ALP": ["Mathematics", "Mental Ability & Reasoning", "General Science", "General Awareness", "Basic Science & Engineering", "Relevant Trade Paper"],
+                "RRB Technician": ["Mathematics", "General Intelligence & Reasoning", "Basic Science & Engineering", "General Awareness"],
+                "RRC Group D": ["General Science", "Mathematics", "General Intelligence & Reasoning", "General Awareness & Current Affairs"],
+                "RRB JE": ["Mathematics", "General Intelligence & Reasoning", "General Awareness", "General Science", "Technical Abilities"],
+                "RPF SI & Constable": ["General Awareness", "Arithmetic (Mathematics)", "General Intelligence & Reasoning"],
+                "IBPS PO": ["English Language", "Quantitative Aptitude", "Reasoning Ability", "General / Economy / Banking Awareness", "Computer Aptitude"],
+                "IBPS Clerk": ["English Language", "Numerical Ability", "Reasoning Ability", "General / Financial Awareness"],
+                "SBI PO": ["English Language", "Quantitative Aptitude & Data Interpretation", "Reasoning & Computer Aptitude", "General / Economy / Banking Awareness"],
+                "SBI Clerk": ["General English", "Quantitative Aptitude", "Reasoning Ability & Computer Aptitude", "General / Financial Awareness"],
+                "RBI Assistant": ["English Language", "Numerical Ability", "Reasoning Ability", "General Awareness", "Computer Knowledge"],
+                "NDA": ["Mathematics", "English", "General Knowledge (Physics, Chemistry, General Science, History, Geography, Current Events)"],
+                "CDS": ["English", "General Knowledge", "Elementary Mathematics"],
+                "AFCAT": ["General Awareness", "Verbal Ability in English", "Numerical Ability", "Reasoning & Military Aptitude"],
+                "Airforce Group X & Y": ["Physics", "Mathematics", "English", "Reasoning & General Awareness (RAGA)"],
+                "Agniveer Army": ["General Knowledge", "General Science", "Mathematics", "Logical Reasoning"]
+              };
+
+              const treeExams = typeof examTree === "object" && examTree !== null ? Object.values(examTree).flat() as string[] : [];
+              const combinedAllExams = Array.from(new Set([...treeExams, ...Object.keys(allWeakExamsMap)]));
+              const selectedList = Array.isArray(myExams) && myExams.length > 0 ? myExams : combinedAllExams;
+              const currentExam = selectedList.includes(weakExam) ? weakExam : (selectedList || "72वीं BPSC CCE");
+
+              const getSubsForExam = (ex: string): string[] => {
+                if (allWeakExamsMap[ex]) return allWeakExamsMap[ex];
+                const low = ex.toLowerCase();
+                if (low.includes("bpsc") || low.includes("bihar")) return ["Bihar Special", "Current Affairs", "History", "Polity", "Economy", "General Science", "Geography", "Quantitative Aptitude"];
+                if (low.includes("police") || low.includes("daroga") || low.includes("si")) return ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity"];
+                if (low.includes("tre") || low.includes("tet") || low.includes("teacher")) return ["Teaching Aptitude", "Bihar Special", "Current Affairs", "General Studies", "हिन्दी / English", "Reasoning"];
+
+                
+                
             {bottomTab === "HOME" && (<>
 
    <div className="flex justify-between items-center">
