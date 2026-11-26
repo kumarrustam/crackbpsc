@@ -46,11 +46,13 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
   const [qTimes, setQTimes] = useState<Record<number, number>>({});
   const [liveSec, setLiveSec] = useState<number>(1);
   const [bookmarks, setBookmarks] = useState<Record<number, boolean>>({});
-  const [showPalette, setShowPalette] = useState<boolean>(false);
+  const [showPalette, setShowPalette] = useState<boolean>(false);  
+  const [showReportModal, setShowReportModal] = useState<boolean>(false);
+  const [reportReason, setReportReason] = useState<string>("");
+  const [reportText, setReportText] = useState<string>("");
   const [showCompletePopup, setShowCompletePopup] = useState<boolean>(false);
   const [filterMode, setFilterMode] = useState<"ALL" | "INCORRECT" | "CORRECT">("ALL");
   const [completedList, setCompletedList] = useState<any[]>([]);
-
   const subjectModules = INITIAL_MODULES.filter((m) => m.exam === examName && m.subject === subjectName);
   const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules[0] || INITIAL_MODULES[0];
   const questions = activeMod.questions;
@@ -87,16 +89,18 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
     setShowCompletePopup(false); setFilterMode("ALL"); setStep("SUMMARY");
   };
 
+
   if (step === "PLAYER") {
     const picked = answers[qIdx];
     const answered = picked !== undefined;
     const isCurrentRight = answered && picked === curQ.ans;
     const opts = lang === "HI" ? curQ.opts_hi : curQ.opts_en;
     const displaySec = answered ? (qTimes[qIdx] || 1) : liveSec;
+    const tagList = (curQ.examTags || "").split(",").map((t) => t.trim()).filter(Boolean);
 
     return (
       <div className="fixed inset-0 z-50 bg-white overflow-y-auto pb-20 text-slate-900">
-        <div className="sticky top-0 z-20 px-3.5 py-2.5 bg-[#181C24] text-white flex items-center justify-between gap-2">
+        <div className="sticky top-0 z-20 px-4 py-3 bg-[#181C24] text-white flex items-center justify-between gap-2 w-full">
           <div className="flex items-center gap-2.5 min-w-0">
             <button type="button" onClick={() => setStep("CHAPTERS")} className="text-lg font-bold text-white shrink-0">←</button>
             <div className="min-w-0">
@@ -105,31 +109,55 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
             </div>
           </div>
           <div className="flex items-center gap-2.5 shrink-0">
-            <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2 py-1 rounded bg-white text-slate-900 text-[11px] font-black">{lang === "HI" ? "अ | E" : "E | अ"}</button>
-            <button type="button" onClick={() => setShowPalette(!showPalette)} className="p-1.5 rounded bg-white/10 text-white font-bold text-sm">☰</button>
+            <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2.5 py-1 rounded bg-white text-slate-900 text-[11px] font-black">{lang === "HI" ? "अ | E" : "E | अ"}</button>
+            <button type="button" onClick={() => setShowPalette(true)} className="p-1.5 rounded bg-white/10 text-white font-bold text-sm">☰</button>
           </div>
         </div>
-        <div className="px-3.5 py-2.5 bg-white border-b border-slate-200 flex items-center gap-2 overflow-x-auto">
+
+        <div className="px-4 py-2.5 bg-white border-b border-slate-200 flex items-center gap-2 overflow-x-auto">
           {questions.map((_, i) => {
             const done = answers[i] !== undefined; const ok = done && answers[i] === questions[i].ans;
             return <button key={i} type="button" onClick={() => { setQIdx(i); setLiveSec(1); }} className={"w-7 h-7 rounded-full text-xs font-extrabold shrink-0 border " + (qIdx === i ? "ring-2 ring-offset-1 ring-[#0084FF] " : "") + (!done ? "bg-white text-slate-700 border-slate-300" : ok ? "bg-emerald-500 text-white border-emerald-500" : "bg-rose-500 text-white border-rose-500")}>{i + 1}</button>;
           })}
         </div>
-        
-        {showPalette && (
-          <div className="p-3.5 bg-slate-50 border-b border-slate-200 space-y-2">
-            <div className="flex items-center justify-between text-xs font-extrabold text-slate-700"><span>Question Palette ({attemptedCount}/{totalQs})</span><button type="button" onClick={() => setShowPalette(false)} className="text-rose-600">Close ✕</button></div>
-            <div className="grid grid-cols-5 gap-2">
-              {questions.map((_, i) => { const done = answers[i] !== undefined; const ok = done && answers[i] === questions[i].ans; return <button key={i} type="button" onClick={() => { setQIdx(i); setLiveSec(1); setShowPalette(false); }} className={"py-1.5 rounded-lg text-xs font-extrabold border " + (!done ? "bg-white text-slate-700 border-slate-300" : ok ? "bg-emerald-500 text-white border-emerald-500" : "bg-rose-500 text-white border-rose-500")}>Q{i + 1}</button>; })}
+
+        <div className="p-4 max-w-3xl mx-auto space-y-4">
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className={"w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center " + (!answered ? "bg-slate-500" : isCurrentRight ? "bg-emerald-500" : "bg-rose-500")}>{qIdx + 1}</span>
+              {curQ.pyp && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#E5E7EB] text-slate-600 text-[11px] font-bold tracking-wide">
+                  <svg className="w-3 h-3 text-slate-500 shrink-0" viewBox="0 0 16 16" fill="currentColor"><path d="M5 1.5A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v.5h1.5A1.5 1.5 0 0 1 14 3.5v10a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-10A1.5 1.5 0 0 1 3.5 2H5v-.5zm1.5-.5a.5.5 0 0 0-.5.5V2h4v-.5a.5.5 0 0 0-.5-.5h-3zM5 5.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 3a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1H5z" /></svg>
+                  <span>{curQ.pyp}</span>
+                  {curQ.year && <><span className="text-slate-400 font-normal">|</span><span className="text-slate-700 font-extrabold">{curQ.year}</span></>}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 ml-1">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                <span>{fmtSec(displaySec)}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-3.5 text-slate-500">
+              <button type="button" onClick={() => setBookmarks({ ...bookmarks, [qIdx]: !bookmarks[qIdx] })} className="p-0.5">
+                <svg className={"w-4 h-4 " + (bookmarks[qIdx] ? "text-[#0084FF] fill-[#0084FF]" : "text-slate-500")} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" /></svg>
+              </button>
+              <button type="button" onClick={() => { setReportReason(""); setReportText(""); setShowReportModal(true); }} className="p-0.5">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+              </button>
             </div>
           </div>
-        )}
-        <div className="p-4 max-w-2xl mx-auto space-y-4">
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-            <div className="flex items-center gap-2.5"><span className={"w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center " + (!answered ? "bg-slate-700" : isCurrentRight ? "bg-emerald-500" : "bg-rose-500")}>{qIdx + 1}</span><span className="text-xs font-bold text-slate-500">🕒 {fmtSec(displaySec)}</span></div>
-            <div className="flex items-center gap-3 text-slate-500"><button type="button" onClick={() => setBookmarks({ ...bookmarks, [qIdx]: !bookmarks[qIdx] })} className="text-base">{bookmarks[qIdx] ? "🔖" : "📑"}</button><button type="button" onClick={() => alert("प्रश्न की रिपोर्ट दर्ज कर ली गई है।")} className="text-base">⚠️</button></div>
+
+          <div className="space-y-2">
+            <div className="font-extrabold text-[15px] sm:text-base text-slate-900 leading-relaxed">{lang === "HI" ? curQ.q_hi : curQ.q_en}</div>
+            {tagList.length > 0 && (
+              <div className="flex flex-wrap items-center justify-end gap-1.5 pt-0.5">
+                {tagList.map((tg, tIdx) => (
+                  <span key={tIdx} className="px-2 py-0.5 rounded bg-[#181C24] text-white text-[10px] font-extrabold tracking-wide shadow-2xs">{tg}</span>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="font-extrabold text-[15px] sm:text-base text-slate-900 leading-relaxed">{lang === "HI" ? curQ.q_hi : curQ.q_en}</div>
+
           <div className="space-y-2.5">
             {opts.map((opt, idx) => {
               const isRight = idx === curQ.ans; const isChosen = picked === idx;
@@ -138,18 +166,62 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
               return <button key={idx} type="button" onClick={() => pickOption(idx)} className={"w-full p-3.5 rounded-xl border text-left flex items-center justify-between gap-2 transition " + cls}><div className="flex items-center gap-3"><span className="text-xs font-extrabold text-slate-500">{idx + 1}.</span><span className="font-bold text-sm">{opt}</span></div>{answered && isRight && <span className="text-emerald-600 font-black text-base">✓</span>}{answered && isChosen && !isRight && <span className="text-rose-600 font-black text-base">✕</span>}</button>;
             })}
           </div>
+
+      
           {answered && (
             <div className="pt-3 border-t border-slate-200 space-y-2.5">
               <div className="flex items-center justify-between text-xs font-extrabold"><span className="text-slate-900">Solution: {curQ.ans + 1}</span><span className="text-slate-500">{curQ.gotRightPct}% got it right</span></div>
               <div className="text-xs font-bold text-slate-800">सही उत्तर <span className="underline">{(lang === "HI" ? curQ.opts_hi : curQ.opts_en)[curQ.ans]}</span> है।</div>
-              <div className="space-y-1"><div className="text-xs font-black text-emerald-700 flex items-center gap-1.5"><span>🔑</span><span className="underline">Key Points</span></div><p className="text-xs text-slate-700 leading-relaxed font-medium">{lang === "HI" ? curQ.kp_hi : curQ.kp_en}</p></div>
+              <div className="space-y-1"><div className="text-xs font-black text-emerald-700 flex items-center gap-1.5"><span className="w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] inline-flex items-center justify-center">🔑</span><span className="underline">Key Points</span></div><p className="text-xs text-slate-700 leading-relaxed font-medium">{lang === "HI" ? curQ.kp_hi : curQ.kp_en}</p></div>
             </div>
           )}
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-[#181C24] text-white grid grid-cols-2 divide-x divide-slate-700 max-w-2xl mx-auto">
+
+        <div className="fixed bottom-0 inset-x-0 w-full z-30 bg-[#181C24] text-white grid grid-cols-2 divide-x divide-slate-700">
           <button type="button" disabled={qIdx === 0} onClick={() => { setQIdx(Math.max(0, qIdx - 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">← Previous</button>
           {isAllDone && qIdx === totalQs - 1 ? <button type="button" onClick={completeAndSaveAttempt} className="py-3.5 text-xs font-extrabold bg-emerald-600 text-white">Summary →</button> : <button type="button" disabled={qIdx >= totalQs - 1} onClick={() => { setQIdx(Math.min(totalQs - 1, qIdx + 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">Next →</button>}
         </div>
+
+        {showPalette && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex justify-end">
+            <div className="w-[84%] max-w-sm bg-white h-full flex flex-col shadow-2xl">
+              <div className="px-4 py-3.5 border-b border-slate-200 flex items-center gap-3"><button type="button" onClick={() => setShowPalette(false)} className="text-lg font-bold text-slate-700">✕</button><span className="font-extrabold text-base text-slate-900">Questions List</span></div>
+              <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between text-xs font-extrabold"><span>Correct <span className="text-emerald-600 ml-1">{correctCount}</span></span><span>Incorrect <span className="text-rose-500 ml-1">{attemptedCount - correctCount}</span></span><span>Skipped <span className="text-slate-500 ml-1">{totalQs - attemptedCount}</span></span></div>
+              <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
+                {questions.map((qItem, i) => {
+                  const done = answers[i] !== undefined; const ok = done && answers[i] === qItem.ans;
+                  return <button key={qItem.id} type="button" onClick={() => { setQIdx(i); setLiveSec(1); setShowPalette(false); }} className="w-full p-3.5 text-left flex items-start gap-3 hover:bg-slate-50"><span className={"w-7 h-7 rounded-full text-xs font-black flex items-center justify-center shrink-0 mt-0.5 " + (!done ? "bg-white border border-slate-300 text-slate-700" : ok ? "bg-emerald-500 text-white" : "bg-rose-500 text-white")}>{i + 1}</span><span className="text-xs font-semibold text-slate-800 line-clamp-2 leading-snug">{lang === "HI" ? qItem.q_hi : qItem.q_en}</span></button>;
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showReportModal && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col max-h-[82vh]">
+              <div className="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between"><span className="font-extrabold text-base text-slate-900">Report Question!</span><button type="button" onClick={() => setShowReportModal(false)} className="text-slate-500 font-bold text-sm">✕</button></div>
+              <div className="overflow-y-auto divide-y divide-slate-100">
+                {["Wrong Translation", "Scroll Not Working", "Wrong Question", "Out of Syllabus", "Question and Options not visible", "Blinking Screen Issue", "Formatting Issues", "Question not visible, but Options are", "Other"].map((rsn) => {
+                  const pickedRsn = reportReason === rsn;
+                  return (
+                    <button key={rsn} type="button" onClick={() => setReportReason(rsn)} className={"w-full px-4 py-3 text-left text-xs font-bold flex items-center justify-between " + (pickedRsn ? "bg-sky-50 text-slate-900" : "bg-white text-slate-700")}>
+                      <span>{rsn}</span>
+                      <svg className={"w-4 h-4 shrink-0 " + (pickedRsn ? "text-rose-500" : "text-slate-400")} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                    </button>
+                  );
+                })}
+              </div>
+              {reportReason && (
+                <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center gap-2">
+                  <input type="text" value={reportText} onChange={(e) => setReportText(e.target.value)} placeholder="Please tell us more about the doubt/report..." className="flex-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none" />
+                  <button type="button" disabled={!reportText.trim()} onClick={() => { setShowReportModal(false); alert(`धन्यवाद! आपकी रिपोर्ट (${reportReason}) एडमिन टीम को भेज दी गई है।`); }} className="w-9 h-9 rounded-full bg-[#0084FF] disabled:bg-slate-300 text-white font-black flex items-center justify-center shrink-0">➤</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {showCompletePopup && isAllDone && (
           <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-center space-y-4 shadow-2xl"><div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black">✓</div><h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3><button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] text-white rounded-xl font-extrabold text-xs">Generate Practice Summary</button></div>
@@ -158,6 +230,9 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
       </div>
     );
   }
+
+  
+  
   if (step === "SUMMARY") {
     const wrongCount = totalQs - correctCount;
     const nextMod = subjectModules.find((m) => m.id !== activeMod.id) || INITIAL_MODULES[0];
