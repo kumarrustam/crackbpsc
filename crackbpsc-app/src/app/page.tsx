@@ -2991,10 +2991,10 @@ useEffect(() => {
               </div>
             );
           })()})
-              </>
-            )}
-          </div>
-        )}
+              
+            
+          
+        
   {role === "STUDENT" && !adHideToday && popupOpen && (() => {
         if (typeof window === "undefined") return false;
         const d = new window.Date();
