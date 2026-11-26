@@ -182,7 +182,11 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [addMoreExamsMode, setAddMoreExamsMode] = useState<boolean>(false);
   const [enrolledExams, setEnrolledExams] = useState<Array<{ cat: string; ex: string }>>([{ cat: "BPSC", ex: "72वीं BPSC CCE" }, { cat: "BPSC", ex: "BPSC TRE 4.0 (Class 6–8)" }, { cat: "Bihar Teaching", ex: "Bihar STET (Paper 1 & 2)" }, { cat: "Bihar Police", ex: "Bihar Police SI (दरोगा)" }]);
   const [checkedExams, setCheckedExams] = useState<string[]>([]);
-  const [bottomTab, setBottomTab] = useState<string>("HOME");
+  
+  const [bottomTab, setBottomTab] = useState<string>(() =>
+    typeof window !== "undefined" ? (sessionStorage.getItem("cb_bottomTab") || "HOME") : "HOME"
+  );
+
   const [caPeriod, setCaPeriod] = useState<string>("DAILY");
   const [caDate, setCaDate] = useState<string>("2026-11-25");
   const [caWeek, setCaWeek] = useState<string>("Week 4 (22–28 Nov)");
@@ -239,12 +243,33 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     { id: "at2", sub: "PYQs", title: "70वीं BPSC Prelims Official Paper (2024)", score: "106 / 150", accuracy: "79%", date: "23 Nov" },
     { id: "at3", sub: "History", title: "आधुनिक भारत और बिहार किसान आंदोलन Quiz", score: "16 / 20", accuracy: "80%", date: "21 Nov" }
   ]);
-  const [weakExam, setWeakExam] = useState<string>("72वीं BPSC CCE");
-  const [myExams, setMyExams] = useState<string[]>(["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"]);
+  
+  const [weakExam, setWeakExam] = useState<string>(() =>
+    typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakExam") || "72वीं BPSC CCE") : "72वीं BPSC CCE"
+  );
+  const [myExams, setMyExams] = useState<string[]>(["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4"]);
   const [showMyExamsModal, setShowMyExamsModal] = useState<boolean>(false);
-  const [activeWeakModalSub, setActiveWeakModalSub] = useState<string | null>(null);
-  const [weakView, setWeakView] = useState<"SUBJECTS" | "CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED_LIST" | "QS_REVIEW">("SUBJECTS");
-  const [weakSubject, setWeakSubject] = useState<string>("History");
+  const [activeWeakModalSub, setActiveWeakModalSub] = useState<string | null>(() =>
+    typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakModalSub") || null) : null
+  );
+  const [weakView, setWeakView] = useState<"SUBJECTS" | "CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED">(() =>
+    typeof window !== "undefined" ? ((sessionStorage.getItem("cb_weakView") as any) || "SUBJECTS") : "SUBJECTS"
+  );
+  const [weakSubject, setWeakSubject] = useState<string>(() =>
+    typeof window !== "undefined" ? (sessionStorage.getItem("cb_weakSubject") || "History") : "History"
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    sessionStorage.setItem("cb_bottomTab", bottomTab);
+    sessionStorage.setItem("cb_weakExam", weakExam);
+    if (activeWeakModalSub) sessionStorage.setItem("cb_weakModalSub", activeWeakModalSub);
+    else sessionStorage.removeItem("cb_weakModalSub");
+    sessionStorage.setItem("cb_weakView", weakView);
+    sessionStorage.setItem("cb_weakSubject", weakSubject);
+  }, [bottomTab, weakExam, activeWeakModalSub, weakView, weakSubject]);
+
+
   const [weakChapterId, setWeakChapterId] = useState<string>("ch_sangam");
   const [weakLang, setWeakLang] = useState<"HI" | "EN">("HI");
   const [weakQIdx, setWeakQIdx] = useState<number>(0);
