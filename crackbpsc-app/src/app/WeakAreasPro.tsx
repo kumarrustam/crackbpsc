@@ -64,21 +64,53 @@ export const INITIAL_MODULES: WeakChapterModule[] = [
 const fmtSec = (s: number) => `00:${String(Math.min(59, Math.max(1, s))).padStart(2, "0")}`;
 
 export default function WeakAreasPlayerModal({ examName, subjectName, onClose }: { examName: string; subjectName: string; onClose: () => void }) {
-  const [step, setStep] = useState<"CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED">("CHAPTERS");
-  const [activeModId, setActiveModId] = useState<string>("mod_sangam");
+  const sKey = `wa_${examName}_${subjectName}`;
+  const [step, setStep] = useState<"CHAPTERS" | "PLAYER" | "SUMMARY" | "ATTEMPTED">(() =>
+    typeof window !== "undefined" ? ((sessionStorage.getItem(`${sKey}_step`) as any) || "CHAPTERS") : "CHAPTERS"
+  );
+  const [activeModId, setActiveModId] = useState<string>(() =>
+    typeof window !== "undefined" ? (sessionStorage.getItem(`${sKey}_mod`) || "mod_sangam") : "mod_sangam"
+  );
   const [lang, setLang] = useState<"HI" | "EN">("HI");
-  const [qIdx, setQIdx] = useState<number>(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [qTimes, setQTimes] = useState<Record<number, number>>({});
+  const [qIdx, setQIdx] = useState<number>(() =>
+    typeof window !== "undefined" ? Number(sessionStorage.getItem(`${sKey}_qidx`) || 0) : 0
+  );
+  const [answers, setAnswers] = useState<Record<number, number>>(() => {
+    if (typeof window === "undefined") return {};
+    try { return JSON.parse(sessionStorage.getItem(`${sKey}_ans`) || "{}"); } catch { return {}; }
+  });
+  const [qTimes, setQTimes] = useState<Record<number, number>>(() => {
+    if (typeof window === "undefined") return {};
+    try { return JSON.parse(sessionStorage.getItem(`${sKey}_times`) || "{}"); } catch { return {}; }
+  });
   const [liveSec, setLiveSec] = useState<number>(1);
-  const [bookmarks, setBookmarks] = useState<Record<number, boolean>>({});
-  const [showPalette, setShowPalette] = useState<boolean>(false);  
+  const [bookmarks, setBookmarks] = useState<Record<number, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try { return JSON.parse(localStorage.getItem(`${sKey}_bm`) || "{}"); } catch { return {}; }
+  });
+  const [showPalette, setShowPalette] = useState<boolean>(false);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [reportReason, setReportReason] = useState<string>("");
   const [reportText, setReportText] = useState<string>("");
   const [showCompletePopup, setShowCompletePopup] = useState<boolean>(false);
   const [filterMode, setFilterMode] = useState<"ALL" | "INCORRECT" | "CORRECT">("ALL");
-  const [completedList, setCompletedList] = useState<any[]>([]);
+  const [completedList, setCompletedList] = useState<any[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem(`${sKey}_completed`) || "[]"); } catch { return []; }
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    sessionStorage.setItem(`${sKey}_step`, step);
+    sessionStorage.setItem(`${sKey}_mod`, activeModId);
+    sessionStorage.setItem(`${sKey}_qidx`, String(qIdx));
+    sessionStorage.setItem(`${sKey}_ans`, JSON.stringify(answers));
+    sessionStorage.setItem(`${sKey}_times`, JSON.stringify(qTimes));
+    localStorage.setItem(`${sKey}_bm`, JSON.stringify(bookmarks));
+    localStorage.setItem(`${sKey}_completed`, JSON.stringify(completedList));
+  }, [step, activeModId, qIdx, answers, qTimes, bookmarks, completedList, sKey]);
+
+  
   const subjectModules = INITIAL_MODULES.filter((m) => m.exam === examName && m.subject === subjectName);
   const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules[0] || INITIAL_MODULES[0];
   const questions = activeMod.questions;
