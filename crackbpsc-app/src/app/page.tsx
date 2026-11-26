@@ -1802,10 +1802,68 @@ useEffect(() => {
                       + Add Exam
                     </button>
                   </div>
+                  
+                  {(() => {
+                    const examSubsMap: Record<string, string[]> = {
+                      "72वीं BPSC CCE": ["Current Affairs", "Bihar Special", "History", "Polity", "Economy", "Geography", "General Science", "Quantitative Aptitude"],
+                      "BPSC TRE 4.0": ["Current Affairs", "Bihar Special", "General Studies", "Hindi / Language", "Logical Reasoning", "General Science"],
+                      "BSSC CGL-4": ["General Knowledge", "General Science", "Quantitative Aptitude", "Logical Reasoning", "Bihar Special"],
+                      "Bihar Police SI": ["Current Affairs", "General Knowledge", "हिन्दी", "General Science", "Polity"]
+                    };
+                    const activeSubs = examSubsMap[currentExam] || ["Bihar Special", "Current Affairs", "General Knowledge", "General Science", "Logical Reasoning", "Quantitative Aptitude"];
+                    return (
+                      <div className="px-3.5 pt-4 pb-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                            <h3 className="font-extrabold text-[15px] text-[#111827]">Subjects Analysis</h3>
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-500">{currentExam} ({activeSubs.length} Subjects)</span>
+                        </div>
 
-                  <div className="p-4 text-center text-xs text-slate-500 font-bold">
-                    Selected Exam: <span className="text-[#0084FF]">{currentExam}</span> (Subjects Analysis अगले पार्ट में जुड़ेगा)
-                  </div>
+                        <div className="space-y-3">
+                          {activeSubs.map((subName: string) => (
+                            <div key={subName} className="p-3.5 bg-white rounded-xl border border-slate-200/70 shadow-xs space-y-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="space-y-0.5">
+                                  <div className="font-extrabold text-[15px] text-[#111827]">{subName}</div>
+                                  <div className="text-xs text-slate-500 font-medium">0 Qs Attempted</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="font-extrabold text-xs text-slate-400">--</div>
+                                  <div className="text-[11px] text-slate-400 font-medium">No Data</div>
+                                </div>
+                              </div>
+                              <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                                <span className="text-slate-500 font-normal inline-flex items-center gap-1.5">
+                                  <span>✎</span>
+                                  <span>Attempt more Qs to generate analysis</span>
+                                </span>
+                                <button type="button" onClick={() => { setCustomSub(subName); setSelSection("Practice Test"); setDrillStep(3); openPage("HOME"); }} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
+                                  Start →
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="p-4 bg-[#EBF5FF] rounded-2xl border border-sky-200/80 space-y-3.5">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="space-y-1">
+                              <div className="text-xs font-semibold text-slate-700">Hey there!</div>
+                              <div className="font-extrabold text-base text-[#111827]">Your Feedback Matters!</div>
+                              <p className="text-xs text-slate-600 leading-relaxed">If you don't find the AI analytics accurate representation of your performance, please let us know.</p>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-white border border-sky-200 flex items-center justify-center text-2xl shrink-0 shadow-2xs">📋</div>
+                          </div>
+                          <button type="button" onClick={() => alert("धन्यवाद! आपका AI Performance Analysis फीडबैक दर्ज कर लिया गया है।")} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
+                            Share Your Feedback
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                 </div>
               );
             })()}           
