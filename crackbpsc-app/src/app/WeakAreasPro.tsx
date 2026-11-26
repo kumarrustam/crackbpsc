@@ -179,27 +179,13 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
     const displaySec = answered ? (qTimes[qIdx] || 1) : liveSec;
 
     return (
-      <div className="fixed inset-0 z-50 bg-white overflow-y-auto pb-20 text-slate-900">
-        <div className="sticky top-0 z-20 px-3.5 py-2.5 bg-[#181C24] text-white flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <button type="button" onClick={() => setStep("CHAPTERS")} className="text-lg font-bold text-white shrink-0">←</button>
-            <div className="min-w-0">
-              <div className="font-extrabold text-sm truncate">{activeMod.title}</div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[11px] font-bold text-slate-300">{attemptedCount}/{totalQs}</span>
-                <div className="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#0084FF]" style={{ width: `${Math.round((attemptedCount / totalQs) * 100)}%` }} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2 py-1 rounded bg-white text-slate-900 text-[11px] font-black">
-              {lang === "HI" ? "अ | E" : "E | अ"}
-            </button>
-            
-          <button type="button" disabled={qIdx >= totalQs - 1} onClick={() => { setQIdx(Math.min(totalQs - 1, qIdx + 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">Next →</button>
-          
+      <div className="fixed bottom-0 left-0 right-0 bg-[#181C24] text-white grid grid-cols-2 divide-x divide-slate-700 max-w-2xl mx-auto">
+          <button type="button" disabled={qIdx === 0} onClick={() => { setQIdx(Math.max(0, qIdx - 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">← Previous</button>
+          {isAllDone && qIdx === totalQs - 1 ? (
+            <button type="button" onClick={completeAndSaveAttempt} className="py-3.5 text-xs font-extrabold bg-emerald-600 text-white">Summary →</button>
+          ) : (
+            <button type="button" disabled={qIdx >= totalQs - 1} onClick={() => { setQIdx(Math.min(totalQs - 1, qIdx + 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">Next →</button>
+          )}
         </div>
 
         {showCompletePopup && isAllDone && (
