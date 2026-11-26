@@ -253,6 +253,10 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
   const [weakShowCompleteModal, setWeakShowCompleteModal] = useState<boolean>(false);
   const [weakFilter, setWeakFilter] = useState<"ALL" | "INCORRECT" | "CORRECT">("ALL");
   const [weakBookmarked, setWeakBookmarked] = useState<Record<number, boolean>>({});
+  const [showWeakFeedbackModal, setShowWeakFeedbackModal] = useState<boolean>(false);
+  const [weakFeedbackRatings, setWeakFeedbackRatings] = useState<Record<string, "RED" | "AMBER" | "GREEN">>({});
+  const [weakFeedbackComment, setWeakFeedbackComment] = useState<string>("");
+  const [weakFeedbackList, setWeakFeedbackList] = useState<any[]>([]);
   const [weakAttemptHistory, setWeakAttemptHistory] = useState<any[]>([
     { id: "att_demo_1", exam: "72वीं BPSC CCE", subject: "History", chapterId: "ch_art", chapterTitle: "Art and Culture", tier: "PRO", totalQs: 5, correct: 2, accuracy: 40, speed: 3, date: "26 Nov 2026", answers: { 0: 1, 1: 0, 2: 2, 3: 0, 4: 1 } }
   ]);
@@ -2210,8 +2214,8 @@ useEffect(() => {
                               <p className="text-xs text-slate-600 leading-relaxed">If you don't find the AI analytics accurate representation of your performance, please let us know.</p>
                             </div>
                             <div className="w-12 h-12 rounded-xl bg-white border border-sky-200 flex items-center justify-center text-2xl shrink-0 shadow-2xs">📋</div>
-                          </div>
-                          <button type="button" onClick={() => alert("धन्यवाद! आपका AI Performance Analysis फीडबैक दर्ज कर लिया गया है।")} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
+                          </div>              
+                          <button type="button" onClick={() => setShowWeakFeedbackModal(true)} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
                             Share Your Feedback
                           </button>
                         </div>
@@ -2280,6 +2284,76 @@ useEffect(() => {
                             </div>
                           </div>
                         )}
+
+                        
+                  {showWeakFeedbackModal && (
+                    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center">
+                      <div className="bg-white rounded-t-3xl sm:rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md max-h-[88vh] flex flex-col overflow-hidden text-slate-900">
+                        <div className="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+                          <div>
+                            <div className="font-extrabold text-sm text-slate-900">📊 AI Analytics Quality Check</div>
+                            <div className="text-[11px] font-bold text-[#0084FF]">Context: {currentExam} • {weakSubject}</div>
+                          </div>
+                          <button type="button" onClick={() => setShowWeakFeedbackModal(false)} className="w-8 h-8 rounded-full bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center">✕</button>
+                        </div>
+
+                        <div className="p-4 overflow-y-auto space-y-4">
+                          {[
+                            { key: "readiness", label: "Exam Readiness Score Accuracy *" },
+                            { key: "strength", label: "Topic Strength Tag (Weak, Moderate, Strong) *" },
+                            { key: "subjectAcc", label: "Subject-Wise Accuracy & Attempt Insights *" },
+                            { key: "chapterAcc", label: "Chapter-Level Performance Breakdown *" }
+                          ].map((qRow) => {
+                            const pickedVal = weakFeedbackRatings[qRow.key];
+                            return (
+                              <div key={qRow.key} className="pb-3.5 border-b border-slate-100 flex items-center justify-between gap-2">
+                                <div className="text-xs font-bold text-slate-800 leading-snug max-w-[44%]">{qRow.label}</div>
+                                <div className="grid grid-cols-3 gap-2.5 shrink-0 text-center">
+                                  <button type="button" onClick={() => setWeakFeedbackRatings({ ...weakFeedbackRatings, [qRow.key]: "RED" })} className="flex flex-col items-center gap-1.5 group">
+                                    <span className={"w-7 h-7 rounded-md border-2 flex items-center justify-center text-xs font-black transition-all duration-200 " + (pickedVal === "RED" ? "rotate-0 scale-110 bg-rose-600 border-rose-600 text-white shadow-sm" : "rotate-12 bg-rose-50/40 border-rose-300 text-transparent group-hover:rotate-0")}>✓</span>
+                                    <span className={"text-[10px] font-bold leading-tight " + (pickedVal === "RED" ? "text-rose-600" : "text-slate-500")}>Needs Fix</span>
+                                  </button>
+                                  <button type="button" onClick={() => setWeakFeedbackRatings({ ...weakFeedbackRatings, [qRow.key]: "AMBER" })} className="flex flex-col items-center gap-1.5 group">
+                                    <span className={"w-7 h-7 rounded-md border-2 flex items-center justify-center text-xs font-black transition-all duration-200 " + (pickedVal === "AMBER" ? "rotate-0 scale-110 bg-amber-500 border-amber-500 text-white shadow-sm" : "rotate-12 bg-amber-50/40 border-amber-300 text-transparent group-hover:rotate-0")}>✓</span>
+                                    <span className={"text-[10px] font-bold leading-tight " + (pickedVal === "AMBER" ? "text-amber-600" : "text-slate-500")}>Fair Match</span>
+                                  </button>
+                                  <button type="button" onClick={() => setWeakFeedbackRatings({ ...weakFeedbackRatings, [qRow.key]: "GREEN" })} className="flex flex-col items-center gap-1.5 group">
+                                    <span className={"w-7 h-7 rounded-md border-2 flex items-center justify-center text-xs font-black transition-all duration-200 " + (pickedVal === "GREEN" ? "rotate-0 scale-110 bg-emerald-600 border-emerald-600 text-white shadow-sm" : "rotate-12 bg-emerald-50/40 border-emerald-300 text-transparent group-hover:rotate-0")}>✓</span>
+                                    <span className={"text-[10px] font-bold leading-tight " + (pickedVal === "GREEN" ? "text-emerald-600" : "text-slate-500")}>Spot On</span>
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-extrabold text-slate-800 block">Share Specific Suggestions *</label>
+                            <textarea rows={3} value={weakFeedbackComment} onChange={(e) => setWeakFeedbackComment(e.target.value)} placeholder="Tell us what felt off or how we can sharpen your AI analysis..." className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 focus:outline-none focus:border-[#0084FF] focus:bg-white" />
+                          </div>
+                        </div>
+
+                        <div className="p-4 border-t border-slate-100 bg-white">
+                          <button
+                            type="button"
+                            disabled={Object.keys(weakFeedbackRatings).length < 4 || !weakFeedbackComment.trim()}
+                            onClick={() => {
+                              setWeakFeedbackList([
+                                { id: `fb_${Date.now()}`, exam: currentExam, subject: weakSubject, view: weakView, ratings: { ...weakFeedbackRatings }, comment: weakFeedbackComment.trim(), date: "26 Nov 2026" },
+                                ...weakFeedbackList
+                              ]);
+                              setWeakFeedbackRatings({});
+                              setWeakFeedbackComment("");
+                              setShowWeakFeedbackModal(false);
+                              alert("धन्यवाद! आपका विस्तृत AI Performance Feedback एडमिन टीम को भेज दिया गया है।");
+                            }}
+                            className="w-full py-3 rounded-xl font-extrabold text-xs text-white bg-[#0084FF] hover:bg-blue-600 disabled:bg-slate-200 disabled:text-slate-400 transition"
+                          >
+                            Submit Feedback ✓
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                         
                       </div>
