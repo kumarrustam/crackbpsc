@@ -197,4 +197,152 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
             <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2 py-1 rounded bg-white text-slate-900 text-[11px] font-black">
               {lang === "HI" ? "अ | E" : "E | अ"}
             </button>
+            
+          <button type="button" disabled={qIdx >= totalQs - 1} onClick={() => { setQIdx(Math.min(totalQs - 1, qIdx + 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">Next →</button>
+          )}
+        </div>
+
+        {showCompletePopup && isAllDone && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-center space-y-4 shadow-2xl">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto font-black">✓</div>
+              <h3 className="font-extrabold text-base text-slate-900">You have attempted all questions</h3>
+              <button type="button" onClick={completeAndSaveAttempt} className="w-full py-3 bg-[#0084FF] text-white rounded-xl font-extrabold text-xs">Generate Practice Summary</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (step === "SUMMARY") {
+    const wrongCount = totalQs - correctCount;
+    const nextMod = subjectModules.find((m) => m.id !== activeMod.id) || INITIAL_MODULES;
+    const filtered = questions.map((q, idx) => ({ ...q, idx, pick: answers[idx], sec: qTimes[idx] || 1 })).filter((item) => {
+      if (filterMode === "CORRECT") return item.pick === item.ans;
+      if (filterMode === "INCORRECT") return item.pick !== item.ans;
+      return true;
+    });
+
+    return (
+      <div className="fixed inset-0 z-50 bg-[#F3F5F8] overflow-y-auto pb-16 text-slate-900">
+        <div className="bg-[#181C24] text-white px-4 py-3.5 flex items-center justify-between">
+          <button type="button" onClick={() => setStep("CHAPTERS")} className="font-extrabold text-sm flex items-center gap-2">
+            <span>←</span>
+            <span className="truncate max-w-[220px]">{activeMod.title}</span>
+          </button>
+          <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2 py-1 rounded bg-white text-slate-900 text-[11px] font-black">{lang === "HI" ? "अ | E" : "E | अ"}</button>
+        </div>
+
+        <div className="p-4 max-w-2xl mx-auto space-y-5">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className="text-xs font-bold text-slate-500">Your Accuracy</div>
+              <div className="text-xl font-black text-emerald-600">{accuracyPct}.00%</div>
+              <div className="grid grid-cols-5 gap-1">
+                {.map((v) => <span key={v} className={"h-1 rounded-full " + (accuracyPct >= v - 10 ? "bg-emerald-500" : "bg-slate-200")} />)}
+              </div>
+              <div className="text-[11px] text-slate-400">Target: {activeMod.targetAcc}%</div>
+            </div>
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className="text-xs font-bold text-slate-500">Your Speed</div>
+              <div className="text-xl font-black text-rose-500">{avgSpeed} Sec/Q</div>
+              <div className="grid grid-cols-5 gap-1">
+                {.map((v) => <span key={v} className={"h-1 rounded-full " + (v <= 2 ? "bg-rose-500" : "bg-slate-200")} />)}
+              </div>
+              <div className="text-[11px] text-slate-400">Target: {activeMod.targetSpeed} Sec/Q</div>
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+              <h3 className="font-extrabold text-[15px] text-slate-900">Next Practice</h3>
+            </div>
+            <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="flex items-center gap-2">
+                <span className={"px-2 py-0.5 rounded text-[10px] font-black " + (nextMod.tier === "PRO" ? "bg-amber-400 text-slate-900" : "bg-emerald-500 text-white")}>{nextMod.tier}</span>
+                <span className="font-extrabold text-[15px] text-slate-900">{nextMod.title}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span>{nextMod.questions.length} Qs.</span>
+                <span>English, Hindi</span>
+              </div>
+              <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-semibold">👥 {nextMod.completedText}</span>
+                <button type="button" onClick={() => startModule(nextMod.id)} className="text-[#0084FF] font-extrabold">Start Practice →</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 overflow-x-auto">
+              <button type="button" onClick={() => setFilterMode("ALL")} className={"px-3.5 py-1.5 rounded-full text-xs font-extrabold border shrink-0 " + (filterMode === "ALL" ? "bg-[#0084FF] text-white border-[#0084FF]" : "bg-white text-slate-600 border-slate-200")}>All Questions ({totalQs})</button>
+              <button type="button" onClick={() => setFilterMode("INCORRECT")} className={"px-3.5 py-1.5 rounded-full text-xs font-extrabold border shrink-0 " + (filterMode === "INCORRECT" ? "bg-rose-500 text-white border-rose-500" : "bg-white text-slate-600 border-slate-200")}>Incorrect ({wrongCount})</button>
+              <button type="button" onClick={() => setFilterMode("CORRECT")} className={"px-3.5 py-1.5 rounded-full text-xs font-extrabold border shrink-0 " + (filterMode === "CORRECT" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-600 border-slate-200")}>Correct ({correctCount})</button>
+            </div>
+
+            <div className="space-y-2.5">
+              {filtered.map((item) => {
+                const ok = item.pick === item.ans;
+                return (
+                  <div key={item.id} className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={"w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center " + (ok ? "bg-emerald-500" : "bg-rose-500")}>{item.idx + 1}</span>
+                        <span className="text-xs font-bold text-slate-400">🕒 {fmtSec(item.sec)}</span>
+                      </div>
+                      <button type="button" onClick={() => setBookmarks({ ...bookmarks, [item.idx]: !bookmarks[item.idx] })} className="text-sm">{bookmarks[item.idx] ? "🔖" : "📑"}</button>
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{lang === "HI" ? item.q_hi : item.q_en}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === "ATTEMPTED") {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#F3F5F8] overflow-y-auto pb-20 text-slate-900">
+        <div className="bg-[#181C24] text-white px-4 py-3.5 flex items-center gap-2">
+          <button type="button" onClick={() => setStep("CHAPTERS")} className="font-extrabold text-sm flex items-center gap-2">
+            <span>←</span>
+            <span>Attempted Modules</span>
+          </button>
+        </div>
+        <div className="p-4 max-w-2xl mx-auto space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+            <h3 className="font-extrabold text-sm text-slate-900">{subjectName}</h3>
+          </div>
+          {completedList.length === 0 ? (
+            <div className="p-4 bg-white rounded-xl border border-slate-200 text-xs text-slate-500 text-center">अभी तक कोई मॉड्यूल 100% सबमिट नहीं हुआ है।</div>
+          ) : (
+            completedList.map((att) => (
+              <div key={att.id} className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className={"px-1.5 py-0.5 rounded text-[10px] font-black " + (att.tier === "PRO" ? "bg-amber-400 text-slate-900" : "bg-emerald-500 text-white")}>{att.tier}</span>
+                  <span className="font-extrabold text-sm text-slate-900">{att.title}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">{att.totalQs}/{att.totalQs} Qs.</span>
+                    <div className="flex-1 h-1.5 bg-emerald-500 rounded-full" />
+                  </div>
+                  <button type="button" onClick={() => { setActiveModId(att.modId); setAnswers(att.savedAnswers); setQTimes(att.savedTimes || {}); setFilterMode("ALL"); setStep("SUMMARY"); }} className="text-xs font-extrabold text-[#0084FF] whitespace-nowrap">View Results</button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                  <div>◎ Accuracy <span className="font-extrabold text-emerald-600 ml-1">{att.accuracy}%</span></div>
+                  <div>⏱ Speed <span className="font-extrabold text-emerald-600 ml-1">{att.speed} Sec/Q</span></div>
+                </div>
+                <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Attempted on: {att.date}</span>
+                  <button type="button" onClick={() => startModule(att.modId)} className="font-extrabold text-[#0084FF]">Reattempt →</button>
+                </div>
+
+                
 
