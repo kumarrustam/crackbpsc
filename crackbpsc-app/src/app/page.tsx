@@ -1767,14 +1767,47 @@ useEffect(() => {
                 </div>
               </div>
             )}
+             
+            {bottomTab === "WEAK" && (() => {
+              const examPills = Array.isArray(myExams) && myExams.length > 0 ? myExams : ["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"];
+              const currentExam = examPills.includes(weakExam) ? weakExam : examPills[0];
+              return (
+                <div className="min-h-[86vh] pb-24 overscroll-contain bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl overflow-hidden shadow-md border border-slate-200">
+                  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <button type="button" onClick={goBackPage} className="inline-flex items-center gap-1.5 text-[#38BDF8] hover:text-sky-300 font-bold text-sm">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                        <span>Back</span>
+                      </button>
+                      <span className="px-2 py-0.5 bg-[#0084FF] text-white rounded text-[10px] font-black tracking-wider uppercase">CRACKBPSC AI</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-1.5">
+                        <h2 className="text-[22px] sm:text-2xl font-extrabold leading-snug text-white tracking-tight">Weak Areas<br />Improvement</h2>
+                        <p className="text-xs text-slate-300 font-normal">With AI generated Performance analysis.</p>
+                      </div>
+                      <div className="w-14 h-14 rounded-2xl bg-amber-300/20 border border-amber-300/40 flex items-center justify-center text-3xl shrink-0">📊</div>
+                    </div>
+                  </div>
 
-            
-            
+                  <div className="px-3.5 py-3 bg-white border-b border-slate-200/80 flex items-center gap-2 overflow-x-auto">
+                    {examPills.map((exName: string) => (
+                      <button key={exName} type="button" onClick={() => setWeakExam(exName)} className={"px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border transition " + (currentExam === exName ? "bg-[#0084FF] text-white border-[#0084FF] shadow-xs" : "bg-white text-slate-800 border-slate-200 hover:bg-slate-50")}>
+                        {exName}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => setShowMyExamsModal(true)} className="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border border-pink-300 bg-pink-50/60 text-[#0084FF] hover:bg-pink-100/70">
+                      + Add Exam
+                    </button>
+                  </div>
 
-              
-                
+                  <div className="p-4 text-center text-xs text-slate-500 font-bold">
+                    Selected Exam: <span className="text-[#0084FF]">{currentExam}</span> (Subjects Analysis अगले पार्ट में जुड़ेगा)
+                  </div>
+                </div>
+              );
+            })()}           
             {bottomTab === "HOME" && (<>
-
    <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <button onClick={() => setExamLang(examLang === "HI" ? "EN" : "HI")} title="भाषा बदलें (क ⇄ A)" className="inline-flex items-center gap-1 bg-slate-900 text-white border border-amber-400 px-2 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-95">
