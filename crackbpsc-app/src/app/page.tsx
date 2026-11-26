@@ -239,6 +239,8 @@ const [newSub, setNewSub] = useState("बिहार विशेष");
     { id: "at3", sub: "History", title: "आधुनिक भारत और बिहार किसान आंदोलन Quiz", score: "16 / 20", accuracy: "80%", date: "21 Nov" }
   ]);
   const [weakExam, setWeakExam] = useState<string>("72वीं BPSC CCE");
+  const [myExams, setMyExams] = useState<string[]>(["72वीं BPSC CCE", "BPSC TRE 4.0", "BSSC CGL-4", "Bihar Police SI"]);
+  const [showMyExamsModal, setShowMyExamsModal] = useState<boolean>(false);
   const [adminStudioTab, setAdminStudioTab] = useState<string>("NEWS");
   const [flipNewsItems, setFlipNewsItems] = useState<any[]>([ 
     {
