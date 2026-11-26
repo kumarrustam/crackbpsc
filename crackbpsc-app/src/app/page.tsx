@@ -1848,6 +1848,156 @@ useEffect(() => {
               ]));
               const currentExam = allSwipeExams.includes(weakExam) ? weakExam : allSwipeExams[0];
               const examPills = allSwipeExams;
+
+
+              const activeExamChapters = weakModulesBank.filter((m) => m.exam === currentExam && m.subject === weakSubject);
+              const fallbackChapters = activeExamChapters.length > 0 ? activeExamChapters : [
+                {
+                  id: `ch_${currentExam}_${weakSubject}_1`,
+                  exam: currentExam,
+                  subject: weakSubject,
+                  title: `${weakSubject} — Core Concept & PYQs`,
+                  tier: "FREE",
+                  targetAcc: 70.0,
+                  targetSpeed: 22,
+                  completedCount: "650+",
+                  questions: weakModulesBank[0].questions
+                }
+              ];
+              const currentModule = fallbackChapters.find((m) => m.id === weakChapterId) || fallbackChapters[0];
+              const totalQsCount = currentModule.questions.length;
+              const attemptedQsCount = Object.keys(weakAnswers).length;
+              const isAllAttempted = attemptedQsCount >= totalQsCount;
+              const currentQ = currentModule.questions[weakQIdx] || currentModule.questions[0];
+
+              const handlePickOption = (optIdx: number) => {
+                if (weakAnswers[weakQIdx] !== undefined) return;
+                const spentSec = weakQStartTime > 0 ? Math.max(1, Math.round((Date.now() - weakQStartTime) / 1000)) : 2;
+                const updatedAns = { ...weakAnswers, [weakQIdx]: optIdx };
+                const updatedTimes = { ...weakTimes, [weakQIdx]: spentSec };
+                setWeakAnswers(updatedAns);
+                setWeakTimes(updatedTimes);
+                if (Object.keys(updatedAns).length >= totalQsCount) {
+                  setWeakShowCompleteModal(true);
+                }
+              };
+
+              const handleFinishAndShowSummary = () => {
+                let correctCnt = 0;
+                let totalSec = 0;
+                currentModule.questions.forEach((qItem: any, idx: number) => {
+                  if (weakAnswers[idx] === qItem.ans) correctCnt += 1;
+                  totalSec += weakTimes[idx] || 2;
+                });
+                const accPct = Math.round((correctCnt / totalQsCount) * 100);
+                const avgSpd = Math.max(1, Math.round(totalSec / totalQsCount));
+                const newRec = {
+                  id: `att_${Date.now()}`,
+                  exam: currentExam,
+                  subject: weakSubject,
+                  chapterId: currentModule.id,
+                  chapterTitle: currentModule.title,
+                  tier: currentModule.tier,
+                  totalQs: totalQsCount,
+                  correct: correctCnt,
+                  accuracy: accPct,
+                  speed: avgSpd,
+                  date: "26 Nov 2026",
+                  answers: { ...weakAnswers }
+                };
+                setWeakAttemptHistory([newRec, ...weakAttemptHistory.filter((x) => x.chapterId !== currentModule.id)]);
+                setWeakShowCompleteModal(false);
+                setWeakView("SUMMARY");
+              };
+
+              if (weakView === "CHAPTERS") {
+                return (
+                  <div className="pb-28 bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">
+                    <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
+                      <button type="button" onClick={() => setWeakView("SUBJECTS")} className="inline-flex items-center gap-1.5 text-[#38BDF8] hover:text-sky-300 font-bold text-sm">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                        <span>Back to {currentExam}</span>
+                      </button>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="space-y-1.5">
+                          <h2 className="text-[22px] sm:text-2xl font-extrabold leading-snug text-white tracking-tight">{weakSubject}</h2>
+                          <p className="text-xs text-slate-300 font-normal leading-relaxed">Correct your mistakes, attempt AI generated practice of your weak chapters</p>
+                        </div>
+                        <div className="w-14 h-14 rounded-2xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300 font-black text-base shrink-0">× ÷<br />+ -</div>
+                      </div>
+                    </div>
+
+                    <div className="px-3.5 pt-4 pb-6 space-y-4">
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                          <h3 className="font-extrabold text-[15px] text-[#111827]">Ongoing Revision ({attemptedQsCount > 0 && !isAllAttempted ? 1 : 0})</h3>
+                        </div>
+                        <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="font-extrabold text-[15px] text-[#111827]">{currentModule.title}</div>
+                            <div className="text-right">
+                              <div className="text-[11px] font-bold text-slate-400">▃▅▇</div>
+                              <div className="text-[10px] text-slate-400">{attemptedQsCount > 0 ? `${attemptedQsCount}/${totalQsCount} Qs` : "No Data"}</div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100 text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold">◎</span>
+                              <div>
+                                <div className="text-[11px] text-slate-500">Accuracy</div>
+                                <div className="font-extrabold text-slate-900">0%</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="w-7 h-7 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold">📄</span>
+                              <div>
+                                <div className="text-[11px] text-slate-500">Attempts</div>
+                                <div className="font-extrabold text-slate-900">{attemptedQsCount}Q</div>
+                              </div>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => { setWeakChapterId(currentModule.id); setWeakQIdx(0); setWeakShowCompleteModal(false); setWeakQStartTime(Date.now()); setWeakView("PLAYER"); }} className="w-full py-2.5 bg-[#0084FF] hover:bg-blue-600 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95">
+                            Continue Practice
+                          </button>
+                        </div>
+                      </div>
+
+                      <button type="button" onClick={() => setWeakView("ATTEMPTED_LIST")} className="w-full p-3.5 bg-white hover:bg-sky-50/50 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between text-left transition">
+                        <span className="font-extrabold text-sm text-[#111827] inline-flex items-center gap-1.5">
+                          <span>View Attempted Modules</span>
+                          <span className="text-[#0084FF]">→</span>
+                        </span>
+                        <span className="w-9 h-9 rounded-lg bg-sky-50 text-[#0084FF] flex items-center justify-center text-base">📝</span>
+                      </button>
+
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1 h-4 bg-[#0084FF] rounded-full" />
+                          <h3 className="font-extrabold text-[15px] text-[#111827]">Chapter Analysis</h3>
+                        </div>
+                        <div className="space-y-3">
+                          {fallbackChapters.map((chItem: any) => (
+                            <div key={chItem.id} className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={"px-1.5 py-0.5 rounded text-[10px] font-black " + (chItem.tier === "PRO" ? "bg-amber-400 text-slate-900" : "bg-emerald-500 text-white")}>{chItem.tier}</span>
+                                    <span className="text-[11px] font-bold text-slate-500">{chItem.questions.length} Qs.</span>
+                                  </div>
+                                  <div className="font-extrabold text-[15px] text-[#111827]">{chItem.title}</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-[11px] font-bold text-slate-400">▃▅▇</div>
+                                  <div className="text-[10px] text-slate-400">No Data</div>
+                                </div>
+                              </div>
+                              <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                                <span className="text-slate-500 inline-flex items-center gap-1.5">
+                                  <span>✎</span>
+
+                                  
+            
               return (
                 <div className="pb-28 bg-[#F3F5F8] text-[#111827] -mx-2 sm:mx-0 sm:rounded-2xl shadow-md border border-slate-200">  <div className="bg-[#181C24] text-white px-4 pt-4 pb-5 space-y-4">
                     <div className="flex items-center justify-between">
@@ -2031,7 +2181,7 @@ useEffect(() => {
                                   <span>✎</span>
                                   <span>Attempt more Qs to generate analysis</span>
                                 </span>
-                                <button type="button" onClick={() => { setCustomSub(subName); setSelSection("Practice Test"); setDrillStep(3); openPage("HOME"); }} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
+                                <button type="button" onClick={() => { setWeakSubject(subName); setWeakView("CHAPTERS"); }} className="text-[#0084FF] hover:text-blue-700 font-bold whitespace-nowrap">
                                   Start →
                                 </button>
                               </div>
