@@ -199,7 +199,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
             </button>
             
           <button type="button" disabled={qIdx >= totalQs - 1} onClick={() => { setQIdx(Math.min(totalQs - 1, qIdx + 1)); setLiveSec(1); }} className="py-3.5 text-xs font-extrabold disabled:opacity-40">Next →</button>
-          )}
+          
         </div>
 
         {showCompletePopup && isAllDone && (
