@@ -72,7 +72,7 @@ function balanceAnswerPositions(
   optMode: "4_OPTS" | "5_BPSC_E" | "5_UNATTEMPTED",
   startOffset = 0
 ): WeakQuestion[] {
-  const targetCycle =;
+  const targetCycle = new Array(1, 3, 0, 2);
   return questions.map((q, qIdx) => {
     const baseHi = q.opts_hi.slice(0, 4);
     const baseEn = q.opts_en.slice(0, 4);
