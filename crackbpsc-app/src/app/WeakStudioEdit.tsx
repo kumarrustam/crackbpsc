@@ -3,16 +3,11 @@
 import React, { useState } from "react";
 import { WeakChapterModule } from "./WeakAreasPro";
 
-export function WeakStudioEdit({
-  mod, modules, saveAll, canDelete
-}: {
-  mod?: WeakChapterModule; modules: WeakChapterModule[]; saveAll: (m: WeakChapterModule[]) => void; canDelete: boolean;
-}) {
+export function WeakStudioEdit(props: { mod?: WeakChapterModule; modules: WeakChapterModule[]; saveAll: (m: WeakChapterModule[]) => void; canDelete: boolean }) {
+  const { mod, modules, saveAll, canDelete } = props;
   const [editId, setEditId] = useState<number | null>(null);
   const [pyp, setPyp] = useState("PYP"); const [year, setYear] = useState("2025"); const [tags, setTags] = useState("BPSC, UPSC");
-  const [qHi, setQHi] = useState(""); const [oHi, setOHi] = useState(["", "", "", ""]);
-  const [ans, setAns] = useState(0); const [kpHi, setKpHi] = useState("");
-
+  const [qHi, setQHi] = useState(""); const [oHi, setOHi] = useState(["", "", "", ""]); const [ans, setAns] = useState(0); const [kpHi, setKpHi] = useState("");
   if (!mod) return null;
 
   return (
