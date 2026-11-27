@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState } from "react";
 import { WeakChapterModule, WeakQuestion } from "./WeakAreasPro";
@@ -64,7 +63,7 @@ export function WeakStudioAI(props: {
       const bal = balanceAnswerPositions(qs, optMode, 0);
       saveAll([...modules, { id: `mod_${Date.now()}`, exam: aiExam, subject: sub, title: title.trim(), tier: "FREE", targetAcc: 72, targetSpeed: 24, completedText: "210+ Completed", questions: bal }]);
       setTitle("");
-      alert(`${bal.length} प्रश्न तैयार हो गए!`);
+      alert(`बधाई हो! [${sub}] के "${title}" में 4-डब्बा व्याख्या वाले ${bal.length} प्रश्न तैयार हो गए!`);
     } catch {
       alert("AI त्रुटि—API Key जांचें।");
     } finally {
@@ -75,12 +74,20 @@ export function WeakStudioAI(props: {
   return (
     <div className="p-4 bg-white rounded-2xl border border-indigo-200 space-y-2.5 text-xs">
       <div className="font-extrabold text-sm text-indigo-950">✨ AI 8-Pattern + 4-Box Builder</div>
-      <input type="password" value={geminiKey} onChange={(e) => setGeminiKey(e.target.value)} placeholder="Gemini API Key..." className="w-full p-2 border rounded-xl bg-slate-50" />
+      <input type="password" value={geminiKey} onChange={(e) => setGeminiKey(e.target.value)} placeholder="Gemini API Key..." className="w-full p-2.5 border rounded-xl bg-slate-50" />
+      <div className="p-2.5 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-1.5">
+        <div className="font-extrabold text-[11px] text-indigo-900">1-Click AI से अध्याय व {count} द्वीभाषी प्रश्न तैयार करें:</div>
+        <div className="flex gap-2 items-center">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="अध्याय या विषय का शीर्षक लिखें (जैसे: हड़प्पा सभ्यता)..." className="flex-1 p-2.5 border border-indigo-300 rounded-xl bg-white font-bold" />
+          <button type="button" disabled={loading} onClick={runAI} className="px-3.5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl font-black shrink-0 shadow-sm">
+            {loading ? "⏳ बन रहा है..." : "1-Click AI Auto-Fill"}
+          </button>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-2">
         <select value={aiExam} onChange={(e) => setAiExam(e.target.value)} className="p-2 border rounded-xl font-bold">{customExams.map((e) => <option key={e} value={e}>{e}</option>)}</select>
         <select value={aiSub} onChange={(e) => setAiSub(e.target.value)} className="p-2 border rounded-xl font-bold"><option value="AUTO">🤖 Auto Subject</option>{customSubjects.map((s) => <option key={s} value={s}>{s}</option>)}</select>
       </div>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="अध्याय का शीर्षक (जैसे: हड़प्पा सभ्यता)..." className="w-full p-2.5 border border-indigo-300 rounded-xl font-bold" />
       <input value={examTags} onChange={(e) => setExamTags(e.target.value)} placeholder="Exam Tags (BPSC, UPSC, JPSC)" className="w-full p-2 border rounded-xl font-bold" />
       <div className="flex flex-wrap gap-1.5">
         {ALL_PATTERNS.map((p) => (
