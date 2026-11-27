@@ -158,7 +158,10 @@ export default function WeakAreasAdminStudio({ isHeadAdmin = true }: { isHeadAdm
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
       });
       const data = await res.json();
-      const rawText = data?.candidates?.?.content?.parts?.?.text || "";
+      
+const rawText = (data && data.candidates && data.candidates.at(0)?.content?.parts?.at(0)?.text) || "";
+
+
       const parsed = JSON.parse(rawText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim());
       const rawQs: WeakQuestion[] = parsed.map((item: any, idx: number) => ({
         id: idx + 1, pyp: item.pyp || "PYP", year: String(item.year || "2024"), examTags: item.examTags || "BPSC, UPSC", gotRightPct: 38,
