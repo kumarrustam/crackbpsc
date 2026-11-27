@@ -17,18 +17,18 @@ const SOUNDS_10 = [
 ];
 
 const ALL_PATTERNS = [
-  { id: "STANDARD", label: "1. साधारण (Standard MCQ)", promptDesc: "Direct Factual MCQ" },
-  { id: "ASSERTION", label: "2. कथन और कारण (A & R)", promptDesc: "Assertion (A) and Reason (R)" },
-  { id: "MATCHING", label: "3. कूट और मिलान (List I-II)", promptDesc: "Match List-I with List-II using codes" },
-  { id: "ORDERING", label: "4. क्रम में सजाएं (पूर्व-पश्चिम/आरोही)", promptDesc: "Chronological or East-to-West / Ascending-Descending Ordering" },
-  { id: "STATEMENT", label: "5. बहु-कथन (1, 2 और 3)", promptDesc: "Multi-statement (Which statements are correct)" },
-  { id: "PAIRS", label: "6. युग्म मिलान (केवल 1/2 युग्म)", promptDesc: "Pair-Matching (How many pairs are correctly matched)" },
-  { id: "NOT_CORRECT", label: "7. असत्य / अपवाद पहचानें", promptDesc: "Find the INCORRECT statement / Exception" },
-  { id: "CONCEPTUAL", label: "8. अवधारणात्मक (कारण-प्रभाव)", promptDesc: "Conceptual & Analytical application-based question" }
+  { id: "STANDARD", label: "1. साधारण (Standard)", desc: "Direct Factual MCQ" },
+  { id: "ASSERTION", label: "2. कथन-कारण (A & R)", desc: "Assertion (A) and Reason (R)" },
+  { id: "MATCHING", label: "3. कूट-मिलान (List I-II)", desc: "Match List-I with List-II using codes" },
+  { id: "ORDERING", label: "4. क्रम सजाएं (पूर्व-पश्चिम)", desc: "Chronological or East-to-West Ordering" },
+  { id: "STATEMENT", label: "5. बहु-कथन (1, 2 और 3)", desc: "Multi-statement (Which statements are correct)" },
+  { id: "PAIRS", label: "6. युग्म मिलान (केवल 1/2)", desc: "Pair-Matching (How many pairs are matched)" },
+  { id: "NOT_CORRECT", label: "7. असत्य पहचानें", desc: "Find the INCORRECT statement" },
+  { id: "CONCEPTUAL", label: "8. अवधारणात्मक", desc: "Conceptual & Analytical question" }
 ];
 
 const NEGATIVE_MODES = [
-  { id: "BPSC_UNATTEMPTED_1_3", label: "स्पेशल BPSC नियम: गलत पर -1/3 + बिना 'अनुत्तरित प्रश्न' चुने छोड़ने पर भी -1/3" },
+  { id: "BPSC_UNATTEMPTED_1_3", label: "BPSC नियम: गलत पर -1/3 + बिना 'अनुत्तरित प्रश्न' चुने छोड़ने पर भी -1/3" },
   { id: "STD_1_3", label: "सामान्य नेगेटिव: गलत पर -1/3 (छोड़ने पर 0)" },
   { id: "STD_1_4", label: "सामान्य नेगेटिव: गलत पर -1/4 (छोड़ने पर 0)" },
   { id: "NONE", label: "कोई नेगेटिव मार्किंग नहीं (0)" }
@@ -46,24 +46,18 @@ interface CwPermissions {
 }
 
 const DEFAULT_CW_PERMS: CwPermissions = {
-  aiGen: false,
-  manual: false,
-  bulk: false,
-  editQ: false,
-  deleteQ: false,
-  examsSub: false,
-  negAndOpt5: false,
-  featuresAndSounds: false
+  aiGen: false, manual: false, bulk: false, editQ: false,
+  deleteQ: false, examsSub: false, negAndOpt5: false, featuresAndSounds: false
 };
 
 function detectSubjectAuto(text: string, fallback: string): string {
   const t = text.toLowerCase();
   if (t.includes("बिहार") || t.includes("bihar") || t.includes("पटना") || t.includes("चंपारण")) return "Bihar Special";
-  if (t.includes("हड़प्पा") || t.includes("मौर्य") || t.includes("संगम") || t.includes("harappa") || t.includes("history") || t.includes("विद्रोह")) return "History";
-  if (t.includes("संविधान") || t.includes("अनुच्छेद") || t.includes("संसद") || t.includes("polity") || t.includes("article")) return "Polity";
-  if (t.includes("नदी") || t.includes("पर्वत") || t.includes("जलवायु") || t.includes("geography") || t.includes("river")) return "Geography";
-  if (t.includes("बजट") || t.includes("मुद्रास्फीति") || t.includes("gdp") || t.includes("economy") || t.includes("अर्थव्यवस्था")) return "Economy";
-  if (t.includes("कोशिका") || t.includes("विटामिन") || t.includes("भौतिक") || t.includes("रसायन") || t.includes("science")) return "General Science";
+  if (t.includes("हड़प्पा") || t.includes("मौर्य") || t.includes("संगम") || t.includes("harappa") || t.includes("history")) return "History";
+  if (t.includes("संविधान") || t.includes("अनुच्छेद") || t.includes("संसद") || t.includes("polity")) return "Polity";
+  if (t.includes("नदी") || t.includes("पर्वत") || t.includes("जलवायु") || t.includes("geography")) return "Geography";
+  if (t.includes("बजट") || t.includes("मुद्रास्फीति") || t.includes("gdp") || t.includes("economy")) return "Economy";
+  if (t.includes("कोशिका") || t.includes("विटामिन") || t.includes("भौतिक") || t.includes("science")) return "General Science";
   return fallback;
 }
 
@@ -78,14 +72,12 @@ function balanceAnswerPositions(
     const baseEn = q.opts_en.slice(0, 4);
     const safeAns = q.ans >= 0 && q.ans < baseHi.length ? q.ans : 0;
     const targetPos = targetCycle[(qIdx + startOffset) % targetCycle.length];
-
     const newHi = [...baseHi];
     const newEn = [...baseEn];
     if (baseHi.length === 4 && safeAns !== targetPos) {
       [newHi[safeAns], newHi[targetPos]] = [newHi[targetPos], newHi[safeAns]];
       [newEn[safeAns], newEn[targetPos]] = [newEn[targetPos], newEn[safeAns]];
     }
-
     if (optMode === "5_UNATTEMPTED") {
       newHi.push("अनुत्तरित प्रश्न");
       newEn.push("Unattempted Question");
@@ -93,7 +85,6 @@ function balanceAnswerPositions(
       newHi.push("उपर्युक्त में से कोई नहीं / उपर्युक्त में से एक से अधिक");
       newEn.push("None of the above / More than one of the above");
     }
-
     return { ...q, opts_hi: newHi, opts_en: newEn, ans: targetPos };
   });
 }
@@ -161,7 +152,6 @@ export default function WeakAreasAdminStudio({ isHeadAdmin = true }: { isHeadAdm
 
   const can = (k: keyof CwPermissions) => isHeadAdmin || cwPerms[k];
   const anyCwAllowed = Object.values(cwPerms).some(Boolean);
-
   if (!isHeadAdmin && !anyCwAllowed) return null;
 
   const updatePerms = (next: CwPermissions) => {
@@ -170,19 +160,19 @@ export default function WeakAreasAdminStudio({ isHeadAdmin = true }: { isHeadAdm
   };
 
   const setAllCwPerms = (val: boolean) => {
-    updatePerms({
-      aiGen: val,
-      manual: val,
-      bulk: val,
-      editQ: val,
-      deleteQ: val,
-      examsSub: val,
-      negAndOpt5: val,
-      featuresAndSounds: val
-    });
+    updatePerms({ aiGen: val, manual: val, bulk: val, editQ: val, deleteQ: val, examsSub: val, negAndOpt5: val, featuresAndSounds: val });
   };
 
   const saveAll = (nextMods: WeakChapterModule[]) => {
     setModules(nextMods);
+    if (typeof window !== "undefined") localStorage.setItem("cb_custom_weak_modules", JSON.stringify(nextMods));
+  };
 
-    
+  const togglePattern = (id: string) => {
+    setSelectedPatterns((prev) => prev.includes(id) ? (prev.length > 1 ? prev.filter((x) => x !== id) : prev) : [...prev, id]);
+  };
+
+  const applyManualTemplate = (pat: string) => {
+    if (pat === "ASSERTION") {
+
+
