@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react"; 
 import WeakAreasPlayerModal from "./WeakAreasPro"; 
 import WeakAreasAdminStudio from "./WeakAreasAdminStudio";
+import FlipCurrentAffairsStudio from "./FlipCurrentAffairsStudio";
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
@@ -2932,125 +2933,11 @@ useEffect(() => {
       )}
       
       {(role === "ADMIN" || role === "WRITER") && (
-        <div className="max-w-5xl mx-auto my-3 p-4 bg-slate-900 text-white rounded-2xl border border-slate-700 shadow-xl space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
-            <div>
-              <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-black uppercase">{role} STUDIO</span>
-              <h3 className="font-black text-base text-amber-300 mt-0.5">Flip Current Affairs Generator (1-Click AI + Manual)</h3>
-            </div>
-            <span className="text-[11px] text-slate-400 font-bold">कुल लाइव कार्ड्स: {flipNewsItems.length}</span>
-          </div>
+        
+       
+<FlipCurrentAffairsStudio items={flipNewsItems} setItems={setFlipNewsItems} caWeek={caWeek} caMonth={caMonth} />
 
-          <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
-            <div className="text-xs font-black text-slate-200">1-Click AI से द्विभाषी (हिन्दी + English) Flip News कार्ड बनाएं:</div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input value={aiNewsTopic} onChange={(e) => setAiNewsTopic(e.target.value)} placeholder="समाचार का विषय या शीर्षक लिखें..." className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
-              <button type="button" disabled={aiNewsLoading || !aiNewsTopic.trim()} onClick={async () => {
-                setAiNewsLoading(true);
-                try {
-                  const res = await fetch("/api/gemini", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      prompt: "Create a detailed bilingual (Hindi & English) BPSC/UPSC Current Affairs flip card JSON for topic: " + aiNewsTopic + ". Return ONLY valid JSON with keys: subject (one of: Bihar Special, Politics, Economy, Sci & Tech, Environment, Defence, International, History & Culture), title_hi, title_en, summary_hi (detailed summary), summary_en (detailed summary), tip_hi, tip_en, d1_hi, d2_hi, d3_hi, d1_en, d2_en, d3_en, tags (comma separated)."
-                    })
-                  });
-                  const data = await res.json();
-                  const raw = (data.text || data.result || "").replace(/```json|```/g, "").trim();
-                  const parsed = JSON.parse(raw);
-                  setDraftNews({ ...draftNews, ...parsed });
-                } catch {
-                  setDraftNews({
-                    ...draftNews,
-                    title_hi: aiNewsTopic + " — प्रमुख परीक्षा तथ्य",
-                    title_en: aiNewsTopic + " — Key Exam Highlights",
-                    summary_hi: aiNewsTopic + " से संबंधित हालिया सरकारी निर्णय और नीतिगत पहल परीक्षा की दृष्टि से अत्यंत महत्वपूर्ण है।",
-                    summary_en: "Recent policy developments and key facts related to " + aiNewsTopic + " are highly relevant for upcoming exams.",
-                    tip_hi: aiNewsTopic + " से जुड़े मुख्य तथ्य, तिथि और संबंधित मंत्रालय।",
-                    tip_en: "Key facts, dates, and nodal ministry related to " + aiNewsTopic + ".",
-                    d1_hi: "प्रमुख बिंदु 1: " + aiNewsTopic + " की शुरुआत और उद्देश्य।",
-                    d2_hi: "प्रमुख बिंदु 2: इससे लाभान्वित होने वाले क्षेत्र और प्रमुख प्रावधान।",
-                    d3_hi: "मुख्य तथ्य: संबंधित योजना, वर्ष और संस्थागत ढांचा।",
-                    d1_en: "Point 1: Objective and launch background of " + aiNewsTopic + ".",
-                    d2_en: "Point 2: Key provisions and target beneficiaries.",
-                    d3_en: "Key Fact: Related scheme, year, and institutional framework."
-                  });
-                }
-                setAiNewsLoading(false);
-              }} className="px-4 py-2 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 rounded-xl font-black text-xs whitespace-nowrap">
-                {aiNewsLoading ? "AI तैयार कर रहा है..." : "1-Click AI Auto-Fill"}
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-            <div>
-              <label className="text-[10px] text-slate-400 font-bold">विषय (Subject)</label>
-              <select value={draftNews.subject} onChange={(e) => setDraftNews({ ...draftNews, subject: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-bold">
-                {["Bihar Special", "Politics", "Economy", "Sci & Tech", "Environment", "Defence", "International", "History & Culture"].map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-slate-400 font-bold">EXAM TIP चरण (वैकल्पिक)</label>
-              <select value={draftNews.examStage} onChange={(e) => setDraftNews({ ...draftNews, examStage: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-amber-300 font-bold">
-                <option value="">कुछ नहीं (केवल EXAM TIP दिखेगा)</option>
-                <option value="Prelims">Prelims</option>
-                <option value="Mains">Mains</option>
-                <option value="Prelims & Mains">Prelims & Mains</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-slate-400 font-bold">Exam Tags (कॉमा लगाकर)</label>
-              <input value={draftNews.tags} onChange={(e) => setDraftNews({ ...draftNews, tags: e.target.value })} className="w-full mt-0.5 p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            <input value={draftNews.title_hi} onChange={(e) => setDraftNews({ ...draftNews, title_hi: e.target.value })} placeholder="शीर्षक (हिन्दी में) *" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-bold" />
-            <input value={draftNews.title_en} onChange={(e) => setDraftNews({ ...draftNews, title_en: e.target.value })} placeholder="Headline (in English)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            <textarea rows={3} value={draftNews.summary_hi} onChange={(e) => setDraftNews({ ...draftNews, summary_hi: e.target.value })} placeholder="सारांश / लेख (हिन्दी में - कोई शब्द सीमा नहीं) *" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            <textarea rows={3} value={draftNews.summary_en} onChange={(e) => setDraftNews({ ...draftNews, summary_en: e.target.value })} placeholder="Summary / Article (in English - unlimited words)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            <input value={draftNews.tip_hi} onChange={(e) => setDraftNews({ ...draftNews, tip_hi: e.target.value })} placeholder="EXAM TIP (हिन्दी में)" className="p-2 rounded-lg bg-slate-950 border border-amber-500/40 text-amber-200" />
-            <input value={draftNews.tip_en} onChange={(e) => setDraftNews({ ...draftNews, tip_en: e.target.value })} placeholder="EXAM TIP (in English)" className="p-2 rounded-lg bg-slate-950 border border-amber-500/40 text-amber-200" />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-            <input value={draftNews.d1_hi} onChange={(e) => setDraftNews({ ...draftNews, d1_hi: e.target.value })} placeholder="Flip Back Point 1 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            <input value={draftNews.d2_hi} onChange={(e) => setDraftNews({ ...draftNews, d2_hi: e.target.value })} placeholder="Flip Back Point 2 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-            <input value={draftNews.d3_hi} onChange={(e) => setDraftNews({ ...draftNews, d3_hi: e.target.value })} placeholder="Flip Back Point 3 (हिन्दी)" className="p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" />
-          </div>
-
-          <button type="button" onClick={() => {
-            if (!draftNews.title_hi.trim() || !draftNews.summary_hi.trim()) { alert("कृपया कम से कम हिन्दी शीर्षक और सारांश भरें!"); return; }
-            const today = new Date().toISOString().slice(0, 10);
-            const newCard = {
-              id: "fn_" + Date.now(),
-              subject: draftNews.subject || "Bihar Special",
-              examStage: draftNews.examStage || "",
-              date: today,
-              week: caWeek,
-              month: caMonth,
-              title_hi: draftNews.title_hi,
-              title_en: draftNews.title_en || draftNews.title_hi,
-              summary_hi: draftNews.summary_hi,
-              summary_en: draftNews.summary_en || draftNews.summary_hi,
-              tip_hi: draftNews.tip_hi,
-              tip_en: draftNews.tip_en || draftNews.tip_hi,
-              details_hi: [draftNews.d1_hi, draftNews.d2_hi, draftNews.d3_hi].filter(Boolean),
-              details_en: [draftNews.d1_en || draftNews.d1_hi, draftNews.d2_en || draftNews.d2_hi, draftNews.d3_en || draftNews.d3_hi].filter(Boolean),
-              tags: String(draftNews.tags || "BPSC").split(",").map((t) => t.trim()).filter(Boolean)
-            };
-            const updated = [newCard, ...flipNewsItems];
-            setFlipNewsItems(updated);
-            try { localStorage.setItem("cb_flip_news_v1", JSON.stringify(updated)); } catch {}
-            setDraftNews({ subject: "Bihar Special", examStage: "", title_hi: "", title_en: "", summary_hi: "", summary_en: "", tip_hi: "", tip_en: "", d1_hi: "", d2_hi: "", d3_hi: "", d1_en: "", d2_en: "", d3_en: "", tags: "72वीं BPSC CCE, BPSC TRE 4.0" });
-            setAiNewsTopic("");
-            alert("नई Flip News लाइव हो गई है!");          
-          
-          }} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs shadow-lg">
-            Publish Flip News Live (तुरंत प्रकाशित करें)
-          </button>
-        </div>
+      
       )}
       
       {role === "ADMIN" && (
