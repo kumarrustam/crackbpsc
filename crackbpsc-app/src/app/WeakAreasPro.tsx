@@ -93,6 +93,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
   });
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
+  const [visited, setVisited] = useState<Record<number, boolean>>({ 0: true });
   const [reportReason, setReportReason] = useState<string>("");
   const [reportText, setReportText] = useState<string>("");
   const [showCompletePopup, setShowCompletePopup] = useState<boolean>(false);
@@ -104,6 +105,7 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    setVisited((v) => (v[qIdx] ? v : { ...v, [qIdx]: true }));
     sessionStorage.setItem(`${sKey}_step`, step);
     sessionStorage.setItem(`${sKey}_mod`, activeModId);
     sessionStorage.setItem(`${sKey}_qidx`, String(qIdx));
@@ -178,12 +180,21 @@ const subjectModules = allMods.filter((m) => m.exam === examName && m.subject ==
           </div>
         </div>
 
-        <div className="px-4 py-2.5 bg-white border-b border-slate-200 flex items-center gap-2 overflow-x-auto">
-          {questions.map((_, i) => {
-            const done = answers[i] !== undefined; const ok = done && answers[i] === questions[i].ans;
-            return <button key={i} type="button" onClick={() => { setQIdx(i); setLiveSec(1); }} className={"w-7 h-7 rounded-full text-xs font-extrabold shrink-0 border " + (qIdx === i ? "ring-2 ring-offset-1 ring-[#0084FF] " : "") + (!done ? "bg-white text-slate-700 border-slate-300" : ok ? "bg-emerald-500 text-white border-emerald-500" : "bg-rose-500 text-white border-rose-500")}>{i + 1}</button>;
-          })}
-        </div>
+        <div className="px-4 py-2 bg-[#F1F5F9] border-b border-slate-200 flex items-center gap-2 overflow-x-auto">
+  {questions.map((_, i) => {
+    const done = answers[i] !== undefined;
+    const ok = done && answers[i] === questions[i].ans;
+    const isCur = i === qIdx;
+    const isVis = Boolean(visited[i]);
+    const cls = done ? (ok ? "bg-emerald-600 text-white border-emerald-600" : "bg-rose-500 text-white border-rose-500") : isVis ? "bg-slate-600 text-white border-slate-600" : "bg-white text-slate-600 border-slate-300";
+    return (
+      <div key={i} className="relative flex flex-col items-center shrink-0 pb-1">
+        <button type="button" onClick={() => { setQIdx(i); setLiveSec(1); }} className={w-8 h-8 rounded-full border text-xs font-black flex items-center justify-center transition ${cls}}>{i + 1}</button>
+        {isCur && <span className="w-2.5 h-2.5 bg-white rotate-45 -mb-2.5 mt-0.5 border-t border-l border-slate-200" />}
+      </div>
+    );
+  })}
+</div>
 
         <div className="p-4 max-w-3xl mx-auto space-y-4">
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
@@ -380,7 +391,7 @@ const subjectModules = allMods.filter((m) => m.exam === examName && m.subject ==
               {filtered.map((item) => {
                 const ok = item.pick === item.ans;
                 return (
-                  <div key={item.id} className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                  <div key={item.id} onClick={() => { setQIdx(item.idx); setStep("PLAYER"); }} className="cursor-pointer hover:border-[#0084FF] p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
                     <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className={"w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center " + (ok ? "bg-emerald-500" : "bg-rose-500")}>{item.idx + 1}</span><span className="text-xs font-bold text-slate-400">🕒 {fmtSec(item.sec)}</span></div><button type="button" onClick={() => setBookmarks({ ...bookmarks, [item.idx]: !bookmarks[item.idx] })} className="text-sm">{bookmarks[item.idx] ? "🔖" : "📑"}</button></div>
                     <div className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{lang === "HI" ? item.q_hi : item.q_en}</div>
                   </div>
