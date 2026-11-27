@@ -4287,7 +4287,9 @@ useEffect(() => {
             <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
           </div> 
       )}
-   <WeakAreasAdminStudio isHeadAdmin={true} />       
+   <WeakAreasAdminStudio isHeadAdmin={true} />
+    <div className="h-28 pb-16 shrink-0" />
+          
      </div>   
   )}
       {loginOpen && (
