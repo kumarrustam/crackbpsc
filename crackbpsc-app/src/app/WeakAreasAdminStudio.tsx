@@ -96,4 +96,19 @@ export default function WeakAreasAdminStudio({ isHeadAdmin = true }: { isHeadAdm
             <select value={modId} onChange={(e) => setModId(e.target.value)} className="w-full p-2 border rounded font-bold">{mods.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}</select>
             <textarea value={qHi} onChange={(e) => setQHi(e.target.value)} placeholder="प्रश्न..." className="w-full p-2 border rounded" />
 
+        {tab === "SOUNDS" && can("featuresAndSounds") && (
+          <div className="grid grid-cols-2 gap-2 font-bold">
+            {SOUNDS_10.map((s) => (
+              <button key={s.id} type="button" onClick={() => { setActSnd(s.id); localStorage.setItem("cb_active_sound", s.id); }} className={"p-2.5 rounded-xl border text-left " + (actSnd === s.id ? "bg-[#0084FF] text-white" : "bg-white")}>
+                {s.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+        
             
