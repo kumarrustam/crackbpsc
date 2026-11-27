@@ -106,7 +106,7 @@ export default function WeakAreasAdminStudio({ isHeadAdmin = true }: { isHeadAdm
           </div>
         )}
       </div>
-    </div>
+  
   );
 }
 
