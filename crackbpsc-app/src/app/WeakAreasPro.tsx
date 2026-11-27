@@ -1,23 +1,26 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { SOUNDS_10 } from "./WeakStudioData";
 
 const playPresetSound = () => {
   try {
     if (typeof window !== "undefined" && localStorage.getItem("cb_sound_enabled") === "false") return;
+    const pickedId = typeof window !== "undefined" ? localStorage.getItem("cb_active_sound") || "snd_10" : "snd_10";
+    const s = SOUNDS_10.find((x) => x.id === pickedId) || SOUNDS_10[9];
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
-    [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98].forEach((freq, idx) => {
+    s.notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
-      gain.gain.setValueAtTime(0.11, ctx.currentTime + idx * 0.07);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.42);
+      osc.type = s.wave;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * s.step);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * s.step);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * s.step + 0.42);
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + idx * 0.07);
-      osc.stop(ctx.currentTime + idx * 0.07 + 0.44);
+      osc.start(ctx.currentTime + idx * s.step);
+      osc.stop(ctx.currentTime + idx * s.step + 0.44);
     });
   } catch {}
 };
@@ -111,8 +114,12 @@ export default function WeakAreasPlayerModal({ examName, subjectName, onClose }:
   }, [step, activeModId, qIdx, answers, qTimes, bookmarks, completedList, sKey]);
 
   
-  const subjectModules = INITIAL_MODULES.filter((m) => m.exam === examName && m.subject === subjectName);
-  const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules[0] || INITIAL_MODULES[0];
+  
+let allMods = INITIAL_MODULES;
+try { const saved = typeof window !== "undefined" ? localStorage.getItem("cb_custom_weak_modules") : null; if (saved) allMods = JSON.parse(saved); } catch {}
+const subjectModules = allMods.filter((m) => m.exam === examName && m.subject === subjectName);
+
+ const activeMod = subjectModules.find((m) => m.id === activeModId) || subjectModules[0] || INITIAL_MODULES[0];
   const questions = activeMod.questions;
   const totalQs = questions.length;
   const attemptedCount = Object.keys(answers).length;
