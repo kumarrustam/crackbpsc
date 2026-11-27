@@ -223,25 +223,80 @@ const rawText = (data && data.candidates && data.candidates.at(0)?.content?.part
         {isHeadAdmin && (
           <div className="flex gap-2">
             <button type="button" onClick={() => setTab("CW_PERMS")} className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-indigo-600">🔐 CW ({enCount}/8)</button>
-        
-        {can("featuresAndSounds") && tab === "SOUNDS" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {SOUNDS_10.map((s) => (
-              <div key={s.id} className="p-2.5 rounded-xl border bg-white flex justify-between items-center text-xs font-bold">
-                <span>{s.name}</span>
-                <div className="flex gap-1">
-                  <button type="button" onClick={() => previewTone(s)} className="px-2 py-1 bg-slate-100 rounded">🔊</button>
-                  <button type="button" onClick={() => { setActiveSound(s.id); localStorage.setItem("cb_active_sound", s.id); }} className={"px-2 py-1 rounded " + (activeSound === s.id ? "bg-[#0084FF] text-white" : "bg-slate-800 text-white")}>{activeSound === s.id ? "✓" : "चुनें"}</button>
-                </div>
-              </div>
-            ))}
+            <button type="button" onClick={() => { const n = !soundOn; setSoundOn(n); localStorage.setItem("cb_sound_enabled", String(n)); }} className={"px-2.5 py-1 rounded-full text-[11px] font-extrabold " + (soundOn ? "bg-emerald-600" : "bg-rose-600")}>{soundOn ? "🔊 ON" : "🔇 OFF"}</button>
           </div>
         )}
       </div>
-    </div>
-  );
-}
 
-        
+      <div className="p-4 max-w-3xl mx-auto space-y-4">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {isHeadAdmin && <button type="button" onClick={() => setTab("CW_PERMS")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "CW_PERMS" ? "bg-indigo-600 text-white" : "bg-white border border-indigo-200")}>🔐 CW अनुमति ({enCount}/8)</button>}
+          {can("aiGen") && <button type="button" onClick={() => setTab("AI_GEN")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "AI_GEN" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>✨ AI Builder</button>}
+          {can("editQ") && <button type="button" onClick={() => setTab("EDIT")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "EDIT" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>✏️ Edit Qs</button>}
+          {can("manual") && <button type="button" onClick={() => setTab("MANUAL")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "MANUAL" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>➕ Manual</button>}
+          {can("bulk") && <button type="button" onClick={() => setTab("BULK")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "BULK" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>📥 Bulk</button>}
+          {can("examsSub") && <button type="button" onClick={() => setTab("EXAMS")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "EXAMS" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>🏛️ Exams</button>}
+          {can("featuresAndSounds") && <button type="button" onClick={() => setTab("SOUNDS")} className={"px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 " + (tab === "SOUNDS" ? "bg-[#0084FF] text-white" : "bg-white border border-slate-200")}>🎵 10 धुनें</button>}
+        </div>
 
-            
+        {can("negAndOpt5") && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span className="font-extrabold">⚖️ नेगेटिव नियम:</span>
+            <select value={negMode} onChange={(e) => { setNegMode(e.target.value); localStorage.setItem("cb_weak_neg_mode", e.target.value); }} className="px-2 py-1 rounded border bg-white font-bold text-[11px]">
+              {NEGATIVE_MODES.map((nm) => <option key={nm.id} value={nm.id}>{nm.label}</option>)}
+            </select>
+          </div>
+        )}
+
+        {isHeadAdmin && tab === "CW_PERMS" && (
+          <div className="p-4 bg-white rounded-2xl border space-y-2.5">
+            <div className="flex justify-between items-center border-b pb-2">
+              <span className="font-extrabold text-sm">🔐 Content Writer Permissions</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setAllCwPerms(true)} className="px-2.5 py-1 bg-emerald-600 text-white rounded text-xs font-extrabold">Allow ALL</button>
+                <button type="button" onClick={() => setAllCwPerms(false)} className="px-2.5 py-1 bg-rose-600 text-white rounded text-xs font-extrabold">Block ALL</button>
+              </div>
+            </div>
+            {[{ k: "aiGen", t: "1. ✨ AI Chapter Builder" }, { k: "manual", t: "2. ➕ Manual Templates" }, { k: "bulk", t: "3. 📥 Bulk Importer" }, { k: "editQ", t: "4. ✏️ Edit Questions" }, { k: "deleteQ", t: "5. 🗑️ Delete Questions" }, { k: "examsSub", t: "6. 🏛️ Exams & Subjects" }, { k: "negAndOpt5", t: "7. ⚖️ Negative & Option E" }, { k: "featuresAndSounds", t: "8. 🎵 Features & 10 Sounds" }].map((it) => {
+              const on = cwPerms[it.k as keyof CwPermissions];
+              return <div key={it.k} className="p-2.5 bg-slate-50 rounded-xl border flex justify-between items-center text-xs font-bold"><span>{it.t}</span><button type="button" onClick={() => updatePerms({ ...cwPerms, [it.k]: !on })} className={"px-3 py-1 rounded-full font-extrabold " + (on ? "bg-emerald-600 text-white" : "bg-slate-300")}>{on ? "ON" : "OFF"}</button></div>;
+            })}
+          </div>
+        )}
+
+        {tab === "AI_GEN" && can("aiGen") && (
+          <div className="p-4 bg-white rounded-2xl border space-y-3">
+            <input type="password" value={geminiKey} onChange={(e) => setGeminiKey(e.target.value)} placeholder="Gemini API Key..." className="w-full px-3 py-2 rounded-xl border text-xs bg-slate-50" />
+            <div className="grid grid-cols-2 gap-2">
+              <select value={aiExam} onChange={(e) => setAiExam(e.target.value)} className="px-3 py-2 rounded-xl border text-xs font-bold">{customExams.map((e) => <option key={e} value={e}>{e}</option>)}</select>
+              <select value={aiSub} onChange={(e) => setAiSub(e.target.value)} className="px-3 py-2 rounded-xl border text-xs font-bold"><option value="AUTO">🤖 Auto Subject</option>{customSubjects.map((s) => <option key={s} value={s}>{s}</option>)}</select>
+            </div>
+            <input value={aiTopicTitle} onChange={(e) => setAiTopicTitle(e.target.value)} placeholder="अध्याय का शीर्षक (जैसे: हड़प्पा सभ्यता)..." className="w-full px-3 py-2.5 rounded-xl border border-indigo-300 text-xs font-bold" />
+            <div className="flex flex-wrap gap-1.5">{ALL_PATTERNS.map((p) => <button key={p.id} type="button" onClick={() => togglePattern(p.id)} className={"px-2.5 py-1 rounded-lg text-[11px] font-extrabold border " + (selectedPatterns.includes(p.id) ? "bg-indigo-600 text-white" : "bg-slate-50")}>{p.label}</button>)}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <input type="number" min={1} max={50} value={aiCount} onChange={(e) => setAiCount(Number(e.target.value))} className="px-2 py-1.5 rounded border font-bold" />
+              <select disabled={!can("negAndOpt5")} value={optMode} onChange={(e) => setOptMode(e.target.value as any)} className="px-2 py-1.5 rounded border font-bold"><option value="5_UNATTEMPTED">5 Opts: अनुत्तरित प्रश्न</option><option value="5_BPSC_E">5 Opts: BPSC E</option><option value="4_OPTS">4 Options</option></select>
+              <select value={aiDifficulty} onChange={(e) => setAiDifficulty(e.target.value as any)} className="px-2 py-1.5 rounded border font-bold"><option value="MODERATE">Moderate</option><option value="HARD">Hard</option></select>
+              <select value={aiTier} onChange={(e) => setAiTier(e.target.value as any)} className="px-2 py-1.5 rounded border font-bold"><option value="FREE">FREE</option><option value="PRO">PRO</option></select>
+            </div>
+            <button type="button" disabled={aiLoading} onClick={generateWithAI} className="w-full py-3 rounded-xl bg-[#0084FF] text-white text-xs font-extrabold">{aiLoading ? "⏳ बन रहा है..." : `✨ AI से ${aiCount} प्रश्न बनाएं`}</button>
+          </div>
+        )}
+
+        {tab === "EDIT" && can("editQ") && (
+          <div className="p-4 bg-white rounded-2xl border space-y-2.5">
+            <select value={selModId} onChange={(e) => { setSelModId(e.target.value); setEditingQId(null); }} className="w-full px-3 py-2 rounded-xl border text-xs font-bold">{modules.map((m) => <option key={m.id} value={m.id}>{m.subject} ➔ {m.title} ({m.questions.length})</option>)}</select>
+            {editingQId !== null ? (
+              <div className="p-3 bg-sky-50 rounded-xl border space-y-2">
+                <textarea value={qHi} onChange={(e) => setQHi(e.target.value)} rows={2} className="w-full p-2 border rounded text-xs bg-white" />
+                <div className="grid grid-cols-2 gap-1">{optsHi.map((o, i) => <input key={i} value={o} onChange={(e) => { const c = [...optsHi]; c[i] = e.target.value; setOptsHi(c); }} className="px-2 py-1 border rounded text-xs bg-white" />)}</div>
+                <select value={ans} onChange={(e) => setAns(Number(e.target.value))} className="px-2 py-1 border rounded text-xs bg-white">{optsHi.map((_, i) => <option key={i} value={i}>विकल्प {["A", "B", "C", "D", "E"][i]}</option>)}</select>
+                <textarea value={kpHi} onChange={(e) => setKpHi(e.target.value)} rows={2} className="w-full p-2 border rounded text-xs bg-white" />
+                <button type="button" onClick={() => { saveAll(modules.map((m) => m.id !== selModId ? m : { ...m, questions: m.questions.map((q) => q.id !== editingQId ? q : { ...q, q_hi: qHi, opts_hi: [...optsHi], ans, kp_hi: kpHi }) })); setEditingQId(null); }} className="w-full py-2 bg-emerald-600 text-white rounded text-xs font-extrabold">✓ सेव करें</button>
+              </div>
+            ) : curMod?.questions.map((q) => (
+              <div key={q.id} className="p-2.5 rounded-xl border bg-slate-50 flex justify-between gap-2 text-xs">
+                <span><strong>Q{q.id}.</strong> {q.q_hi} ({["A", "B", "C", "D", "E"][q.ans]})</span>
+
+                
+  
