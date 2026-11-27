@@ -189,7 +189,7 @@ const subjectModules = allMods.filter((m) => m.exam === examName && m.subject ==
     const cls = done ? (ok ? "bg-emerald-600 text-white border-emerald-600" : "bg-rose-500 text-white border-rose-500") : isVis ? "bg-slate-600 text-white border-slate-600" : "bg-white text-slate-600 border-slate-300";
     return (
       <div key={i} className="relative flex flex-col items-center shrink-0 pb-1">
-        <button type="button" onClick={() => { setQIdx(i); setLiveSec(1); }} className={w-8 h-8 rounded-full border text-xs font-black flex items-center justify-center transition ${cls}}>{i + 1}</button>
+        <button type="button" onClick={() => { setQIdx(i); setLiveSec(1); }} className={"w-8 h-8 rounded-full border text-xs font-black flex items-center justify-center transition " + cls}>{i + 1}</button>
         {isCur && <span className="w-2.5 h-2.5 bg-white rotate-45 -mb-2.5 mt-0.5 border-t border-l border-slate-200" />}
       </div>
     );
