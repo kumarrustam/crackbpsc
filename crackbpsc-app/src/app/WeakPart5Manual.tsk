@@ -1,0 +1,110 @@
+
+"use client";
+import React, { useState } from "react";
+import { WeakChapterModule, WeakQuestion } from "./WeakAreasPro";
+import { ALL_PATTERNS, SOUNDS_10 } from "./WeakPart1Config";
+import { balanceAnswerPositions } from "./WeakPart2Engine";
+
+export function WeakPart5Manual({
+  tab, modules, saveAll, canDelete, canOpt5, activeSound, setActiveSound, customExams, setCustomExams, customSubjects, setCustomSubjects
+}: {
+  tab: string; modules: WeakChapterModule[]; saveAll: (m: WeakChapterModule[]) => void; canDelete: boolean; canOpt5: boolean;
+  activeSound: string; setActiveSound: (id: string) => void; customExams: string[]; setCustomExams: (e: string[]) => void;
+  customSubjects: string[]; setCustomSubjects: (s: string[]) => void;
+}) {
+  const [modId, setModId] = useState(modules.at(0)?.id || "mod_sangam");
+  const [editId, setEditId] = useState<number | null>(null);
+  const [qHi, setQHi] = useState(""); const [qEn, setQEn] = useState("");
+  const [oHi, setOHi] = useState(["", "", "", ""]); const [oEn, setOEn] = useState(["", "", "", ""]);
+  const [ans, setAns] = useState(0); const [kpHi, setKpHi] = useState(""); const [otherHi, setOtherHi] = useState("");
+  const [optMode, setOptMode] = useState("5_UNATTEMPTED"); const [bulkRaw, setBulkRaw] = useState("");
+  const [newEx, setNewEx] = useState(""); const [newSb, setNewSb] = useState("");
+
+  const applyTpl = (pat: string) => {
+    if (pat === "ASSERTION") {
+      setQHi("अभिकथन (A): हड़प्पा सभ्यता एक नगरीय सभ्यता थी।\nकारण (R): यहाँ सुनियोजित जल निकासी व्यवस्था थी।");
+      setOHi(["(A) और (R) दोनों सही हैं तथा (R), (A) की सही व्याख्या है", "(A) और (R) दोनों सही हैं परंतु व्याख्या नहीं है", "(A) सही है, परंतु (R) गलत है", "(A) गलत है, परंतु (R) सही है"]);
+    } else if (pat === "MATCHING") {
+      setQHi("सूची-I को सूची-II से सुमेलित कीजिए:\nA. हड़प्पा — 1. भोगवा | B. मोहनजोदड़ो — 2. रावी | C. लोथल — 3. सिंधु | D. कालीबंगा — 4. घग्गर");
+      setOHi(["A-2, B-3, C-1, D-4", "A-1, B-2, C-3, D-4", "A-3, B-1, C-4, D-2", "A-4, B-3, C-2, D-1"]);
+    } else if (pat === "ORDERING") {
+      setQHi("हड़प्पा स्थलों को पूर्व से पश्चिम क्रम में सजाएं: 1. आलमगीरपुर 2. बनावली 3. मोहनजोदड़ो 4. सुत्कागेंडोर");
+      setOHi(["1 - 2 - 3 - 4", "4 - 3 - 2 - 1", "2 - 1 - 3 - 4", "1 - 3 - 2 - 4"]);
+    } else {
+      setQHi("निम्नलिखित कथनों पर विचार कीजिए:\n1. लोथल से गोदीबाड़ा के साक्ष्य मिले हैं।\n2. धौलावीरा तीन भागों में विभाजित था।");
+      setOHi(["केवल 1", "केवल 2", "1 और 2 दोनों", "न तो 1, न ही 2"]);
+    }
+  };
+
+  const previewTone = (s: typeof SOUNDS_10[number]) => {
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext; const c = new Ctx();
+      s.notes.forEach((f, i) => {
+        const o = c.createOscillator(); const g = c.createGain();
+        o.type = s.wave; o.frequency.setValueAtTime(f, c.currentTime + i * s.step);
+        g.gain.setValueAtTime(0.15, c.currentTime + i * s.step); g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + i * s.step + 0.4);
+        o.connect(g); g.connect(c.destination); o.start(c.currentTime + i * s.step); o.stop(c.currentTime + i * s.step + 0.42);
+      });
+    } catch {}
+  };
+
+  const curMod = modules.find((m) => m.id === modId) || modules.at(0);
+
+  if (tab === "EXAMS") {
+    return (
+      <div className="p-4 bg-white rounded-2xl border space-y-3 text-xs">
+        <div className="flex gap-2"><input value={newEx} onChange={(e) => setNewEx(e.target.value)} placeholder="नई परीक्षा..." className="flex-1 p-2 border rounded-xl" /><button type="button" onClick={() => { if (!newEx.trim()) return; const u = [...customExams, newEx.trim()]; setCustomExams(u); localStorage.setItem("cb_custom_weak_exams", JSON.stringify(u)); setNewEx(""); }} className="px-3 py-2 bg-[#0084FF] text-white rounded-xl font-bold">जोड़ें</button></div>
+        <div className="flex flex-wrap gap-1.5">{customExams.map((x) => <span key={x} className="px-2.5 py-1 bg-slate-100 rounded-full font-bold">{x}</span>)}</div>
+        <div className="flex gap-2"><input value={newSb} onChange={(e) => setNewSb(e.target.value)} placeholder="नया विषय..." className="flex-1 p-2 border rounded-xl" /><button type="button" onClick={() => { if (!newSb.trim()) return; const u = [...customSubjects, newSb.trim()]; setCustomSubjects(u); localStorage.setItem("cb_custom_weak_subjects", JSON.stringify(u)); setNewSb(""); }} className="px-3 py-2 bg-[#0084FF] text-white rounded-xl font-bold">जोड़ें</button></div>
+        <div className="flex flex-wrap gap-1.5">{customSubjects.map((x) => <span key={x} className="px-2.5 py-1 bg-sky-50 rounded-full font-bold">{x}</span>)}</div>
+      </div>
+    );
+  }
+
+  if (tab === "SOUNDS") {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold">
+        {SOUNDS_10.map((s) => (
+          <div key={s.id} className="p-2.5 rounded-xl border bg-white flex justify-between items-center">
+            <span>{s.name}</span>
+            <div className="flex gap-1.5">
+              <button type="button" onClick={() => previewTone(s)} className="px-2 py-1 bg-slate-100 rounded">🔊</button>
+              <button type="button" onClick={() => { setActiveSound(s.id); localStorage.setItem("cb_active_sound", s.id); }} className={"px-2.5 py-1 rounded " + (activeSound === s.id ? "bg-[#0084FF] text-white" : "bg-slate-800 text-white")}>{activeSound === s.id ? "✓" : "चुनें"}</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 bg-white rounded-2xl border space-y-2.5 text-xs">
+      <select value={modId} onChange={(e) => { setModId(e.target.value); setEditId(null); }} className="w-full p-2 border rounded-xl font-bold">{modules.map((m) => <option key={m.id} value={m.id}>{m.subject} ➔ {m.title} ({m.questions.length})</option>)}</select>
+      {tab === "MANUAL" && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-1">{ALL_PATTERNS.slice(0, 4).map((p) => <button key={p.id} type="button" onClick={() => applyTpl(p.id)} className="px-2 py-1 bg-sky-50 border rounded text-[11px] font-bold">+ {p.label}</button>)}</div>
+          <textarea value={qHi} onChange={(e) => setQHi(e.target.value)} placeholder="हिन्दी प्रश्न..." className="w-full p-2 border rounded" />
+          <textarea value={qEn} onChange={(e) => setQEn(e.target.value)} placeholder="English Question..." className="w-full p-2 border rounded" />
+          <div className="grid grid-cols-2 gap-1">{oHi.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...oHi]; c[i] = e.target.value; setOHi(c); }} placeholder={`विकल्प ${["A", "B", "C", "D"][i]}`} className="p-1.5 border rounded" />)}</div>
+          {canOpt5 && <select value={optMode} onChange={(e) => setOptMode(e.target.value)} className="p-1.5 border rounded font-bold"><option value="5_UNATTEMPTED">5 Opts: अनुत्तरित प्रश्न</option><option value="5_BPSC_E">5 Opts: BPSC E</option><option value="4_OPTS">4 Options</option></select>}
+          <textarea value={kpHi} onChange={(e) => setKpHi(e.target.value)} placeholder="✅ मुख्य बिंदु..." className="w-full p-2 border rounded" />
+          <textarea value={otherHi} onChange={(e) => setOtherHi(e.target.value)} placeholder="📌 अन्य विकल्पों का 100+ शब्दों में विश्लेषण..." className="w-full p-2 border rounded" />
+          <button type="button" onClick={() => { const kp = otherHi ? `✅ मुख्य बिंदु:\n${kpHi}\n\n📌 अन्य विकल्प विश्लेषण:\n${otherHi}` : kpHi; const [fq] = balanceAnswerPositions([{ id: 1, pyp: "PYP", year: "2025", examTags: "BPSC", gotRightPct: 40, q_hi: qHi, q_en: qEn || qHi, opts_hi: oHi, opts_en: oEn.map((x, i) => x || oHi[i]), ans, kp_hi: kp, kp_en: kp }], optMode, curMod?.questions.length || 0); saveAll(modules.map((m) => m.id !== modId ? m : { ...m, questions: [...m.questions, { ...fq, id: m.questions.length + 1 }] })); setQHi(""); setQEn(""); setOHi(["", "", "", ""]); setKpHi(""); setOtherHi(""); alert("सेव हो गया!"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-bold">प्रश्न सेव करें</button>
+        </div>
+      )}
+      {tab === "BULK" && (
+        <div className="space-y-2">
+          <textarea value={bulkRaw} onChange={(e) => setBulkRaw(e.target.value)} rows={4} placeholder="Gemini JSON पेस्ट करें..." className="w-full p-2 border rounded font-mono" />
+          <button type="button" onClick={() => { try { const arr = JSON.parse(bulkRaw); const bal = balanceAnswerPositions(arr.map((x: any, i: number) => ({ id: i + 1, pyp: "PYP", year: "2025", examTags: "BPSC", gotRightPct: 40, q_hi: x.q_hi || x.question, q_en: x.q_en || x.q_hi, opts_hi: x.opts_hi, opts_en: x.opts_en || x.opts_hi, ans: Number(x.ans || 0), kp_hi: x.kp_hi || "", kp_en: x.kp_en || "" })), optMode, 0); saveAll(modules.map((m) => m.id !== modId ? m : { ...m, questions: [...m.questions, ...bal] })); setBulkRaw(""); alert("इंपोर्ट सफल!"); } catch { alert("JSON जांचें।"); } }} className="w-full py-2.5 bg-[#0084FF] text-white rounded-xl font-bold">📥 सभी प्रश्न इंपोर्ट करें</button>
+        </div>
+      )}
+      {tab === "EDIT" && (
+        <div className="space-y-2">
+          {editId !== null ? (
+            <div className="p-2.5 bg-sky-50 rounded-xl border space-y-2">
+              <textarea value={qHi} onChange={(e) => setQHi(e.target.value)} className="w-full p-2 border rounded bg-white" />
+              <div className="grid grid-cols-2 gap-1">{oHi.map((v, i) => <input key={i} value={v} onChange={(e) => { const c = [...oHi]; c[i] = e.target.value; setOHi(c); }} className="p-1.5 border rounded bg-white" />)}</div>
+              <select value={ans} onChange={(e) => setAns(Number(e.target.value))} className="p-1.5 border rounded bg-white">{oHi.map((_, i) => <option key={i} value={i}>विकल्प {["A", "B", "C", "D", "E"][i]}</option>)}</select>
+              <textarea value={kpHi} onChange={(e) => setKpHi(e.target.value)} className="w-full p-2 border rounded bg-white" />
+
+                    
