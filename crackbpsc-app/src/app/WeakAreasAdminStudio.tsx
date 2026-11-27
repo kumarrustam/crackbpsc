@@ -223,5 +223,25 @@ const rawText = (data && data.candidates && data.candidates.at(0)?.content?.part
         {isHeadAdmin && (
           <div className="flex gap-2">
             <button type="button" onClick={() => setTab("CW_PERMS")} className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-indigo-600">🔐 CW ({enCount}/8)</button>
+        
+        {can("featuresAndSounds") && tab === "SOUNDS" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {SOUNDS_10.map((s) => (
+              <div key={s.id} className="p-2.5 rounded-xl border bg-white flex justify-between items-center text-xs font-bold">
+                <span>{s.name}</span>
+                <div className="flex gap-1">
+                  <button type="button" onClick={() => previewTone(s)} className="px-2 py-1 bg-slate-100 rounded">🔊</button>
+                  <button type="button" onClick={() => { setActiveSound(s.id); localStorage.setItem("cb_active_sound", s.id); }} className={"px-2 py-1 rounded " + (activeSound === s.id ? "bg-[#0084FF] text-white" : "bg-slate-800 text-white")}>{activeSound === s.id ? "✓" : "चुनें"}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+        
 
             
