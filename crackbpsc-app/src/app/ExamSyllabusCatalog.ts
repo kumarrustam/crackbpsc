@@ -82,5 +82,38 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     hasPicker: false, pickerLabel: "", totalTests: 520, freeTests: 4, durationMins: 120, totalQs: 100, maxMarks: 200, posMark: 2.0, negMark: 0.66, unansNeg: 0, hasOpt5: false, subjects: [],
     sections: [{ name: "GS Paper - I (100 Qs)", qsCount: 100 }],
     categories: [
+
+      { id: "CHAPTER", label: "Chapter Test", count: 182, freeCount: 2, tab: "MOCK", subTopics: [{ id: "pol", title: "Polity", count: 50 }] },
+      { id: "FULL", label: "Full Test", count: 45, freeCount: 1, tab: "MOCK", subTopics: [{ id: "uf1", title: "All-India Full", count: 45 }] },
+      { id: "PYP", label: "Previous Year Paper", count: 26, tab: "PYP", subTopics: [{ id: "upyp", title: "Official Papers", count: 26 }] }
+    ],
+    instructions: ["कुल 100 प्रश्न (200 अंक) व समय 120 मिनट। सही पर +2.0 और गलत पर -0.66 अंक कटेगा।"]
+  },
+  {
+    id: "rrb_railway", matchKeys: ["rrb", "railway", "ntpc", "group d"], group: "RAILWAY", name: "RRB NTPC, Group D & ALP Complete Test Series", shortName: "RRB Railway (CBT 1 & 2)",
+    hasPicker: true, pickerLabel: "Stage", totalTests: 640, freeTests: 5, durationMins: 90, totalQs: 100, maxMarks: 100, posMark: 1.0, negMark: 0.33, unansNeg: 0, hasOpt5: false,
+    subjects: ["All", "CBT 1", "CBT 2", "Group D CBT"],
+    sections: [{ name: "Science (25)", qsCount: 25 }, { name: "Maths (25)", qsCount: 25 }, { name: "Reasoning (30)", qsCount: 30 }, { name: "GA (20)", qsCount: 20 }],
+    categories: [
+      { id: "CHAPTER", label: "चैप्टर टेस्ट (Science/Maths/Reasoning)", count: 220, freeCount: 3, tab: "MOCK", subTopics: [{ id: "sci", title: "NCERT Science", count: 90 }] },
+      { id: "FULL", label: "फुल लेंथ टेस्ट (100 Qs)", count: 55, freeCount: 2, tab: "MOCK", subTopics: [{ id: "cbt1_f", title: "CBT-1 Full", count: 30 }] },
+      { id: "PYP", label: "Previous Year Paper", count: 60, tab: "PYP", subTopics: [{ id: "rp", title: "Official Shifts", count: 60 }] }
+    ],
+    instructions: ["कुल 100 प्रश्न (100 अंक) व समय 90 मिनट। सही पर +1.0 और गलत पर -0.33 अंक कटेगा।"]
+  },
+  {
+    id: "banking_ibps", matchKeys: ["bank", "ibps", "sbi", "rbi"], group: "BANKING", name: "IBPS PO / Clerk & SBI Complete Test Series", shortName: "IBPS / SBI Banking",
+    hasPicker: true, pickerLabel: "Stage", totalTests: 580, freeTests: 5, durationMins: 60, totalQs: 100, maxMarks: 100, posMark: 1.0, negMark: 0.25, unansNeg: 0, hasOpt5: false,
+    subjects: ["All", "Prelims", "Mains"],
+    sections: [{ name: "English (30)", qsCount: 30 }, { name: "Quant (35)", qsCount: 35 }, { name: "Reasoning (35)", qsCount: 35 }],
+    categories: [
+      { id: "CHAPTER", label: "चैप्टर टेस्ट (DI / Puzzles / Grammar)", count: 210, freeCount: 3, tab: "MOCK", subTopics: [{ id: "quant", title: "DI & Arithmetic", count: 80 }] },
+      { id: "FULL", label: "फुल लेंथ टेस्ट (Prelims & Mains)", count: 60, freeCount: 2, tab: "MOCK", subTopics: [{ id: "bp", title: "Prelims", count: 40 }] },
+      { id: "PYP", label: "Previous Year Paper", count: 30, tab: "PYP", subTopics: [{ id: "bpyp", title: "Memory PYPs", count: 30 }] }
+    ],
+    instructions: ["कुल 100 प्रश्न (100 अंक) व समय 60 मिनट। सही पर +1.0 और गलत पर -0.25 अंक कटेगा।"]
+  }
 ];
+
+
     
