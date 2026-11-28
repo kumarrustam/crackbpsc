@@ -3,19 +3,11 @@ import React, { useState, useEffect } from "react";
 import WeakAreasPlayerModal from "./WeakAreasPro"; 
 import WeakAreasAdminStudio from "./WeakAreasAdminStudio";
 import FlipCurrentAffairsStudio from "./FlipCurrentAffairsStudio";
-
-
-import CrackBpscStudentApp from "./CrackBpscStudentApp";
-
-
-
-
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
 export default function CrackBPSC() {
   const [role, setRole] = useState("STUDENT");
-if (typeof window !== "undefined" && window.location.search.includes("pro=1")) return <CrackBpscStudentApp />;
   const [goal, setGoal] = useState("BPSC");
   const [showLive, setShowLive] = useState(true);
   const [liveCount, setLiveCount] = useState(2485);
