@@ -1,0 +1,50 @@
+
+"use client";
+import React, { useState, useEffect } from "react";
+import { EXAM_BLUEPRINTS, ExamBlueprint } from "../ExamSyllabusCatalog";
+import TestsHubPro from "../TestsHubPro";
+import CbtExamPlayerPro from "../CbtExamPlayerPro";
+import TestAnalysisPro from "../TestAnalysisPro";
+import { FreeTestsHub } from "../FreeTestsHub";
+import { PassCheckoutModal } from "../PassCheckoutModal";
+import { WhiteSideMenu } from "../WhiteSideMenu";
+import { SAMPLE_QS, SampleQ, loadSavedAdminData } from "../Studentsampledata";
+
+export default function ProStudentPage() {
+  const [nav, setNav] = useState("TESTS");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [passOpen, setPassOpen] = useState(false);
+  const [hasPass, setHasPass] = useState(false);
+  const [daysLeft, setDaysLeft] = useState(0);
+  const [userCat, setUserCat] = useState("General (UR)");
+  const [activeTest, setActiveTest] = useState<{ exam: ExamBlueprint; title: string } | null>(null);
+  const [viewRes, setViewRes] = useState<{ exam: ExamBlueprint; title: string; res: { answers: Record<number, number>; timeSpent: Record<number, number>; totalSecs: number; category: string } } | null>(null);
+  const [resultsMap, setResultsMap] = useState<Record<string, { examId: string; answers: Record<number, number>; timeSpent: Record<number, number>; totalSecs: number; category: string }>>({});
+  const [adminData, setAdminData] = useState<{ qs: SampleQ[]; seats: Record<string, number>; achievers: []; menu: Record<string, boolean> }>({ qs: [], seats: {}, achievers: [], menu: {} });
+
+  useEffect(() => { setAdminData(loadSavedAdminData()); }, []);
+  const allQuestions = [...adminData.qs, ...SAMPLE_QS];
+
+  if (activeTest) return <CbtExamPlayerPro exam={activeTest.exam} testTitle={activeTest.title} questions={allQuestions} userCategory={userCat} onFinish={(res) => { setResultsMap((p) => ({ ...p, [activeTest.title]: { examId: activeTest.exam.id, ...res } })); setViewRes({ exam: activeTest.exam, title: activeTest.title, res }); setActiveTest(null); }} onExit={() => setActiveTest(null)} />;
+  if (viewRes) return <TestAnalysisPro exam={viewRes.exam} testTitle={viewRes.title} questions={allQuestions} result={viewRes.res} achievers={adminData.achievers} categorySeats={adminData.seats} onReattempt={() => { const cur = viewRes; setViewRes(null); setActiveTest({ exam: cur.exam, title: cur.title }); }} onClose={() => setViewRes(null)} />;
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+      {menuOpen && <WhiteSideMenu userName="Kumar Rustom" isLoggedIn={true} hasPass={hasPass} daysLeft={daysLeft} menuToggles={adminData.menu} onNavigate={setNav} onOpenPass={() => setPassOpen(true)} onAuthToggle={() => alert("Logged out")} onClose={() => setMenuOpen(false)} />}
+      {passOpen && <PassCheckoutModal onActivate={(pl) => { setHasPass(true); setDaysLeft(pl.days); setPassOpen(false); }} onClose={() => setPassOpen(false)} />}
+      <header className="bg-white border-b px-4 py-3 flex justify-between items-center sticky top-0 z-30">
+        <button type="button" onClick={() => setMenuOpen(true)} className="w-8 h-8 rounded-lg bg-slate-100 font-black text-sm">☰</button>
+        <div className="font-black text-base text-[#0084FF]">CrackBPSC <span className="text-[10px] bg-sky-50 px-1.5 py-0.5 rounded text-slate-700">PRO</span></div>
+        <button type="button" onClick={() => setPassOpen(true)} className="px-2.5 py-1 bg-amber-50 border border-amber-300 text-amber-800 rounded-full text-[11px] font-black">{hasPass ? `✓ ${daysLeft}d` : "⚡ Pass"}</button>
+      </header>
+      <div className="bg-white border-b grid grid-cols-2 text-xs font-black">
+        <button type="button" onClick={() => setNav("TESTS")} className={"py-2.5 border-b-2 " + (nav === "TESTS" ? "border-[#0084FF] text-[#0084FF]" : "border-transparent text-slate-500")}>📚 All Tests</button>
+        <button type="button" onClick={() => setNav("FREE")} className={"py-2.5 border-b-2 " + (nav === "FREE" ? "border-[#0084FF] text-[#0084FF]" : "border-transparent text-slate-500")}>🎁 Free Tests</button>
+      </div>
+      <main className="max-w-2xl mx-auto p-4">
+        {nav === "FREE" ? <FreeTestsHub onLaunchFree={(ex, t) => setActiveTest({ exam: ex, title: t })} onOpenPass={() => setPassOpen(true)} /> : <TestsHubPro selectedExams={["72nd BPSC", "TRE 4.0"]} hasPass={hasPass} userCategory={userCat} onCategoryChange={setUserCat} onRequirePass={() => setPassOpen(true)} onStartExam={(ex, t, c) => { setUserCat(c); setActiveTest({ exam: ex, title: t }); }} attemptedResults={resultsMap} onOpenResult={(t) => { const r = resultsMap[t]; const ex = EXAM_BLUEPRINTS.find((e) => e.id === r?.examId) || EXAM_BLUEPRINTS.at(0)!; if (r) setViewRes({ exam: ex, title: t, res: r }); }} />}
+      </main>
+    </div>
+  );
+}
+
