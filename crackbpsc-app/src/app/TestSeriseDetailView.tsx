@@ -1,18 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import { ExamBlueprint } from "./ExamSyllabusCatalog";
-import { TestSetCardItem } from "./TestSetCardItem";
+import { TestSetCardItem } from "./TestSetCardItam";
 
 export function TestSeriesDetailView(p: { exam: ExamBlueprint; attemptedIds: Record<string, boolean>; hasPass: boolean; onLaunch: (t: string, f: boolean) => void; onViewResult: (t: string) => void; onBack: () => void }) {
   const { exam, attemptedIds, hasPass, onLaunch, onViewResult, onBack } = p;
   const [tab, setTab] = useState<"MOCK" | "PYP">("MOCK");
   const [subj, setSubj] = useState("All");
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [openCat, setOpenCat] = useState<string>(exam.categories[0]?.id || "");
+  const [openCat, setOpenCat] = useState<string>(exam.categories.at(0)?.id || "");
   const [subTopic, setSubTopic] = useState("All");
 
   const cats = exam.categories.filter((c) => c.tab === tab);
-  const activeCat = cats.find((c) => c.id === openCat) || cats[0];
+  const activeCat = cats.find((c) => c.id === openCat) || cats.at(0);
 
   return (
     <div className="space-y-3">
@@ -33,7 +33,7 @@ export function TestSeriesDetailView(p: { exam: ExamBlueprint; attemptedIds: Rec
       {activeCat && (
         <div className="bg-white p-3.5 rounded-2xl border space-y-2.5">
           <div className="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-black"><button type="button" onClick={() => setSubTopic("All")} className={"px-3 py-1 rounded-full border shrink-0 " + (subTopic === "All" ? "bg-[#0084FF] text-white" : "bg-slate-50")}>All ({activeCat.count})</button>{activeCat.subTopics.map((st) => <button key={st.id} type="button" onClick={() => setSubTopic(st.title)} className={"px-3 py-1 rounded-full border shrink-0 " + (subTopic === st.title ? "bg-[#0084FF] text-white" : "bg-slate-50")}>{st.title} ({st.count})</button>)}</div>
-          {[1, 2, 3, 4].map((num) => { const t = `${exam.shortName} • ${activeCat.label}${subTopic !== "All" ? ` (${subTopic})` : ""}${subj !== "All" ? ` [${subj}]` : ""} - Set ${num}`; return <TestSetCardItem key={num} exam={exam} title={t} isFree={num <= (activeCat.freeCount || 1)} hasPass={hasPass} done={!!attemptedIds[t]} onLaunch={onLaunch} onViewResult={onViewResult} />; })}
+          {Array.of(1, 2, 3, 4).map((num) => { const t = `${exam.shortName} • ${activeCat.label}${subTopic !== "All" ? ` (${subTopic})` : ""}${subj !== "All" ? ` [${subj}]` : ""} - Set ${num}`; return <TestSetCardItem key={num} exam={exam} title={t} isFree={num <= (activeCat.freeCount || 1)} hasPass={hasPass} done={!!attemptedIds[t]} onLaunch={onLaunch} onViewResult={onViewResult} />; })}
         </div>
       )}
     </div>
