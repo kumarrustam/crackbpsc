@@ -1,0 +1,161 @@
+
+"use client";
+import React, { useState, useEffect } from "react";
+import { ExamBlueprint } from "./ExamSyllabusCatalog";
+import { CbtPauseModal, CbtPaletteDrawer, CbtInstructionsModal } from "./CbtDrawerModals";
+
+export interface CbtQuestion {
+  id: string;
+  sectionIdx?: number;
+  pypYear?: string;
+  pypSize?: "sm" | "md" | "lg";
+  examTags?: string[];
+  q_hi: string;
+  q_en: string;
+  opts_hi: string[];
+  opts_en: string[];
+  ansIdx: number;
+  exp_hi?: string;
+  exp_en?: string;
+}
+
+const REPORT_REASONS = ["Wrong Translation", "Scroll Not Working", "Wrong Question", "Out of Syllabus", "Question and Options not visible", "Blinking Screen Issue", "Formatting Issues", "Question not visible, but Options are", "Other"];
+
+export default function CbtExamPlayerPro(props: {
+  exam: ExamBlueprint;
+  testTitle: string;
+  questions: CbtQuestion[];
+  userCategory: string;
+  onFinish: (result: { answers: Record<number, number>; timeSpent: Record<number, number>; totalSecs: number; category: string }) => void;
+  onExit: () => void;
+}) {
+  const { exam, testTitle, questions, userCategory, onFinish, onExit } = props;
+  const [lang, setLang] = useState<"HI" | "EN">("HI");
+  const [idx, setIdx] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [marked, setMarked] = useState<Record<number, boolean>>({});
+  const [visited, setVisited] = useState<Record<number, boolean>>({ 0: true });
+  const [qTime, setQTime] = useState<Record<number, number>>({});
+  const [secsLeft, setSecsLeft] = useState(exam.durationMins * 60);
+  const [paused, setPaused] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [instOpen, setInstOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportText, setReportText] = useState("");
+  const [reportSent, setReportSent] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => {
+      setSecsLeft((s) => (s > 0 ? s - 1 : 0));
+      setQTime((prev) => ({ ...prev, [idx]: (prev[idx] || 0) + 1 }));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [paused, idx]);
+
+  const fmt = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const fmtShort = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
+  const q = questions[idx] || questions;
+  const baseOpts = lang === "HI" ? q.opts_hi : q.opts_en;
+  const displayOpts = exam.hasOpt5 ? [...baseOpts.slice(0, 4), lang === "HI" ? "अनुत्तरित (Unanswered)" : "Unanswered"] : baseOpts.slice(0, 4);
+  const pypScale = q.pypSize === "lg" ? "text-xs" : q.pypSize === "md" ? "text-[11px]" : "text-[10px]";
+
+  const go = (nextIdx: number) => {
+    const safe = Math.max(0, Math.min(questions.length - 1, nextIdx));
+    setIdx(safe);
+    setVisited((v) => ({ ...v, [safe]: true }));
+  };
+
+  const sendReport = (reason: string) => {
+    try {
+      const prev = JSON.parse(localStorage.getItem("crackbpsc_q_reports") || "[]");
+      prev.unshift({ id: Date.now(), testTitle, qNum: idx + 1, reason, note: reportText, at: new Date().toLocaleString() });
+      localStorage.setItem("crackbpsc_q_reports", JSON.stringify(prev.slice(0, 100)));
+    } catch {}
+    setReportSent(true);
+    setTimeout(() => { setReportSent(false); setReportOpen(false); setReportText(""); }, 900);
+  };
+
+  const stats = {
+    attempted: Object.entries(answers).filter(([, v]) => !(exam.hasOpt5 && v === 4)).length,
+    unattempted: questions.length - Object.entries(answers).filter(([, v]) => !(exam.hasOpt5 && v === 4)).length,
+    marked: Object.values(marked).filter(Boolean).length,
+    noOpt: Object.keys(visited).filter((k) => answers[Number(k)] === undefined).length
+  };
+
+  const handleSubmit = () => onFinish({ answers, timeSpent: qTime, totalSecs: exam.durationMins * 60 - secsLeft, category: userCategory });
+
+  return (
+    <div className="fixed inset-0 z-40 bg-white text-slate-900 flex flex-col">
+      {paused && <CbtPauseModal timeLeftStr={fmt(secsLeft)} stats={stats} onResume={() => setPaused(false)} onExit={onExit} />}
+      {drawerOpen && <CbtPaletteDrawer questions={questions} answers={answers} marked={marked} visited={visited} hasOpt5={exam.hasOpt5} currentIdx={idx} onSelect={go} onOpenInstructions={() => setInstOpen(true)} onSubmit={handleSubmit} onClose={() => setDrawerOpen(false)} />}
+      {instOpen && <CbtInstructionsModal title={testTitle} instructions={exam.instructions} onClose={() => setInstOpen(false)} />}
+      {reportOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white text-slate-900 rounded-2xl w-full max-w-sm p-4 shadow-2xl space-y-2.5">
+            <div className="flex justify-between items-center border-b pb-2"><h3 className="font-black text-sm">Report Question!</h3><button type="button" onClick={() => setReportOpen(false)} className="font-black text-slate-400">✕</button></div>
+            {reportSent ? <div className="py-8 text-center text-emerald-600 font-black text-sm">✓ Report Sent to Admin!</div> : (
+              <>
+                <div className="max-h-60 overflow-y-auto divide-y divide-slate-100">
+                  {REPORT_REASONS.map((r) => (
+                    <button key={r} type="button" onClick={() => sendReport(r)} className="w-full py-2.5 px-1 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex justify-between items-center">
+                      <span>{r}</span><span className="text-slate-400">⚠</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-1.5 pt-1">
+                  <input value={reportText} onChange={(e) => setReportText(e.target.value)} placeholder="Please tell us more about the doubt/report..." className="flex-1 px-3 py-2 bg-slate-100 rounded-xl text-xs outline-none" />
+                  <button type="button" onClick={() => sendReport("Custom Note")} className="w-9 h-9 rounded-full bg-[#0084FF] text-white font-black text-xs flex items-center justify-center">➤</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="px-3 py-2.5 bg-slate-900 text-white flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <button type="button" onClick={() => setPaused(true)} className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-xs font-black shrink-0">⏸</button>
+          <div className="min-w-0"><div className="font-black text-xs text-amber-300">{fmt(secsLeft)}</div><div className="text-[11px] text-slate-300 truncate">{testTitle}</div></div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button type="button" onClick={() => setLang(lang === "HI" ? "EN" : "HI")} className="px-2 py-1 bg-white text-slate-900 rounded text-[11px] font-black">{lang === "HI" ? "E | अ" : "अ | E"}</button>
+          <button type="button" onClick={() => setDrawerOpen(true)} className="px-2.5 py-1 bg-slate-800 border border-slate-600 rounded text-xs font-black">≡</button>
+        </div>
+      </div>
+
+      {exam.sections.length > 1 && (
+        <div className="flex overflow-x-auto border-b border-slate-200 bg-slate-50 px-2 gap-1 shrink-0">
+          {exam.sections.map((sec, sIdx) => (
+            <button key={sec.name} type="button" onClick={() => { const found = questions.findIndex((item) => (item.sectionIdx || 0) === sIdx); if (found >= 0) go(found); }} className={"px-3 py-2 text-xs font-black whitespace-nowrap border-b-2 " + ((q.sectionIdx || 0) === sIdx ? "border-[#0084FF] text-[#0084FF] bg-white" : "border-transparent text-slate-500")}>{sec.name}</button>
+          ))}
+        </div>
+      )}
+
+      <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between gap-1 text-xs shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="w-6 h-6 rounded-full bg-slate-700 text-white font-black flex items-center justify-center text-[11px]">{idx + 1}</span>
+          {q.pypYear && (
+            <span className={"inline-flex items-center gap-1 font-black " + pypScale}>
+              <svg className="w-3.5 h-3.5 text-[#0084FF] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+              <span className="text-[#0084FF]">PYP</span>
+              <span className="text-slate-300 font-normal">|</span>
+              <span className="text-slate-700">{q.pypYear}</span>
+            </span>
+          )}
+          <span className="text-slate-500 font-bold">⏱ {fmtShort(qTime[idx] || 0)}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-black text-[10px]">+{exam.posMark}</span>
+          {exam.negMark > 0 && <span className="px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded font-black text-[10px]">-{exam.negMark}</span>}
+          <button type="button" onClick={() => setMarked((m) => ({ ...m, [idx]: !m[idx] }))} className={"text-base font-black " + (marked[idx] ? "text-amber-500" : "text-slate-400")}>{marked[idx] ? "★" : "☆"}</button>
+          <button type="button" onClick={() => setReportOpen(true)} className="text-sm font-black text-slate-400 hover:text-rose-600">⚠</button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed">{lang === "HI" ? q.q_hi : q.q_en}</div>
+        {q.examTags && q.examTags.length > 0 && (
+          <div className="flex justify-end flex-wrap gap-1">
+
