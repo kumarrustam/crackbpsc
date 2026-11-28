@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { EXAM_BLUEPRINTS, ExamBlueprint } from "./ExamSyllabusCatalog";
-import { TestSeriesDetailView } from "./TestSeriesDetailView";
+import { TestSeriesDetailView } from "./TestSeriseDetailView";
 import { CbtCategoryEntryModal, CbtInstructionsModal } from "./CbtDrawerModals";
 
 export default function TestsHubPro(p: { selectedExams: string[]; hasPass: boolean; userCategory: string; onCategoryChange: (c: string) => void; onRequirePass: () => void; onStartExam: (exam: ExamBlueprint, title: string, cat: string) => void; attemptedResults: Record<string, { examId: string }>; onOpenResult: (title: string) => void }) {
@@ -28,9 +28,9 @@ export default function TestsHubPro(p: { selectedExams: string[]; hasPass: boole
       {step === "CAT" && pendingTest && <CbtCategoryEntryModal examName={pendingTest.title} isBiharExam={["BPSC", "TEACHING", "BSSC_STATE"].includes(pendingTest.exam.group)} currentCat={userCategory} onConfirm={(c) => { onCategoryChange(c); setStep("INST"); }} onClose={() => setStep("NONE")} />}
       {step === "INST" && pendingTest && <CbtInstructionsModal title={pendingTest.title} instructions={pendingTest.exam.instructions} onStart={() => { const cur = pendingTest; setStep("NONE"); onStartExam(cur.exam, cur.title, userCategory); }} onClose={() => setStep("NONE")} />}
       {activeExam ? (
-        <TestSeriesDetailView exam={activeExam} attemptedIds={attemptedMap} hasPass={hasPass} onLaunch={(t, f) => triggerLaunch(activeExam, t, f)} onViewResult={onOpenResult} onBack={() => setActiveExam(null)} />
+        <TestSeriesDetailView exam={activeExam} attemptedIds={attemptedMap} hasPass={hasPass} onLaunch={(t: string, f: boolean) => triggerLaunch(activeExam, t, f)} onViewResult={onOpenResult} onBack={() => setActiveExam(null)} />
       ) : (
-        <>
+        <div className="space-y-4">
           <div className="bg-white p-4 rounded-2xl border space-y-2.5">
             <div className="text-xs font-black uppercase text-[#0084FF]">Your Enrolled Test Series</div>
             {myExams.map((ex) => (
@@ -49,7 +49,7 @@ export default function TestsHubPro(p: { selectedExams: string[]; hasPass: boole
               </button>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
