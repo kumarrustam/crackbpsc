@@ -2,8 +2,8 @@
 "use client";
 import React from "react";
 import { EXAM_BLUEPRINTS, ExamBlueprint } from "./ExamSyllabusCatalog";
-import TestsHubPro from "./TestsHubPro";
-import { FreeTestsHub } from "./FreeTestsHub";
+import TestsHubPro from "./TestHubPro";
+import { FreeTestsHub } from "./FreeTestHub";
 import { PassCheckoutModal } from "./PassCheckoutModal";
 import { WhiteSideMenu } from "./WhiteSideMenu";
 
