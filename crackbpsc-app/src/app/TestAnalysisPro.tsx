@@ -66,12 +66,27 @@ export default function TestAnalysisPro(props: { exam: ExamBlueprint; testTitle:
               <div className="grid grid-cols-3 gap-3 items-end h-28 pt-4 px-4 border-b">{[{ label: "You", val: youVal, cls: "bg-[#0084FF]" }, { label: "Topper", val: topperVal, cls: "bg-purple-500" }, { label: "Average", val: avgVal, cls: "bg-slate-400" }].map((b) => <div key={b.label} className="flex flex-col items-center gap-1"><span className="text-[10px] font-black">{Number(b.val.toFixed(1))}</span><div className={"w-8 rounded-t-lg " + b.cls} style={{ height: `${Math.max(12, Math.round((b.val / barMax) * 72))}px` }} /><span className="text-[10px] font-bold text-slate-500">{b.label}</span></div>)}</div>
             </div>
             <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2"><div className="flex justify-between text-xs font-black"><span>MARKS VS RANK</span><span className="text-[#0084FF]">Marks: {sliderMarks} ➔ Rank #{Math.max(1, Math.round(4500 * (1 - sliderMarks / (maxTestMarks || 1)) + 5))}</span></div><input type="range" min={0} max={maxTestMarks || 100} value={sliderMarks} onChange={(e) => setSliderMarks(Number(e.target.value))} className="w-full accent-[#0084FF]" /></div>
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between"><span className="text-xs font-black">Rate Test Quality</span><div className="flex gap-1">{Array.from({ length: 5 }, (_, idx) => idx + 1).map((s) => <button key={s} type="button" onClick={() => setStars(s)} className={"text-lg " + (stars >= s ? "text-amber-400" : "text-slate-300")}>★</button>)}</div></div>
+            
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
+              <span className="text-xs font-black">Rate Test Quality</span>
+              <div className="flex gap-1">
+                <button type="button" onClick={() => setStars(1)} className={"text-lg " + (stars >= 1 ? "text-amber-400" : "text-slate-300")}>★</button>
+                <button type="button" onClick={() => setStars(2)} className={"text-lg " + (stars >= 2 ? "text-amber-400" : "text-slate-300")}>★</button>
+                <button type="button" onClick={() => setStars(3)} className={"text-lg " + (stars >= 3 ? "text-amber-400" : "text-slate-300")}>★</button>
+                <button type="button" onClick={() => setStars(4)} className={"text-lg " + (stars >= 4 ? "text-amber-400" : "text-slate-300")}>★</button>
+                <button type="button" onClick={() => setStars(5)} className={"text-lg " + (stars >= 5 ? "text-amber-400" : "text-slate-300")}>★</button>
+              </div>
+            </div>
           </>
         )}
         {tab === "SOLUTIONS" && <TestSolutionsTab exam={exam} questions={questions} result={result} />}
         {tab === "LEADERBOARD" && (
           <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center items-end pt-2"><div className="p-2 bg-slate-50 rounded-xl"><div className="text-xs font-black">#2</div><div className="text-[11px] font-bold">Ritu Raj</div><div className="text-[10px] text-[#0084FF] font-black">{(maxTestMarks * 0.91).toFixed(1)}</div></div><div className="p-3 bg-amber-50 border border-amber-200 rounded-xl"><div className="text-sm font-black text-amber-600">👑 #1</div><div className="text-xs font-black">Ankit Sharma</div><div className="text-[11px] text-emerald-700 font-black">{(maxTestMarks * 0.95).toFixed(1)}</div></div><div className="p-2 bg-slate-50 rounded-xl"><div className="text-xs font-black">#3</div><div className="text-[11px] font-bold">Priya Kumari</div><div className="text-[10px] text-[#0084FF] font-black">{(maxTestMarks * 0.88).toFixed(1)}</div></div></div>
-
-    
+            <div className="p-3 bg-sky-50 border border-[#0084FF] rounded-xl flex justify-between items-center text-xs font-black"><span>#{rank} • आप (You • {cat})</span><span className="text-[#0084FF]">{rawScore} / {maxTestMarks} ({percentile}%ile)</span></div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
