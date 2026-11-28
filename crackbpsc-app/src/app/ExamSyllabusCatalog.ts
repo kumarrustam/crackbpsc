@@ -79,4 +79,5 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
       { id: "SECTIONAL", label: "Sectional Test", count: 30, freeCount: 2, tab: "MOCK", subTopics: [{ id: "sec1", title: "50 Qs Sectional", count: 30 }] },
       { id: "SUBJECT", label: "Subject Test", count: 35, freeCount: 1, tab: "MOCK", subTopics: [{ id: "sub1", title: "Subject Wise", count: 35 }] },
 
-      
+        }
+      ];
