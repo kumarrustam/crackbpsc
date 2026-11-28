@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import WeakAreasPlayerModal from "./WeakAreasPro"; 
 import WeakAreasAdminStudio from "./WeakAreasAdminStudio";
 import FlipCurrentAffairsStudio from "./FlipCurrentAffairsStudio";
+import { EmbeddedProHub } from "./EmbeddedProHub";
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
@@ -4174,6 +4175,7 @@ useEffect(() => {
             <button onClick={() => { setAdVer(adVer + 1); setPopupOpen(true); setAdHideToday(false); alert("🚀 नया विज्ञापन लाइव हो गया! (प्रतिदिन अधिकतम " + adMaxDaily + " बार दिखेगा)"); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-black shadow">🚀 नया विज्ञापन लाइव करें (सभी छात्रों को 1 बार नया दिखेगा)</button>
           </div> 
       )}
+      <EmbeddedProHub />    
    <WeakAreasAdminStudio isHeadAdmin={true} />
     <div className="h-28 pb-16 shrink-0" />
           
