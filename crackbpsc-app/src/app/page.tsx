@@ -4,7 +4,10 @@ import WeakAreasPlayerModal from "./WeakAreasPro";
 import WeakAreasAdminStudio from "./WeakAreasAdminStudio";
 import FlipCurrentAffairsStudio from "./FlipCurrentAffairsStudio";
 
-import CrackBpscStudentApp from "./CrackBpecStudentApp";
+
+import CrackBpscStudentApp from "./CrackBpscStudentApp";
+
+
 
 
 const SB_URL = "https://supabase.co";
