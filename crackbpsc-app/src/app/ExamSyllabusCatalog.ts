@@ -82,5 +82,5 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     hasPicker: false, pickerLabel: "", totalTests: 520, freeTests: 4, durationMins: 120, totalQs: 100, maxMarks: 200, posMark: 2.0, negMark: 0.66, unansNeg: 0, hasOpt5: false, subjects: [],
     sections: [{ name: "GS Paper - I (100 Qs)", qsCount: 100 }],
     categories: [
-
+];
     
