@@ -1,16 +1,16 @@
 "use client";
 import React, { useState } from "react";
 import { ExamBlueprint } from "./ExamSyllabusCatalog";
-import { CbtQuestion } from "./CbtExamPlayerPro";
 import { BIHAR_CATEGORIES } from "./CbtDrawerModals";
-import { TestSolutionsTab } from "./TestSolutionsTab";
+import { TestSolutionsTab } from "./TestSolutionTab";
 import { TestAnalysisExtras, AchieverItem } from "./TestAnalysisExtras";
-import { TestLeaderboardTab } from "./TestLeaderboardTab";
+import { TestLeaderboardTab } from "./TestLeaderboarTab";
 
+interface QItem { id: string; q_hi: string; q_en: string; opts_hi: string[]; opts_en: string[]; ansIdx: number; exp_hi?: string; exp_en?: string; }
 const SEATS: Record<string, number> = { "General (UR)": 200, "BC-2 (OBC)": 60, "EBC (BC-1)": 90, "EWS": 50, "SC": 80, "ST": 10, "WBC (BC Women)": 15 };
 const RATIO: Record<string, number> = { "General (UR)": 0.66, "BC-2 (OBC)": 0.62, "EWS": 0.60, "EBC (BC-1)": 0.59, "WBC (BC Women)": 0.57, "SC": 0.52, "ST": 0.50 };
 
-export default function TestAnalysisPro(p: { exam: ExamBlueprint; testTitle: string; questions: CbtQuestion[]; result: { answers: Record<number, number>; timeSpent: Record<number, number>; totalSecs: number; category: string }; studentName?: string; achievers?: AchieverItem[]; categorySeats?: Record<string, number>; customCutoffs?: Record<string, number>; onReattempt: () => void; onClose: () => void }) {
+export default function TestAnalysisPro(p: { exam: ExamBlueprint; testTitle: string; questions: QItem[]; result: { answers: Record<number, number>; timeSpent: Record<number, number>; totalSecs: number; category: string }; studentName?: string; achievers?: AchieverItem[]; categorySeats?: Record<string, number>; customCutoffs?: Record<string, number>; onReattempt: () => void; onClose: () => void }) {
   const [tab, setTab] = useState<"ANALYSIS" | "SOLUTIONS" | "LEADERBOARD">("ANALYSIS");
   const [cat, setCat] = useState(p.result.category || "General (UR)");
   let corr = 0, wrong = 0, unans = 0, noOpt = 0;
@@ -35,5 +35,4 @@ export default function TestAnalysisPro(p: { exam: ExamBlueprint; testTitle: str
     </div>
   );
 }
-
 
