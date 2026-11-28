@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import WeakAreasPlayerModal from "./WeakAreasPro"; 
 import WeakAreasAdminStudio from "./WeakAreasAdminStudio";
 import FlipCurrentAffairsStudio from "./FlipCurrentAffairsStudio";
-import CrackBpscStudentApp from "./CrackBpscStudentApp";
+import CrackBpscStudentApp from "./CrackBpecStudentApp";
 const SB_URL = "https://supabase.co";
 const SB_KEY = "sb_publishable_rHzmx1vhZtb64ibnpImGUA_Tq1oj1go"; 
 
