@@ -2,7 +2,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { EXAM_BLUEPRINTS, ExamBlueprint } from "../ExamSyllabusCatalog";
-import CbtExamPlayerPro from "../CbtExamPlayerPro";
+
+import CbtExamPlayerPro from "../CbtExamPlayer";
+
+
 import TestAnalysisPro from "../TestAnalysisPro";
 import { SAMPLE_QS, SampleQ, loadSavedAdminData } from "../Studentsampledata";
 import { ProShellView } from "../ProShellView";
