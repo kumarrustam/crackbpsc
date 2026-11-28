@@ -1,12 +1,39 @@
 "use client";
 import React, { useState } from "react";
 
-export function CbtPauseModal(props: {
-  timeLeftStr: string;
-  stats: { attempted: number; unattempted: number; marked: number; noOpt: number };
-  onResume: () => void;
-  onExit: () => void;
-}) {
+export const BIHAR_CATEGORIES = ["General (UR)", "BC-2 (OBC)", "EBC (BC-1)", "EWS", "SC", "ST", "WBC (BC Women)"];
+export const CENTRAL_CATEGORIES = ["General (UR)", "OBC (NCL)", "EWS", "SC", "ST"];
+
+export function CbtCategoryEntryModal(props: { examName: string; isBiharExam: boolean; customCats?: string[]; currentCat: string; onConfirm: (cat: string) => void; onClose: () => void }) {
+  const { examName, isBiharExam, customCats, currentCat, onConfirm, onClose } = props;
+  const list = customCats && customCats.length ? customCats : isBiharExam ? BIHAR_CATEGORIES : CENTRAL_CATEGORIES;
+  const [picked, setPicked] = useState<string>(list.includes(currentCat) ? currentCat : list[0]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+      <div className="bg-white text-slate-900 rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-4 border border-slate-100">
+        <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div>
+            <span className="px-2 py-0.5 bg-sky-50 text-[#0084FF] rounded-full text-[10px] font-black">{isBiharExam ? "BIHAR RESERVATION CATEGORY" : "CENTRAL RESERVATION CATEGORY"}</span>
+            <h3 className="font-black text-sm text-slate-900 mt-1">{examName}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 font-black text-slate-500">✕</button>
+        </div>
+        <p className="text-xs text-slate-600 font-medium">अपने आधिकारिक कट-ऑफ़ (Cut-off) और श्रेणी रैंक के लिए अपनी श्रेणी चुनें:</p>
+        <div className="grid grid-cols-2 gap-2">
+          {list.map((c) => (
+            <button key={c} type="button" onClick={() => setPicked(c)} className={"p-3 rounded-xl border text-left text-xs font-black transition " + (picked === c ? "bg-sky-50 border-[#0084FF] text-[#0084FF] shadow-sm" : "bg-white border-slate-200 text-slate-700")}>
+              {picked === c ? "◉ " : "○ "}{c}
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={() => onConfirm(picked)} className="w-full py-3 bg-[#0084FF] text-white rounded-xl font-black text-xs shadow">Save Category & Continue →</button>
+      </div>
+    </div>
+  );
+}
+
+export function CbtPauseModal(props: { timeLeftStr: string; stats: { attempted: number; unattempted: number; marked: number; noOpt: number }; onResume: () => void; onExit: () => void }) {
   const { timeLeftStr, stats, onResume, onExit } = props;
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
@@ -26,21 +53,9 @@ export function CbtPauseModal(props: {
   );
 }
 
-export function CbtPaletteDrawer(props: {
-  questions: { q_hi: string; q_en: string }[];
-  answers: Record<number, number>;
-  marked: Record<number, boolean>;
-  visited: Record<number, boolean>;
-  hasOpt5: boolean;
-  currentIdx: number;
-  onSelect: (idx: number) => void;
-  onOpenInstructions: () => void;
-  onSubmit: () => void;
-  onClose: () => void;
-}) {
+export function CbtPaletteDrawer(props: { questions: { q_hi: string; q_en: string }[]; answers: Record<number, number>; marked: Record<number, boolean>; visited: Record<number, boolean>; hasOpt5: boolean; currentIdx: number; onSelect: (idx: number) => void; onOpenInstructions: () => void; onSubmit: () => void; onClose: () => void }) {
   const { questions, answers, marked, visited, hasOpt5, currentIdx, onSelect, onOpenInstructions, onSubmit, onClose } = props;
   const [viewMode, setViewMode] = useState<"GRID" | "LIST">("GRID");
-
   const getBadge = (i: number) => {
     const ans = answers[i];
     if (marked[i]) return "bg-purple-600 text-white border-purple-600";
@@ -49,7 +64,6 @@ export function CbtPaletteDrawer(props: {
     if (visited[i]) return "bg-amber-500 text-white border-amber-500";
     return "bg-white text-slate-700 border-slate-300";
   };
-
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex justify-end">
       <div className="bg-white text-slate-900 w-80 max-w-[88vw] h-full flex flex-col shadow-2xl">
@@ -60,29 +74,16 @@ export function CbtPaletteDrawer(props: {
           </div>
           <button type="button" onClick={onClose} className="px-2 py-1 text-slate-500 font-black">✕</button>
         </div>
-        <div className="px-3 py-2 bg-slate-50 border-b flex flex-wrap gap-2 text-[10px] font-bold text-slate-600">
-          <span>★ Marked</span><span className="text-[#0084FF]">● Attempted</span><span>● Unattempted</span><span className="text-amber-600">● No Opt</span><span>○ Unseen</span>
-        </div>
+        <div className="px-3 py-2 bg-slate-50 border-b flex flex-wrap gap-2 text-[10px] font-bold text-slate-600"><span>★ Marked</span><span className="text-[#0084FF]">● Attempted</span><span>● Unattempted</span><span className="text-amber-600">● No Opt</span><span>○ Unseen</span></div>
         <div className="flex-1 overflow-y-auto p-3">
           {viewMode === "GRID" ? (
-            <div className="grid grid-cols-5 gap-2">
-              {questions.map((_, i) => (
-                <button key={i} type="button" onClick={() => { onSelect(i); onClose(); }} className={"h-9 rounded-full border font-black text-xs " + getBadge(i) + (currentIdx === i ? " ring-2 ring-offset-1 ring-slate-900" : "")}>{i + 1}</button>
-              ))}
-            </div>
+            <div className="grid grid-cols-5 gap-2">{questions.map((_, i) => <button key={i} type="button" onClick={() => { onSelect(i); onClose(); }} className={"h-9 rounded-full border font-black text-xs " + getBadge(i) + (currentIdx === i ? " ring-2 ring-offset-1 ring-slate-900" : "")}>{i + 1}</button>)}</div>
           ) : (
-            <div className="space-y-1.5 text-xs">
-              {questions.map((q, i) => (
-                <button key={i} type="button" onClick={() => { onSelect(i); onClose(); }} className="w-full p-2 border rounded-xl text-left flex items-start gap-2 hover:bg-slate-50">
-                  <span className={"w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black border " + getBadge(i)}>{i + 1}</span>
-                  <span className="line-clamp-2 font-medium text-slate-800">{q.q_hi || q.q_en}</span>
-                </button>
-              ))}
-            </div>
+            <div className="space-y-1.5 text-xs">{questions.map((q, i) => <button key={i} type="button" onClick={() => { onSelect(i); onClose(); }} className="w-full p-2 border rounded-xl text-left flex items-start gap-2"><span className={"w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black border " + getBadge(i)}>{i + 1}</span><span className="line-clamp-2 font-medium">{q.q_hi || q.q_en}</span></button>)}</div>
           )}
         </div>
         <div className="p-3 border-t space-y-2">
-          <button type="button" onClick={onOpenInstructions} className="w-full py-2 border border-slate-300 rounded-xl text-xs font-black text-slate-700">ℹ️ View Instructions</button>
+          <button type="button" onClick={onOpenInstructions} className="w-full py-2 border border-slate-300 rounded-xl text-xs font-black">ℹ️ View Instructions</button>
           <button type="button" onClick={onSubmit} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black">SUBMIT TEST</button>
         </div>
       </div>
@@ -90,13 +91,13 @@ export function CbtPaletteDrawer(props: {
   );
 }
 
-export function CbtInstructionsModal({ title, instructions, onClose }: { title: string; instructions: string[]; onClose: () => void }) {
+export function CbtInstructionsModal({ title, instructions, onStart, onClose }: { title: string; instructions: string[]; onStart?: () => void; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-white text-slate-900 rounded-2xl w-full max-w-md p-5 space-y-3 shadow-2xl">
         <div className="flex justify-between items-center border-b pb-2"><h3 className="font-black text-sm">{title} — Instructions</h3><button type="button" onClick={onClose} className="font-black text-slate-500">✕</button></div>
         <ul className="space-y-2 text-xs text-slate-700 list-disc pl-4">{instructions.map((ins, i) => <li key={i}>{ins}</li>)}</ul>
-        <button type="button" onClick={onClose} className="w-full py-2 bg-[#0084FF] text-white rounded-xl font-black text-xs">समझ गया (Close)</button>
+        <button type="button" onClick={onStart || onClose} className="w-full py-2.5 bg-[#0084FF] text-white rounded-xl font-black text-xs">{onStart ? "I am ready to begin →" : "समझ गया (Close)"}</button>
       </div>
     </div>
   );
