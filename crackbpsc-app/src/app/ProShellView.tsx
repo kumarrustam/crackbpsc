@@ -3,10 +3,6 @@
 import React from "react";
 import { EXAM_BLUEPRINTS, ExamBlueprint } from "./ExamSyllabusCatalog";
 import TestsHubPro from "./TestHubPro";
-
-import { FreeTestsHub } from "./FreeTestsHub";
-
-
 import { PassCheckoutModal } from "./PassCheckoutModal";
 import { WhiteSideMenu } from "./WhiteSideMenu";
 
@@ -25,7 +21,14 @@ export function ProShellView(p: { nav: string; setNav: (v: string) => void; menu
         <button type="button" onClick={() => p.setNav("FREE")} className={"py-2.5 border-b-2 " + (p.nav === "FREE" ? "border-[#0084FF] text-[#0084FF]" : "border-transparent text-slate-500")}>🎁 Free Tests</button>
       </div>
       <main className="max-w-2xl mx-auto p-4">
-        {p.nav === "FREE" ? <FreeTestsHub onLaunchFree={(ex, t) => p.onStart(ex, t)} onOpenPass={() => p.setPassOpen(true)} /> : <TestsHubPro selectedExams={["72nd BPSC", "TRE 4.0"]} hasPass={p.hasPass} userCategory={p.userCat} onCategoryChange={p.setUserCat} onRequirePass={() => p.setPassOpen(true)} onStartExam={(ex, t, c) => { p.setUserCat(c); p.onStart(ex, t); }} attemptedResults={p.resultsMap} onOpenResult={p.onOpenRes} />}
+        {p.nav === "FREE" ? (
+          <div className="bg-white p-4 rounded-2xl border space-y-2.5">
+            <div className="text-xs font-black uppercase text-emerald-700">🎁 Free Mock Tests & Live PYPs</div>
+            {EXAM_BLUEPRINTS.slice(0, 6).map((ex) => { const title = `${ex.shortName} • Free Live Mock - Set 1`; return (<div key={ex.id} className="p-3 border rounded-xl flex justify-between items-center gap-2"><div className="min-w-0"><div className="font-black text-xs truncate">{title}</div><div className="text-[11px] text-slate-500 font-bold">{ex.totalQs} Qs • {ex.maxMarks} Marks</div></div><button type="button" onClick={() => p.onStart(ex, title)} className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-black shrink-0">Attempt Free →</button></div>); })}
+          </div>
+        ) : (
+          <TestsHubPro selectedExams={["72nd BPSC", "TRE 4.0"]} hasPass={p.hasPass} userCategory={p.userCat} onCategoryChange={p.setUserCat} onRequirePass={() => p.setPassOpen(true)} onStartExam={(ex, t, c) => { p.setUserCat(c); p.onStart(ex, t); }} attemptedResults={p.resultsMap} onOpenResult={p.onOpenRes} />
+        )}
       </main>
     </div>
   );
