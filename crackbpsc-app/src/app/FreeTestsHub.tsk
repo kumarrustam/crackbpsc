@@ -1,0 +1,29 @@
+"use client";
+import React from "react";
+import { EXAM_BLUEPRINTS, ExamBlueprint } from "./ExamSyllabusCatalog";
+
+export function FreeTestsHub(p: { onLaunchFree: (exam: ExamBlueprint, title: string) => void; onOpenPass: () => void }) {
+  return (
+    <div className="space-y-4">
+      <div className="bg-white p-4 rounded-2xl border space-y-2.5">
+        <div className="flex justify-between items-center"><span className="text-xs font-black uppercase text-emerald-700">🎁 Free Mock Tests & Live PYPs</span><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black">100% FREE</span></div>
+        {EXAM_BLUEPRINTS.slice(0, 6).map((ex) => {
+          const title = `${ex.shortName} • Free All-Bihar Live Mock - Set 1`;
+          return (
+            <div key={ex.id} className="p-3 border rounded-xl flex justify-between items-center gap-2">
+              <div className="min-w-0"><div className="font-black text-xs text-slate-900 truncate">{title}</div><div className="text-[11px] text-slate-500 font-bold">{ex.totalQs} Qs • {ex.maxMarks} Marks • {ex.durationMins} Mins</div></div>
+              <button type="button" onClick={() => p.onLaunchFree(ex, title)} className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-black shrink-0">Attempt Free →</button>
+            </div>
+          );
+        })}
+      </div>
+      <div className="bg-gradient-to-r from-[#0084FF] to-sky-600 text-white p-4 rounded-2xl shadow space-y-2">
+        <div className="text-xs font-black uppercase">Unlock All 4,500+ Test Series with CrackBPSC Pass</div>
+        <p className="text-[11px] text-sky-100">72वीं BPSC, TRE 4.0 (PGT/TGT/Middle/PRT), BSSC, UPSC, Railway व Banking की सभी सीरीज़ अनलॉक करें।</p>
+        <button type="button" onClick={p.onOpenPass} className="w-full py-2.5 bg-white text-[#0084FF] rounded-xl text-xs font-black">Enroll & Unlock Pass Now →</button>
+      </div>
+    </div>
+  );
+}
+
+                
