@@ -4176,7 +4176,7 @@ useEffect(() => {
       )}
       
    <WeakAreasAdminStudio isHeadAdmin={true} />
-    <div className="h-28 pb-16 shrink-0" />
+    <div className="h-40 pb-24 shrink-0" />
           
      </div>   
   )}
