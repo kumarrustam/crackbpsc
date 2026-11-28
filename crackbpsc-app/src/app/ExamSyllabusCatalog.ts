@@ -40,7 +40,6 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     sections: [{ name: "भाषा भाग - I", qsCount: 30, qualifying: "30% अर्हता" }, { name: "सामान्य अध्ययन - भाग II", qsCount: 40 }, { name: "विषय भाग - III", qsCount: 80 }],
     categories: [
       { id: "CHAPTER", label: "चैप्टर टेस्ट (9 to 10)", count: 150, freeCount: 2, tab: "MOCK", subTopics: [{ id: "sub_c", title: "Topic Wise", count: 90 }, { id: "gs_c", title: "GS Chapter", count: 60 }] },
-      { id: "LANG", label: "भाषा टेस्ट (अर्हता)", count: 28, tab: "MOCK", subTopics: [{ id: "eng", title: "English", count: 10 }, { id: "hin", title: "हिन्दी", count: 18 }] },
       { id: "FULL", label: "फुल टेस्ट (150 Qs)", count: 41, freeCount: 2, tab: "MOCK", subTopics: [{ id: "tgt_f", title: "TGT Full Mock", count: 41 }] },
       { id: "PYP", label: "Previous Year Paper", count: 15, tab: "PYP", subTopics: [{ id: "tgt_p", title: "TRE Official", count: 15 }] }
     ],
@@ -52,8 +51,7 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     sections: [{ name: "भाषा भाग - I", qsCount: 30, qualifying: "30% अर्हता" }, { name: "सामान्य अध्ययन - भाग II", qsCount: 40 }, { name: "विषय भाग - III", qsCount: 80 }],
     categories: [
       { id: "CHAPTER", label: "चैप्टर टेस्ट (Class 6 to 8)", count: 140, freeCount: 2, tab: "MOCK", subTopics: [{ id: "nc68", title: "NCERT/SCERT 6–8", count: 140 }] },
-      { id: "FULL", label: "फुल टेस्ट (150 Qs)", count: 35, freeCount: 2, tab: "MOCK", subTopics: [{ id: "f68", title: "6–8 Full Mock", count: 35 }] },
-      { id: "PYP", label: "Previous Year Paper", count: 12, tab: "PYP", subTopics: [{ id: "p68", title: "TRE 6–8 Papers", count: 12 }] }
+      { id: "FULL", label: "फुल टेस्ट (150 Qs)", count: 35, freeCount: 2, tab: "MOCK", subTopics: [{ id: "f68", title: "6–8 Full Mock", count: 35 }] }
     ],
     instructions: ["कक्षा 6–8 के लिए भाग-I भाषा (30 Qs अर्हता), भाग-II GS (40 Qs), भाग-III विषय (80 Qs)। 5वाँ विकल्प 'अनुत्तरित' अनिवार्य।"]
   },
@@ -62,9 +60,8 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     hasPicker: false, pickerLabel: "", totalTests: 540, freeTests: 5, durationMins: 150, totalQs: 150, maxMarks: 150, posMark: 1.0, negMark: 0.33, unansNeg: 0.33, hasOpt5: true, subjects: [],
     sections: [{ name: "भाषा भाग - I", qsCount: 30, qualifying: "30% अर्हता" }, { name: "सामान्य अध्ययन - भाग II", qsCount: 120 }],
     categories: [
-      { id: "CHAPTER", label: "SCERT/NCERT चैप्टर टेस्ट (1–5)", count: 180, freeCount: 3, tab: "MOCK", subTopics: [{ id: "evs", title: "EVS & Science", count: 60 }, { id: "math", title: "Maths & Reasoning", count: 60 }, { id: "gk", title: "Bihar & National", count: 60 }] },
-      { id: "FULL", label: "PRT फुल टेस्ट (150 Qs)", count: 35, freeCount: 2, tab: "MOCK", subTopics: [{ id: "prt_f", title: "PRT Full Mock", count: 35 }] },
-      { id: "PYP", label: "Previous Year Paper (PRT)", count: 15, tab: "PYP", subTopics: [{ id: "prt_p", title: "Official PYPs", count: 15 }] }
+      { id: "CHAPTER", label: "SCERT/NCERT चैप्टर टेस्ट (1–5)", count: 180, freeCount: 3, tab: "MOCK", subTopics: [{ id: "evs", title: "EVS & Science", count: 60 }, { id: "math", title: "Maths & Reasoning", count: 60 }] },
+      { id: "FULL", label: "PRT फुल टेस्ट (150 Qs)", count: 35, freeCount: 2, tab: "MOCK", subTopics: [{ id: "prt_f", title: "PRT Full Mock", count: 35 }] }
     ],
     instructions: ["कक्षा 1–5 के लिए भाग-I भाषा (30 Qs अर्हता) तथा भाग-II सामान्य अध्ययन (120 Qs)। 5वाँ विकल्प 'अनुत्तरित' अनिवार्य।"]
   },
@@ -75,9 +72,15 @@ export const EXAM_BLUEPRINTS: ExamBlueprint[] = [
     categories: [
       { id: "CA_SPEC", label: "🔥 Special Current Affairs", count: 13, tab: "MOCK", subTopics: [{ id: "cs1", title: "Bihar & National", count: 13 }] },
       { id: "FULL_NEW", label: "New Full Test", count: 6, freeCount: 1, tab: "MOCK", subTopics: [{ id: "fn1", title: "Latest Pattern", count: 6 }] },
-      { id: "CHAPTER_NEW", label: "New Chapter Test", count: 172, freeCount: 1, tab: "MOCK", subTopics: [{ id: "reas", title: "Reasoning", count: 65 }, { id: "math", title: "Maths", count: 55 }, { id: "gs", title: "GS & Science", count: 52 }] },
-      { id: "SECTIONAL", label: "Sectional Test", count: 30, freeCount: 2, tab: "MOCK", subTopics: [{ id: "sec1", title: "50 Qs Sectional", count: 30 }] },
-      { id: "SUBJECT", label: "Subject Test", count: 35, freeCount: 1, tab: "MOCK", subTopics: [{ id: "sub1", title: "Subject Wise", count: 35 }] },
+      { id: "CHAPTER_NEW", label: "New Chapter Test", count: 172, freeCount: 1, tab: "MOCK", subTopics: [{ id: "reas", title: "Reasoning", count: 65 }, { id: "math", title: "Maths", count: 55 }] },
+      { id: "PYP", label: "Previous Year Paper", count: 10, freeCount: 1, tab: "PYP", subTopics: [{ id: "p1", title: "BSSC Official", count: 10 }] }
+    ],
+    instructions: ["कुल 150 प्रश्न (600 अंक) व समय 135 मिनट। सही पर +4.0 और गलत पर -1.0 अंक कटेगा।"]
+  },
+  {
+    id: "upsc_epfo", matchKeys: ["upsc", "ias", "epfo", "uppsc", "jpsc"], group: "UPSC_PCS", name: "UPSC CSE, EPFO (APFC) & UPPSC RO/ARO Mock Series", shortName: "UPSC CSE / EPFO / RO-ARO",
+    hasPicker: false, pickerLabel: "", totalTests: 520, freeTests: 4, durationMins: 120, totalQs: 100, maxMarks: 200, posMark: 2.0, negMark: 0.66, unansNeg: 0, hasOpt5: false, subjects: [],
+    sections: [{ name: "GS Paper - I (100 Qs)", qsCount: 100 }],
+    categories: [
 
-        }
-      ];
+    
