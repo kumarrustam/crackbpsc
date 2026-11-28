@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { EXAM_BLUEPRINTS, ExamBlueprint } from "../ExamSyllabusCatalog";
 
-import CbtExamPlayerPro from "../CbtExamPlayer";
+
+import CbtExamPlayerPro from "../CbtExamPlayerPro";
+
+
 
 
 import TestAnalysisPro from "../TestAnalysisPro";
